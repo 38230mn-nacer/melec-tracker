@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fiche de révision — Kulture Académie</title>
+<meta name="description" content="Fiche de révision visuelle en maths ou physique-chimie, à lire et à imprimer.">
+<meta name="theme-color" content="#16215B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/store.css">
+<link rel="stylesheet" href="assets/css/fiche.css">
+</head>
+<body>
+
+<header class="header no-print">
+  <div class="wrap header__inner">
+    <a class="logo" href="index.html">
+      <span class="logo__mark" aria-hidden="true">🎓</span>
+      <span class="logo__txt">Kulture Académie<small>Apprendre vite, comprendre mieux</small></span>
+    </a>
+    <nav class="nav" aria-label="Navigation principale">
+      <a href="index.html#packs">Les packs</a>
+      <a href="index.html#gratuit">Fiche gratuite</a>
+    </nav>
+    <div class="header__actions">
+      <button class="btn btn--sm btn--ghost" id="imprimer">🖨️ Imprimer</button>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap-narrow">
+    <div class="center no-print" style="margin-bottom:1.6rem">
+      <span class="section-tag">Fiche offerte</span>
+      <h1 id="titre" style="font-size:clamp(1.8rem,4vw,2.6rem)">Ta fiche de révision</h1>
+      <p class="section-lead" id="sous-titre">Lis-la à l'écran, ou imprime-la en A4 : elle est prévue pour les deux.</p>
+    </div>
+    <div id="zone-fiche"></div>
+    <div class="center no-print" style="margin-top:2.4rem">
+      <h2>Le programme entier dans ce format</h2>
+      <p class="section-lead">Cette fiche fait partie d'une collection de 301 fiches couvrant les maths et la
+        physique-chimie de la Seconde à la Terminale.</p>
+      <a class="btn btn--gold btn--lg" href="index.html#packs">Voir les packs →</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer no-print">
+  <div class="wrap">
+    <div class="footer__bottom" style="border:0;margin:0">
+      <span>© <span class="annee">2026</span> Kulture Académie</span>
+      <span><a href="mentions.html">Mentions légales</a> · <a href="cgv.html">CGV</a> · <a href="index.html">Accueil</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>document.querySelectorAll('.annee').forEach(e => e.textContent = new Date().getFullYear());</script>
+<script type="module" src="assets/js/page-fiche.js"></script>
+</body>
+</html>

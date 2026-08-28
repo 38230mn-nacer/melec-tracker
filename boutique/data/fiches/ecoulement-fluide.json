@@ -1,0 +1,80 @@
+{
+  "id": "ecoulement-fluide",
+  "titre": "Écoulement d'un fluide",
+  "niveau": "terminale",
+  "matiere": "physique-chimie",
+  "chapitre": "Fluides en mouvement",
+  "sections": [
+    {
+      "n": 1,
+      "titre": "Poussée d'Archimède",
+      "icone": "book",
+      "blocs": [
+        { "type": "texte", "html": "Tout corps plongé dans un fluide subit une force verticale dirigée <b>vers le haut</b>, de valeur égale au poids du fluide déplacé :" },
+        { "type": "formule", "tex": "\\Pi = \\rho_{\\text{fluide}} \\times V_{\\text{immergé}} \\times g" },
+        { "type": "texte", "html": "Le corps flotte si $\\rho_{\\text{corps}} < \\rho_{\\text{fluide}}$, coule sinon." }
+      ]
+    },
+    {
+      "n": 2,
+      "titre": "Débit volumique",
+      "icone": "key",
+      "blocs": [
+        { "type": "formule", "tex": "D_v = \\dfrac{V}{\\Delta t} = S \\times v \\qquad (\\mathrm{m^3 \\cdot s^{-1}})" },
+        { "type": "schema", "nom": "conduite", "legende": "Rétrécissement d'une conduite : la vitesse augmente quand la section diminue" },
+        { "type": "encadre", "variante": "exemple", "titre": "Ordre de grandeur", "html": "Un robinet remplit un seau de 10 L en 40 s : $D_v = \\dfrac{10 \\times 10^{-3}}{40} = 2{,}5 \\times 10^{-4}\\ \\mathrm{m^3 \\cdot s^{-1}}$." }
+      ]
+    },
+    {
+      "n": 3,
+      "titre": "Conservation du débit",
+      "icone": "target",
+      "blocs": [
+        { "type": "texte", "html": "Pour un fluide <b>incompressible</b> en régime permanent, le débit volumique est le même dans toute section de la conduite :" },
+        { "type": "formule", "tex": "S_1 v_1 = S_2 v_2" },
+        { "type": "texte", "html": "Conséquence directe : si la section est divisée par 4, la vitesse est multipliée par 4." }
+      ]
+    },
+    {
+      "n": 4,
+      "titre": "Relation de Bernoulli",
+      "icone": "sign",
+      "blocs": [
+        { "type": "texte", "html": "Pour un fluide incompressible, en écoulement <b>laminaire</b> et sans frottement :" },
+        { "type": "formule", "tex": "\\tfrac{1}{2}\\rho v^2 + \\rho g z + p = \\text{constante}" },
+        { "type": "encadre", "variante": "cle", "titre": "Lecture physique", "html": "Là où la vitesse augmente, la pression <b>diminue</b>. C'est l'effet Venturi : il explique la portance d'une aile et le fonctionnement d'un pulvérisateur." }
+      ]
+    },
+    {
+      "n": 5,
+      "titre": "Régimes d'écoulement",
+      "icone": "chart",
+      "blocs": [
+        { "type": "tableau", "entetes": ["Régime", "Description", "Bernoulli applicable ?"], "lignes": [["Laminaire", "lignes de courant parallèles, pas de mélange", "oui"], ["Turbulent", "tourbillons, dissipation d'énergie", "non"]] }
+      ]
+    },
+    {
+      "n": 6,
+      "titre": "Méthode type bac",
+      "icone": "steps",
+      "blocs": [
+        { "type": "etapes", "items": [
+          { "titre": "Identifier les deux points", "html": "Choisir 1 et 2 là où deux grandeurs sur trois sont connues." },
+          { "titre": "Simplifier", "html": "Conduite horizontale $\\Rightarrow z_1 = z_2$ : le terme $\\rho g z$ disparaît." },
+          { "titre": "Relier les vitesses", "html": "Utiliser $S_1 v_1 = S_2 v_2$ pour n'avoir plus qu'une inconnue." },
+          { "titre": "Conclure", "html": "Vérifier l'unité finale : une pression en Pa, une vitesse en $\\mathrm{m \\cdot s^{-1}}$." }
+        ] }
+      ]
+    }
+  ],
+  "astuces": [
+    "La section d'un tuyau cylindrique de rayon $r$ vaut $S = \\pi r^2$ : si le rayon double, la section quadruple.",
+    "Convertis systématiquement les litres en $\\mathrm{m^3}$ : $1\\ \\mathrm{L} = 10^{-3}\\ \\mathrm{m^3}$.",
+    "Un schéma avec les deux points repérés rapporte souvent un point de barème à lui seul."
+  ],
+  "erreurs": [
+    "Appliquer Bernoulli en régime turbulent ou avec frottements : hors du domaine de validité.",
+    "Oublier le facteur $\\tfrac{1}{2}$ dans le terme cinétique.",
+    "Utiliser le volume total au lieu du volume <b>immergé</b> dans la poussée d'Archimède."
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "id": "couleur-objets",
+  "titre": "Couleur des objets",
+  "niveau": "premiere",
+  "matiere": "physique-chimie",
+  "chapitre": "Ondes et signaux",
+  "sections": [
+    {
+      "n": 1,
+      "titre": "Synthèse additive",
+      "icone": "book",
+      "blocs": [
+        { "type": "texte", "html": "Elle concerne les <b>lumières</b> qui s'additionnent. Couleurs primaires : rouge, vert, bleu (RVB)." },
+        { "type": "schema", "nom": "synthese-additive", "legende": "R + V = jaune • R + B = magenta • V + B = cyan • R + V + B = blanc" }
+      ]
+    },
+    {
+      "n": 2,
+      "titre": "Synthèse soustractive",
+      "icone": "key",
+      "blocs": [
+        { "type": "texte", "html": "Elle concerne les <b>matières</b> (filtres, peintures) qui absorbent une partie de la lumière. Couleurs primaires : cyan, magenta, jaune (CMJ)." },
+        { "type": "encadre", "variante": "cle", "titre": "Le lien entre les deux", "html": "Chaque primaire soustractive est la <b>couleur complémentaire</b> d'une primaire additive : cyan $\\leftrightarrow$ rouge, magenta $\\leftrightarrow$ vert, jaune $\\leftrightarrow$ bleu." }
+      ]
+    },
+    {
+      "n": 3,
+      "titre": "Pourquoi un objet a une couleur",
+      "icone": "target",
+      "blocs": [
+        { "type": "texte", "html": "La couleur perçue dépend de trois éléments : la lumière incidente, l'objet (ce qu'il absorbe) et l'œil de l'observateur." },
+        { "type": "formule", "tex": "\\text{couleur perçue} = \\text{lumière incidente} - \\text{radiations absorbées}" },
+        { "type": "tableau", "entetes": ["Objet", "Éclairé en lumière blanche", "Éclairé en lumière rouge"], "lignes": [["Objet rouge", "rouge (diffuse le rouge)", "rouge"], ["Objet bleu", "bleu", "noir (rien à diffuser)"], ["Objet blanc", "blanc (diffuse tout)", "rouge"]] }
+      ]
+    },
+    {
+      "n": 4,
+      "titre": "Absorbance et loi de Beer-Lambert",
+      "icone": "sign",
+      "blocs": [
+        { "type": "texte", "html": "Une solution colorée absorbe la radiation <b>complémentaire</b> de sa couleur : une solution bleue absorbe dans l'orange." },
+        { "type": "formule", "tex": "A = k \\times \\ell \\times C" },
+        { "type": "texte", "html": "L'absorbance est proportionnelle à la concentration : c'est le principe du dosage par étalonnage." }
+      ]
+    },
+    {
+      "n": 5,
+      "titre": "Méthode",
+      "icone": "steps",
+      "blocs": [
+        { "type": "etapes", "items": [
+          { "titre": "Identifier la source", "html": "Quelle lumière éclaire l'objet ? Blanche = toutes les radiations." },
+          { "titre": "Identifier ce que l'objet diffuse", "html": "Un objet de couleur $X$ ne diffuse que le $X$ et absorbe le reste." },
+          { "titre": "Croiser les deux", "html": "S'il ne reçoit pas la radiation qu'il diffuse, l'objet apparaît <b>noir</b>." }
+        ] }
+      ]
+    }
+  ],
+  "astuces": [
+    "Retiens le triangle RVB / CMJ : deux primaires additives donnent une primaire soustractive.",
+    "Pour un spectre d'absorption, cherche le maximum : la couleur de la solution est sa complémentaire.",
+    "« Un objet noir n'absorbe pas tout par nature : il n'a simplement rien à diffuser. »"
+  ],
+  "erreurs": [
+    "Mélanger les deux synthèses : les lumières s'ajoutent, les matières soustraient.",
+    "Dire qu'un objet rouge « émet » du rouge : il le <b>diffuse</b>, il n'est pas une source.",
+    "Oublier que l'absorbance est sans unité."
+  ]
+}

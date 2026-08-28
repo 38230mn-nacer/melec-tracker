@@ -1,0 +1,40 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/store.css">
+<link rel="stylesheet" href="assets/css/fiche.css">
+<style>
+  body { margin:0; width:1200px; height:630px; overflow:hidden; background:var(--cream); }
+  .og { display:grid; grid-template-columns: 1.02fr .98fr; height:630px; align-items:center; padding:0 0 0 62px; }
+  .og h1 { font-size:64px; line-height:1.02; margin:0 0 18px; }
+  .og h1 em { font-style:normal; position:relative; }
+  .og > div > p { font-size:23px; color:var(--ink-soft); max-width:22ch; margin:0 0 26px; }
+  .og .marque { display:flex; align-items:center; gap:12px; margin-bottom:26px; font-family:var(--font-display); font-weight:800; font-size:23px; color:var(--navy); }
+  .og .marque span { width:46px;height:46px;border-radius:50%;background:var(--navy);color:var(--gold);display:grid;place-items:center;border:2px solid var(--gold);font-size:22px; }
+  .og .tags { display:flex; gap:10px; font-size:17px; }
+  .og .tags b { background:var(--navy); color:#fff; padding:9px 16px; border-radius:100px; font-weight:700; }
+  .og .fan { height:630px; aspect-ratio:auto; }
+  .og .fan__badge { width:132px;height:132px; right:6%; bottom:11%; }
+  .og .fan__badge b { font-size:2.3rem; }
+</style></head><body>
+<div class="og">
+  <div>
+    <div class="marque"><span>🎓</span> Kulture Académie</div>
+    <h1>Les fiches que tu <em>relis vraiment</em>.</h1>
+    <p>301 fiches de maths &amp; physique-chimie, de la Seconde à la Terminale.</p>
+    <div class="tags"><b>Une notion = une page</b><b>PDF + PNG</b></div>
+  </div>
+  <div class="fan"><div class="fan__badge"><b>301</b><small>fiches</small></div></div>
+</div>
+<script type="module">
+  import { rendreFiche, chargerFiche } from './assets/js/fiche.js';
+  const fan = document.querySelector('.fan');
+  for (const id of ['vecteurs','second-degre','fonction-ln','titrage','tableau-periodique']) {
+    const d = document.createElement('div'); d.className = 'fan__item'; fan.appendChild(d);
+    d.appendChild(rendreFiche(await chargerFiche(id, (i) => `data/fiches/${i}.json`), { vignette: true }));
+  }
+  document.body.dataset.pret = '1';
+</script></body></html>

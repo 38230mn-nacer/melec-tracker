@@ -1,0 +1,159 @@
+/* =========================================================================
+   Kulture Académie — rendu d'une fiche de révision (format A4, hyper visuel)
+   Toute fiche est générée depuis un JSON : aucun visuel à produire à la main.
+   ========================================================================= */
+
+.fiche {
+  --accent: var(--maths);
+  --accent-soft: var(--maths-soft);
+  --niveau: var(--premiere);
+  position: relative;
+  width: 100%;
+  min-height: 141.4cqw;                 /* au moins une page A4 */
+  container-type: inline-size;
+  background: #fff;
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  font-family: var(--font-body);
+  color: #14172B;
+  display: flex;
+  flex-direction: column;
+}
+/* Vignette : format A4 strict, contenu rogné — utilisée dans les aperçus cliquables. */
+.fiche--vignette { min-height: 0; aspect-ratio: 1 / 1.414; }
+
+.fiche[data-matiere="physique-chimie"] { --accent: var(--pc); --accent-soft: var(--pc-soft); }
+.fiche[data-niveau="seconde"]   { --niveau: var(--seconde); }
+.fiche[data-niveau="premiere"]  { --niveau: var(--premiere); }
+.fiche[data-niveau="terminale"] { --niveau: var(--terminale); }
+
+/* Tout l'intérieur est dimensionné en cqw : la fiche reste identique à toute taille */
+.fiche__head {
+  display: flex; align-items: center; gap: 2cqw;
+  padding: 2cqw 3cqw; border-bottom: .45cqw solid var(--accent);
+  background: var(--accent-soft);
+}
+.fiche__logo {
+  flex: none; width: 5.6cqw; height: 5.6cqw; border-radius: 50%;
+  background: var(--navy); color: var(--gold);
+  display: grid; place-items: center; font-size: 2.8cqw;
+}
+.fiche__title {
+  flex: 1; margin: 0; font-family: var(--font-display); font-weight: 800;
+  font-size: 3.3cqw; line-height: 1.06; letter-spacing: -.01em; text-transform: uppercase;
+  color: var(--accent);
+}
+.fiche__level {
+  flex: none; font-family: var(--font-display); font-weight: 800; font-size: 2.1cqw;
+  background: var(--niveau); color: #fff; padding: .7cqw 1.4cqw; border-radius: 100px;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.fiche__body {
+  flex: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.2cqw;
+  padding: 2.6cqw 3cqw; align-content: start; overflow: hidden;
+}
+.fiche--une-colonne .fiche__body { grid-template-columns: minmax(0, 1fr); }
+.fiche__body > *, .fiche__foot > * { min-width: 0; }
+
+.fsection { break-inside: avoid; }
+.fsection__title {
+  display: flex; align-items: center; gap: 1.2cqw;
+  font-family: var(--font-display); font-weight: 800; font-size: 2.1cqw;
+  color: var(--accent); text-transform: uppercase; letter-spacing: .02em;
+  margin: 0 0 1.2cqw;
+}
+.fsection__num {
+  flex: none; width: 3.4cqw; height: 3.4cqw; border-radius: 50%;
+  background: var(--accent); color: #fff; display: grid; place-items: center;
+  font-size: 1.9cqw; line-height: 1;
+}
+.fsection__ico { flex: none; font-size: 2cqw; filter: saturate(1.1); }
+.fsection > * + * { margin-top: 1.2cqw; }
+
+.fiche p, .fiche li, .fiche td, .fiche th { font-size: 1.62cqw; line-height: 1.42; margin: 0; }
+.fiche b, .fiche strong { color: var(--accent); }
+
+.fformule {
+  background: #fff; border: .35cqw solid var(--accent); border-radius: 1.6cqw;
+  padding: 1.1cqw 1.4cqw; text-align: center; font-size: 1.9cqw;
+  box-shadow: 0 .6cqw 0 color-mix(in srgb, var(--accent) 16%, transparent);
+}
+.fformule .katex { font-size: 1em; }
+.flegende { font-size: 1.4cqw; color: #5A6076; text-align: center; font-style: italic; }
+
+.fliste { list-style: none; padding: 0; margin: 0; }
+.fliste li { display: flex; gap: 1cqw; padding: .35cqw 0; }
+.fliste li::before { content: '▸'; color: var(--accent); font-weight: 800; flex: none; }
+
+.fencadre { border-radius: 1.6cqw; padding: 1.5cqw 1.8cqw; border-left: 1cqw solid var(--accent); background: var(--accent-soft); }
+.fencadre__t { display: flex; align-items: center; gap: .8cqw; font-family: var(--font-display); font-weight: 800; font-size: 1.72cqw; margin-bottom: .6cqw; color: var(--accent); }
+.fencadre--attention { --accent: var(--alert); background: var(--alert-soft); border-color: var(--alert); }
+.fencadre--attention .fencadre__t { color: var(--alert); }
+.fencadre--exemple { background: #F4F6FB; border-color: var(--navy-600); }
+.fencadre--exemple .fencadre__t { color: var(--navy-600); }
+
+.ftable { width: 100%; border-collapse: collapse; font-size: 1.42cqw; }
+.ftable th, .ftable td { border: .18cqw solid color-mix(in srgb, var(--accent) 35%, #fff); padding: .8cqw 1cqw; text-align: center; }
+.ftable thead th { background: var(--accent); color: #fff; font-family: var(--font-display); font-weight: 700; }
+.ftable tbody tr:nth-child(even) { background: var(--accent-soft); }
+
+.fetapes { counter-reset: etape; display: grid; gap: 1cqw; }
+.fetape { display: grid; grid-template-columns: 3.4cqw minmax(0, 1fr); gap: 1.1cqw; align-items: start; }
+.fetape__n {
+  counter-increment: etape; width: 3.4cqw; height: 3.4cqw; border-radius: 1cqw;
+  background: var(--accent-soft); color: var(--accent); border: .22cqw solid var(--accent);
+  display: grid; place-items: center; font-weight: 800; font-size: 1.7cqw;
+}
+.fetape__n::before { content: counter(etape); }
+.fetape b { display: block; font-size: 1.7cqw; }
+
+.fgraphe, .fschema { width: 100%; display: block; }
+.fgraphe svg, .fschema svg { width: 100%; height: auto; display: block; }
+
+.fiche__foot {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.2cqw;
+  padding: 2cqw 3cqw 2.4cqw; border-top: .35cqw dashed color-mix(in srgb, var(--accent) 45%, #fff);
+  margin-top: auto;
+}
+.fnote { border-radius: 1.4cqw; padding: 1.3cqw 1.6cqw; }
+.fnote--astuces { background: var(--ok-soft); }
+.fnote--erreurs { background: var(--alert-soft); }
+.fnote__t { font-family: var(--font-display); font-weight: 800; font-size: 1.7cqw; display: flex; align-items: center; gap: .7cqw; margin-bottom: .5cqw; }
+.fnote--astuces .fnote__t { color: var(--ok); }
+.fnote--erreurs .fnote__t { color: var(--alert); }
+.fnote ul { list-style: none; padding: 0; margin: 0; }
+.fnote li { display: flex; gap: .8cqw; padding: .2cqw 0; font-size: 1.42cqw; line-height: 1.38; }
+.fnote--astuces li::before { content: '✓'; color: var(--ok); font-weight: 800; }
+.fnote--erreurs li::before { content: '✕'; color: var(--alert); font-weight: 800; }
+.fnote b, .fnote strong { color: inherit; }
+
+.fiche__mark {
+  position: absolute; right: 3cqw; bottom: 1cqw;
+  font-size: 1.3cqw; color: #A9AEC2; letter-spacing: .04em;
+}
+
+/* Filigrane sur les aperçus gratuits */
+.fiche--apercu::after {
+  content: 'APERÇU'; position: absolute; inset: 0; display: grid; place-items: center;
+  font-family: var(--font-display); font-size: 16cqw; font-weight: 800; letter-spacing: .1em;
+  color: rgba(22, 33, 91, .06); transform: rotate(-24deg); pointer-events: none;
+}
+
+/* Vignette cliquable */
+.fiche-thumb { position: relative; cursor: zoom-in; border: 0; background: none; padding: 0; width: 100%; display: block; }
+.fiche-thumb .fiche { pointer-events: none; }
+.fiche-thumb::after {
+  content: '⤢ Agrandir'; position: absolute; right: .6rem; bottom: .6rem;
+  background: var(--navy); color: #fff; font-size: .75rem; font-weight: 700;
+  padding: .3rem .65rem; border-radius: 100px; opacity: 0; transition: opacity .2s;
+}
+.fiche-thumb:hover::after { opacity: 1; }
+
+/* Impression : une fiche par page */
+@media print {
+  body { background: #fff; }
+  .header, .topbar, .footer, .mobile-cta, .drawer, .drawer-backdrop, .no-print { display: none !important; }
+  .fiche { box-shadow: none; page-break-after: always; width: 100%; }
+}

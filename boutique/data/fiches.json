@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "fiches": [
+    {
+      "id": "second-degre",
+      "titre": "Fonction polynôme du second degré",
+      "niveau": "premiere",
+      "matiere": "maths",
+      "chapitre": "Second degré",
+      "gratuite": true,
+      "resume": "Forme canonique, discriminant, racines et signe du trinôme sur une seule page."
+    },
+    {
+      "id": "fonction-ln",
+      "titre": "Fonction logarithme népérien",
+      "niveau": "terminale",
+      "matiere": "maths",
+      "chapitre": "Fonction ln",
+      "gratuite": true,
+      "resume": "Propriétés algébriques, limites, dérivée et croissances comparées."
+    },
+    {
+      "id": "vecteurs",
+      "titre": "Vecteurs : définition et représentation",
+      "niveau": "seconde",
+      "matiere": "maths",
+      "chapitre": "Géométrie vectorielle",
+      "gratuite": true,
+      "resume": "Direction, sens, norme, coordonnées et relation de Chasles."
+    },
+    {
+      "id": "titrage",
+      "titre": "Titrage colorimétrique",
+      "niveau": "terminale",
+      "matiere": "physique-chimie",
+      "chapitre": "Suivi d'une transformation",
+      "gratuite": true,
+      "resume": "Montage, équivalence, calcul de concentration et pièges du barème."
+    },
+    {
+      "id": "tableau-periodique",
+      "titre": "Tableau périodique et électrons de valence",
+      "niveau": "seconde",
+      "matiere": "physique-chimie",
+      "chapitre": "Constitution de la matière",
+      "gratuite": false,
+      "resume": "Configuration électronique, règle de l'octet et familles chimiques."
+    },
+    {
+      "id": "ecoulement-fluide",
+      "titre": "Écoulement d'un fluide",
+      "niveau": "terminale",
+      "matiere": "physique-chimie",
+      "chapitre": "Fluides en mouvement",
+      "gratuite": false,
+      "resume": "Débit volumique, conservation du débit, Bernoulli et poussée d'Archimède."
+    },
+    {
+      "id": "couleur-objets",
+      "titre": "Couleur des objets",
+      "niveau": "premiere",
+      "matiere": "physique-chimie",
+      "chapitre": "Ondes et signaux",
+      "gratuite": false,
+      "resume": "Synthèses additive et soustractive, absorption et couleur perçue."
+    }
+  ]
+}

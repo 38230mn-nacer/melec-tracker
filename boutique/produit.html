@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pack de fiches — Kulture Académie</title>
+<meta name="description" content="Fiches de révision hyper visuelles en maths et physique-chimie. PDF A4 + PNG, téléchargement immédiat, satisfait ou remboursé 30 jours.">
+<meta name="theme-color" content="#16215B">
+<meta property="og:type" content="product">
+<meta property="og:site_name" content="Kulture Académie">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/store.css">
+<link rel="stylesheet" href="assets/css/fiche.css">
+<style>
+  .produit { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(1.6rem, 4vw, 3.2rem); align-items: start; }
+  @media (max-width: 960px) { .produit { grid-template-columns: 1fr; } }
+  .achat { position: sticky; top: 96px; padding: clamp(1.4rem, 3vw, 2rem); border-radius: var(--r-xl); background: var(--paper); border: 2px solid var(--navy); box-shadow: var(--shadow-md); }
+  @media (max-width: 960px) { .achat { position: static; } }
+  .achat__prix { display: flex; align-items: baseline; gap: .7rem; margin-bottom: .3rem; }
+  .achat__prix b { font-family: var(--font-display); font-size: 3rem; color: var(--navy); line-height: 1; }
+  .galerie { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.2rem; }
+  .argument { display: flex; gap: 1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--line); }
+  .argument i { flex: none; width: 40px; height: 40px; border-radius: 12px; background: var(--navy-050); color: var(--navy); display: grid; place-items: center; font-style: normal; font-weight: 800; font-family: var(--font-display); }
+</style>
+</head>
+<body>
+
+<noscript>
+  <style>.reveal { opacity: 1; transform: none; }</style>
+  <div style="background:#16215B;color:#fff;padding:1.2rem;text-align:center">
+    Cette page a besoin de JavaScript. Écris-nous à
+    <a href="mailto:contact@kulture-academie.fr" style="color:#F2B705">contact@kulture-academie.fr</a> et nous t'envoyons le lien de paiement.
+  </div>
+</noscript>
+
+<header class="header">
+  <div class="wrap header__inner">
+    <a class="logo" href="index.html">
+      <span class="logo__mark" aria-hidden="true">🎓</span>
+      <span class="logo__txt">Kulture Académie<small>Apprendre vite, comprendre mieux</small></span>
+    </a>
+    <nav class="nav" aria-label="Navigation principale">
+      <a href="index.html#apercus">Voir les fiches</a>
+      <a href="index.html#packs">Les packs</a>
+      <a href="index.html#gratuit">Fiche gratuite</a>
+      <a href="index.html#faq">FAQ</a>
+    </nav>
+    <div class="header__actions">
+      <button class="cart-btn" aria-label="Ouvrir le panier">
+        <span aria-hidden="true">🛒</span> Panier <span class="cart-btn__count">0</span>
+      </button>
+    </div>
+    <button class="burger" aria-label="Menu" aria-expanded="false">☰</button>
+  </div>
+</header>
+
+<main id="produit-vide" hidden>
+  <section class="wrap center">
+    <h1>Produit introuvable</h1>
+    <p>Ce pack n'existe pas ou n'est plus disponible.</p>
+    <a class="btn btn--gold" href="index.html#packs">Voir tous les packs</a>
+  </section>
+</main>
+
+<main id="produit-contenu" hidden>
+  <div class="page-head">
+    <div class="wrap">
+      <div class="breadcrumb"><a href="index.html">Accueil</a> › <a href="index.html#packs">Packs</a> › <span id="fil-nom"></span></div>
+      <h1 id="p-nom"></h1>
+      <p id="p-accroche"></p>
+      <div class="flex" style="margin-top:1rem">
+        <span class="stars">★★★★★</span> <span style="color:rgba(255,255,255,.82)">4,9/5 · téléchargement immédiat</span>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap produit">
+      <div>
+        <h2>Ce que contient le pack</h2>
+        <ul class="product__list" id="p-inclus" style="font-size:1.02rem"></ul>
+
+        <h2 style="margin-top:2.4rem">Pourquoi ce pack</h2>
+        <div id="p-arguments"></div>
+
+        <h2 style="margin-top:2.4rem">Des fiches, en vrai</h2>
+        <p class="section-lead">Voici des fiches issues de ce pack, affichées telles quelles. Clique pour agrandir.</p>
+        <div class="galerie" id="p-galerie"></div>
+      </div>
+
+      <aside>
+        <div class="achat">
+          <div class="product__tags" id="p-tags"></div>
+          <div class="achat__prix">
+            <b id="p-prix"></b>
+            <span class="strike" id="p-prix-barre"></span>
+            <span class="product__save" id="p-eco"></span>
+          </div>
+          <p class="product__unit" id="p-unitaire"></p>
+          <div class="product__actions">
+            <button class="btn btn--gold btn--block btn--lg" id="p-acheter">Acheter maintenant</button>
+            <button class="btn btn--ghost btn--block" id="p-panier">Ajouter au panier</button>
+          </div>
+          <small class="btn-sub center" style="display:block">🔒 Paiement sécurisé Stripe · TVA incluse</small>
+          <ul class="product__list" style="margin-top:1.2rem;font-size:.92rem">
+            <li><span>Fichiers disponibles immédiatement après paiement</span></li>
+            <li><span>PDF A4 imprimable + PNG pour le téléphone</span></li>
+            <li><span>Satisfait ou remboursé pendant 30 jours</span></li>
+            <li><span>Mises à jour du programme offertes à vie</span></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section style="background:var(--paper);border-block:1px solid var(--line)">
+    <div class="wrap">
+      <div class="center" style="margin-bottom:2rem"><h2>Les autres packs</h2></div>
+      <div class="products" id="p-autres"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap-narrow">
+      <div class="guarantee">
+        <div class="guarantee__seal"><b>30</b><small>JOURS</small></div>
+        <div>
+          <h3 style="margin-bottom:.4rem">Satisfait ou remboursé, sans justification</h3>
+          <p class="mb-0">Un e-mail suffit. Tu es remboursé intégralement et tu gardes ce que tu as téléchargé.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:var(--paper);border-block:1px solid var(--line)">
+    <div class="wrap">
+      <div class="center" style="margin-bottom:1.6rem"><h2>Questions fréquentes</h2></div>
+      <div class="faq" id="faq-liste"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__bottom" style="border:0;margin:0">
+      <span>© <span class="annee">2026</span> Kulture Académie</span>
+      <span><a href="mentions.html">Mentions légales</a> · <a href="cgv.html">CGV</a> · <a href="index.html">Accueil</a></span>
+    </div>
+  </div>
+</footer>
+
+<div class="drawer-backdrop"></div>
+<aside class="drawer" aria-hidden="true" aria-label="Panier">
+  <div class="drawer__head"><h3>Ton panier</h3><button class="drawer__close" aria-label="Fermer le panier">×</button></div>
+  <div class="drawer__body"></div>
+  <div class="drawer__foot"></div>
+</aside>
+
+<div class="mobile-cta"><button class="btn btn--gold" id="p-mobile">Acheter maintenant</button></div>
+
+<script>document.querySelectorAll('.annee').forEach(e => e.textContent = new Date().getFullYear());</script>
+<script type="module" src="assets/js/page-produit.js"></script>
+</body>
+</html>

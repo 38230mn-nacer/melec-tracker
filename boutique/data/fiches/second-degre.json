@@ -1,0 +1,83 @@
+{
+  "id": "second-degre",
+  "titre": "Fonction polynôme du second degré",
+  "niveau": "premiere",
+  "matiere": "maths",
+  "chapitre": "Second degré",
+  "sections": [
+    {
+      "n": 1,
+      "titre": "Définition",
+      "icone": "book",
+      "blocs": [
+        { "type": "texte", "html": "Une fonction polynôme du second degré est une fonction $f$ définie sur $\\mathbb{R}$ par :" },
+        { "type": "formule", "tex": "f(x) = ax^2 + bx + c \\qquad \\text{avec } a \\neq 0" },
+        { "type": "texte", "html": "$a$, $b$ et $c$ sont des nombres réels appelés <b>coefficients</b>. La condition $a \\neq 0$ est essentielle : sans elle, la fonction est affine." }
+      ]
+    },
+    {
+      "n": 2,
+      "titre": "Représentation graphique",
+      "icone": "chart",
+      "blocs": [
+        { "type": "texte", "html": "La courbe représentative est une <b>parabole</b>, d'axe de symétrie la droite d'équation $x = \\alpha$." },
+        { "type": "graphe", "spec": { "type": "polynome", "a": 1, "b": -2, "c": -3, "xmin": -3, "xmax": 5, "ymin": -5, "ymax": 5, "racines": [-1, 3], "sommet": [1, -4] }, "legende": "$f(x)=x^2-2x-3$ : racines $-1$ et $3$, sommet $S(1\\,;-4)$" },
+        { "type": "tableau", "entetes": ["Signe de a", "Allure", "Sommet"], "lignes": [["$a > 0$", "Parabole tournée vers le haut", "minimum"], ["$a < 0$", "Parabole tournée vers le bas", "maximum"]] }
+      ]
+    },
+    {
+      "n": 3,
+      "titre": "Forme canonique",
+      "icone": "key",
+      "blocs": [
+        { "type": "formule", "tex": "f(x) = a\\,(x - \\alpha)^2 + \\beta" },
+        { "type": "texte", "html": "avec" },
+        { "type": "formule", "tex": "\\alpha = \\dfrac{-b}{2a} \\qquad \\text{et} \\qquad \\beta = f(\\alpha) = \\dfrac{-\\Delta}{4a}" },
+        { "type": "encadre", "variante": "cle", "titre": "À retenir", "html": "Le sommet de la parabole a pour coordonnées $S(\\alpha\\,;\\beta)$. La forme canonique se lit directement sur le graphique, et réciproquement." }
+      ]
+    },
+    {
+      "n": 4,
+      "titre": "Racines et discriminant",
+      "icone": "target",
+      "blocs": [
+        { "type": "formule", "tex": "\\Delta = b^2 - 4ac" },
+        { "type": "tableau", "entetes": ["Discriminant", "Nombre de racines", "Racines", "Parabole"], "lignes": [["$\\Delta > 0$", "2 racines distinctes", "$x_{1,2} = \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a}$", "coupe l'axe des abscisses en 2 points"], ["$\\Delta = 0$", "1 racine double", "$x_0 = \\dfrac{-b}{2a}$", "tangente à l'axe des abscisses"], ["$\\Delta < 0$", "aucune racine réelle", "—", "ne coupe pas l'axe des abscisses"]] },
+        { "type": "texte", "html": "Lorsque $\\Delta \\geqslant 0$, on peut factoriser : $f(x) = a(x - x_1)(x - x_2)$." }
+      ]
+    },
+    {
+      "n": 5,
+      "titre": "Signe du trinôme",
+      "icone": "sign",
+      "blocs": [
+        { "type": "encadre", "variante": "cle", "titre": "La phrase à connaître par cœur", "html": "Le trinôme est <b>du signe de $a$</b>, sauf <b>entre les racines</b> lorsqu'elles existent." },
+        { "type": "tableau", "entetes": ["$x$", "$-\\infty$ … $x_1$", "$x_1$ … $x_2$", "$x_2$ … $+\\infty$"], "lignes": [["$f(x)$ si $a>0$", "$+$", "$-$", "$+$"], ["$f(x)$ si $a<0$", "$-$", "$+$", "$-$"]] },
+        { "type": "texte", "html": "Si $\\Delta < 0$, $f(x)$ garde le signe de $a$ sur $\\mathbb{R}$ tout entier." }
+      ]
+    },
+    {
+      "n": 6,
+      "titre": "Exemple guidé",
+      "icone": "steps",
+      "blocs": [
+        { "type": "etapes", "items": [
+          { "titre": "Calculer $\\Delta$", "html": "$f(x) = 2x^2 - 5x + 2$, donc $\\Delta = (-5)^2 - 4 \\times 2 \\times 2 = 25 - 16 = 9$." },
+          { "titre": "Conclure sur les racines", "html": "$\\Delta = 9 > 0$ : deux racines, $x_1 = \\dfrac{5 - 3}{4} = \\dfrac{1}{2}$ et $x_2 = \\dfrac{5 + 3}{4} = 2$." },
+          { "titre": "Factoriser", "html": "$f(x) = 2\\left(x - \\dfrac{1}{2}\\right)(x - 2)$." },
+          { "titre": "Donner le signe", "html": "$a = 2 > 0$ : $f(x) > 0$ sur $\\left]-\\infty\\,;\\tfrac{1}{2}\\right[ \\cup\\, ]2\\,;+\\infty[$ et $f(x) < 0$ sur $\\left]\\tfrac{1}{2}\\,;2\\right[$." }
+        ] }
+      ]
+    }
+  ],
+  "astuces": [
+    "Vérifie tes racines avec la somme et le produit : $x_1 + x_2 = -\\dfrac{b}{a}$ et $x_1 x_2 = \\dfrac{c}{a}$.",
+    "Si $a + b + c = 0$, alors $1$ est racine évidente : l'autre vaut $\\dfrac{c}{a}$.",
+    "Un dessin rapide de la parabole évite 9 erreurs de signe sur 10."
+  ],
+  "erreurs": [
+    "Écrire $\\Delta = b^2 - 4ac$ puis oublier le carré du signe : $(-5)^2 = 25$, pas $-25$.",
+    "Confondre l'abscisse du sommet $\\alpha = \\dfrac{-b}{2a}$ avec $\\dfrac{b}{2a}$.",
+    "Conclure « pas de solution » quand $\\Delta < 0$ pour une inéquation : le signe existe toujours, c'est celui de $a$."
+  ]
+}

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://kulture-academie.fr/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://kulture-academie.fr/produit.html?id=pack-lycee-complet</loc><priority>0.9</priority></url>
+  <url><loc>https://kulture-academie.fr/produit.html?id=pack-seconde</loc><priority>0.8</priority></url>
+  <url><loc>https://kulture-academie.fr/produit.html?id=pack-premiere</loc><priority>0.8</priority></url>
+  <url><loc>https://kulture-academie.fr/produit.html?id=pack-terminale</loc><priority>0.8</priority></url>
+  <url><loc>https://kulture-academie.fr/produit.html?id=pack-maths-lycee</loc><priority>0.7</priority></url>
+  <url><loc>https://kulture-academie.fr/produit.html?id=pack-pc-lycee</loc><priority>0.7</priority></url>
+  <url><loc>https://kulture-academie.fr/produit.html?id=sprint-bac</loc><priority>0.7</priority></url>
+  <url><loc>https://kulture-academie.fr/fiche.html?id=second-degre</loc><priority>0.6</priority></url>
+  <url><loc>https://kulture-academie.fr/fiche.html?id=fonction-ln</loc><priority>0.6</priority></url>
+  <url><loc>https://kulture-academie.fr/fiche.html?id=vecteurs</loc><priority>0.6</priority></url>
+  <url><loc>https://kulture-academie.fr/fiche.html?id=titrage</loc><priority>0.6</priority></url>
+  <url><loc>https://kulture-academie.fr/cgv.html</loc><priority>0.3</priority></url>
+  <url><loc>https://kulture-academie.fr/mentions.html</loc><priority>0.3</priority></url>
+</urlset>
