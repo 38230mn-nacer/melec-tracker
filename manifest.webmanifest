@@ -1,0 +1,19 @@
+{
+  "name": "MELEC Tracker — évaluation par compétences",
+  "short_name": "MELEC Tracker",
+  "description": "Suivi des compétences APP/ANA/REA/VAL/COM en Bac Pro MELEC. Fonctionne hors connexion.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f6fa",
+  "theme_color": "#1a4b8c",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

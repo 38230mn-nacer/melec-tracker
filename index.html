@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light" />
+    <meta name="description" content="Suivi des competences APP/ANA/REA/VAL/COM en Bac Pro MELEC, 100% hors ligne." />
+    <meta name="theme-color" content="#1a4b8c" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="MELEC Tracker" />
+    <!-- PWA : ignore si le fichier est ouvert seul (file://), actif si servi en https -->
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <title>MELEC Tracker</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f4f6fa; padding: 16px 12px 80px; color: #1a1a2e; touch-action: manipulation; }
+        .container { max-width: 500px; margin: 0 auto; }
+        :focus-visible { outline: 3px solid #1a4b8c; outline-offset: 2px; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+        .app-header { background: #1a4b8c; color: #fff; padding: 14px 16px; border-radius: 16px 16px 0 0; margin: 0 0 16px 0; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .app-header h1 { font-size: 1.2rem; font-weight: 700; }
+        .app-header h1 small { display: block; font-size: 0.65rem; font-weight: 400; opacity: 0.85; }
+        .app-header .badge { background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; white-space: nowrap; }
+        .tab-bar { display: flex; background: #fff; border-radius: 16px; padding: 4px; gap: 3px; margin-bottom: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .tab-bar button { flex: 1 0 auto; border: none; background: transparent; padding: 10px 6px; font-size: 0.7rem; font-weight: 600; border-radius: 12px; color: #4a4a6a; cursor: pointer; white-space: nowrap; min-width: 52px; touch-action: manipulation; user-select: none; font-family: inherit; }
+        .tab-bar button .tab-icon { display: block; font-size: 1.2rem; margin-bottom: 2px; pointer-events: none; }
+        .tab-bar button.active { background: #1a4b8c; color: #fff; }
+        .tab-bar button:active { transform: scale(0.95); }
+        .panel { display: none; animation: fadeUp 0.2s ease; }
+        .panel.active { display: block; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .card { background: #fff; border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .card-title { font-size: 0.8rem; font-weight: 700; color: #4a4a6a; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .card-title .action-link { font-size: 0.7rem; font-weight: 600; color: #1a4b8c; background: none; border: none; cursor: pointer; text-transform: none; padding: 4px 8px; border-radius: 6px; font-family: inherit; }
+        .card-title .action-link:active { background: rgba(26,75,140,0.1); }
+        .gauge-grid { display: flex; flex-direction: column; gap: 10px; }
+        .gauge-item { display: flex; align-items: center; gap: 10px; }
+        .gauge-label { width: 70px; font-size: 0.7rem; font-weight: 700; flex-shrink: 0; }
+        .gauge-label .sub { display: block; font-weight: 400; font-size: 0.55rem; color: #4a4a6a; }
+        .gauge-track { flex: 1; height: 10px; background: #e8ecf4; border-radius: 30px; overflow: hidden; }
+        .gauge-fill { height: 100%; border-radius: 30px; transition: width 0.5s; width: 0%; background: #b71c1c; }
+        .gauge-fill.level-0 { background: #b71c1c; }
+        .gauge-fill.level-1 { background: #d35400; }
+        .gauge-fill.level-2 { background: #b8960b; }
+        .gauge-fill.level-3 { background: #2e7d32; }
+        .gauge-value { width: 44px; text-align: right; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 0.75rem; font-weight: 600; color: #4a4a6a; margin-bottom: 4px; }
+        .form-hint { font-size: 0.7rem; color: #4a4a6a; margin-top: 4px; }
+        select, input[type="text"] { width: 100%; padding: 12px 14px; border: 2px solid #dce1ed; border-radius: 12px; font-size: 0.9rem; background: #fff; font-family: inherit; color: inherit; -webkit-appearance: none; appearance: none; touch-action: manipulation; }
+        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a4a6a' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
+        select:focus, input:focus { outline: none; border-color: #1a4b8c; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 14px 16px; border: none; border-radius: 12px; font-size: 0.9rem; font-weight: 700; font-family: inherit; cursor: pointer; touch-action: manipulation; user-select: none; min-height: 48px; }
+        .btn:active { transform: scale(0.96); opacity: 0.85; }
+        .btn-primary { background: #1a4b8c; color: #fff; }
+        .btn-success { background: #2e7d32; color: #fff; }
+        .btn-danger { background: #b71c1c; color: #fff; }
+        .btn-outline { background: transparent; color: #1a4b8c; border: 2px solid #1a4b8c; }
+        .btn-sm { padding: 10px 12px; font-size: 0.8rem; width: auto; min-height: 40px; }
+        .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn-row .btn { flex: 1; min-width: 120px; }
+        .inline-form { display: flex; gap: 8px; align-items: flex-end; }
+        .inline-form .form-group { flex: 1; margin-bottom: 0; }
+        .inline-form .form-group.narrow { flex: 0 0 110px; }
+        .mt-8 { margin-top: 8px; } .mt-12 { margin-top: 12px; } .mb-8 { margin-bottom: 8px; }
+        .text-muted { color: #4a4a6a; font-size: 0.8rem; }
+        .text-center { text-align: center; }
+        .score-selector { display: flex; gap: 8px; flex-wrap: wrap; }
+        .score-btn { flex: 1; min-width: 48px; padding: 10px 0; border: 2px solid #dce1ed; border-radius: 12px; background: #fff; font-weight: 700; font-size: 1rem; cursor: pointer; touch-action: manipulation; user-select: none; min-height: 44px; font-family: inherit; color: #1a1a2e; }
+        .score-btn:active { transform: scale(0.94); background: #e8ecf4; }
+        .score-btn.selected-0 { border-color: #b71c1c; background: #ffebee; color: #b71c1c; }
+        .score-btn.selected-1 { border-color: #d35400; background: #fff3e0; color: #a35400; }
+        .score-btn.selected-2 { border-color: #b8960b; background: #fffde7; color: #6d5f00; }
+        .score-btn.selected-3 { border-color: #2e7d32; background: #e8f5e9; color: #2e7d32; }
+        .class-header { background: #e8f0fe; border-radius: 12px; padding: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+        .class-header .info { font-size: 0.8rem; font-weight: 600; color: #1a4b8c; }
+        .class-header .info small { font-weight: 400; display: block; color: #4a4a6a; font-size: 0.65rem; }
+        .student-row, .list-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #f8f9fc; border-radius: 10px; margin-bottom: 6px; }
+        .student-row .name, .list-row .name { flex: 1; font-weight: 600; font-size: 0.85rem; min-width: 0; overflow-wrap: anywhere; }
+        .list-row .name small { display: block; font-weight: 400; font-size: 0.7rem; color: #4a4a6a; }
+        .icon-btn { border: none; background: transparent; font-size: 0.95rem; padding: 8px 10px; border-radius: 8px; cursor: pointer; color: #b71c1c; line-height: 1; flex-shrink: 0; min-height: 36px; font-family: inherit; }
+        .icon-btn:active { background: rgba(183,28,28,0.12); }
+        .student-row .score-selector { gap: 4px; flex-wrap: nowrap; }
+        .student-row .score-selector .score-btn { min-width: 36px; padding: 6px 0; font-size: 0.8rem; min-height: 36px; }
+        .profile-header { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 2px solid #e8ecf4; }
+        .profile-avatar { width: 48px; height: 48px; border-radius: 50%; background: #1a4b8c; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 700; flex-shrink: 0; }
+        .profile-name { font-size: 1.1rem; font-weight: 700; }
+        .profile-class { font-size: 0.8rem; color: #4a4a6a; }
+        .obs-table { width: 100%; font-size: 0.75rem; border-collapse: collapse; }
+        .obs-table th { text-align: left; padding: 6px 4px; color: #4a4a6a; border-bottom: 2px solid #e8ecf4; }
+        .obs-table td { padding: 6px 4px; border-bottom: 1px solid #e8ecf4; }
+        .comp-badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.6rem; font-weight: 700; }
+        .comp-badge.app { background: #e3f0ff; color: #1a4b8c; }
+        .comp-badge.ana { background: #fff3e0; color: #a35400; }
+        .comp-badge.rea { background: #e8f5e9; color: #2e7d32; }
+        .comp-badge.val { background: #fce4ec; color: #b71c1c; }
+        .comp-badge.com { background: #f3e5f5; color: #6a1b9a; }
+        .remed-card { background: #f8f9fc; border-radius: 10px; padding: 12px 14px; border-left: 4px solid #1a4b8c; margin-top: 6px; }
+        .remed-card .title { font-weight: 700; font-size: 0.8rem; }
+        .remed-card .desc { font-size: 0.8rem; color: #4a4a6a; margin-top: 2px; }
+        .ccf-card { padding: 12px; border-radius: 10px; font-size: 0.85rem; }
+        .ccf-card.ready { background: #e8f5e9; color: #1a5e1a; }
+        .ccf-card.pending { background: #fff3e0; color: #7a5800; }
+        .obs-line { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid #e8ecf4; font-size: 0.8rem; }
+        .obs-line:last-child { border-bottom: none; }
+        .obs-line .who { min-width: 0; overflow-wrap: anywhere; }
+        .obs-line .meta { white-space: nowrap; flex-shrink: 0; }
+        .qbank-item { display: flex; gap: 8px; padding: 10px 0; border-bottom: 1px solid #e8ecf4; align-items: flex-start; }
+        .qbank-item:last-child { border-bottom: none; }
+        .qbank-item .code { font-family: monospace; font-size: 0.7rem; font-weight: 700; background: #e8ecf4; padding: 2px 8px; border-radius: 12px; white-space: nowrap; flex-shrink: 0; }
+        .qbank-item .text { flex: 1; font-size: 0.8rem; min-width: 0; overflow-wrap: anywhere; }
+        .qbank-item .tag { flex-shrink: 0; }
+        .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1a1a2e; color: #fff; padding: 12px 20px; border-radius: 14px; font-size: 0.85rem; font-weight: 600; box-shadow: 0 8px 30px rgba(0,0,0,0.25); opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none; z-index: 999; max-width: 90%; text-align: center; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.success { background: #2e7d32; }
+        .toast.warning { background: #a35400; }
+        .toast.error { background: #b71c1c; }
+        #selfTest { position: fixed; inset: 8px; background: #fff; border: 3px solid #1a4b8c; border-radius: 12px; padding: 12px; overflow: auto; z-index: 9999; font-family: monospace; font-size: 0.75rem; line-height: 1.5; }
+        #selfTest .ok { color: #2e7d32; }
+        #selfTest .ko { color: #b71c1c; font-weight: 700; }
+        @media (max-width: 400px) {
+            .gauge-label { width: 56px; font-size: 0.6rem; }
+            .gauge-value { width: 36px; font-size: 0.7rem; }
+            .tab-bar button { font-size: 0.6rem; padding: 8px 4px; min-width: 44px; }
+            .tab-bar button .tab-icon { font-size: 1rem; }
+            .student-row .score-selector .score-btn { min-width: 30px; padding: 4px 0; font-size: 0.7rem; min-height: 30px; }
+            .inline-form { flex-wrap: wrap; }
+            .inline-form .form-group.narrow { flex: 1 0 100px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+            .btn:active, .score-btn:active, .tab-bar button:active { transform: none; }
+        }
+        @media print { .no-print { display: none !important; } body { background: #fff; padding: 10px; } .card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header class="app-header no-print">
+        <h1>&#128202; MELEC Tracker <small>&Eacute;valuation par comp&eacute;tences</small></h1>
+        <span class="badge" id="studentCount">0 app.</span>
+    </header>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <nav class="tab-bar no-print" id="tabBar" role="tablist" aria-label="Sections de l&#39;application">
+        <button type="button" role="tab" id="tabBtn-tabDashboard" aria-controls="tabDashboard" aria-selected="true" class="active" data-tab="tabDashboard"><span class="tab-icon" aria-hidden="true">&#128202;</span> Tableau</button>
+        <button type="button" role="tab" id="tabBtn-tabEval" aria-controls="tabEval" aria-selected="false" tabindex="-1" data-tab="tabEval"><span class="tab-icon" aria-hidden="true">&#9999;&#65039;</span> &Eacute;valuer</button>
+        <button type="button" role="tab" id="tabBtn-tabClass" aria-controls="tabClass" aria-selected="false" tabindex="-1" data-tab="tabClass"><span class="tab-icon" aria-hidden="true">&#128101;</span> Classe</button>
+        <button type="button" role="tab" id="tabBtn-tabBank" aria-controls="tabBank" aria-selected="false" tabindex="-1" data-tab="tabBank"><span class="tab-icon" aria-hidden="true">&#128218;</span> Banque</button>
+        <button type="button" role="tab" id="tabBtn-tabProfile" aria-controls="tabProfile" aria-selected="false" tabindex="-1" data-tab="tabProfile"><span class="tab-icon" aria-hidden="true">&#128100;</span> Profil</button>
+    </nav>
+
+    <section class="panel active" id="tabDashboard" role="tabpanel" aria-labelledby="tabBtn-tabDashboard" tabindex="0">
+        <div class="card">
+            <div class="card-title">Jauges de la classe</div>
+            <div class="gauge-grid" id="dashGauges">
+                <div class="gauge-item"><div class="gauge-label">APP <span class="sub">S'approprier</span></div><div class="gauge-track"><div class="gauge-fill" id="gaugeAPP"></div></div><div class="gauge-value" id="gaugeValAPP">0%</div></div>
+                <div class="gauge-item"><div class="gauge-label">ANA <span class="sub">Analyser</span></div><div class="gauge-track"><div class="gauge-fill" id="gaugeANA"></div></div><div class="gauge-value" id="gaugeValANA">0%</div></div>
+                <div class="gauge-item"><div class="gauge-label">REA <span class="sub">R&eacute;aliser</span></div><div class="gauge-track"><div class="gauge-fill" id="gaugeREA"></div></div><div class="gauge-value" id="gaugeValREA">0%</div></div>
+                <div class="gauge-item"><div class="gauge-label">VAL <span class="sub">Valider</span></div><div class="gauge-track"><div class="gauge-fill" id="gaugeVAL"></div></div><div class="gauge-value" id="gaugeValVAL">0%</div></div>
+                <div class="gauge-item"><div class="gauge-label">COM <span class="sub">Communiquer</span></div><div class="gauge-track"><div class="gauge-fill" id="gaugeCOM"></div></div><div class="gauge-value" id="gaugeValCOM">0%</div></div>
+            </div>
+            <p class="form-hint">Moyenne des 5 derni&egrave;res observations de chaque apprenti.</p>
+        </div>
+        <div class="card">
+            <div class="card-title">Rem&eacute;diation prioritaire</div>
+            <div id="dashRemed"><p class="text-muted">Aucune alerte.</p></div>
+        </div>
+        <div class="card">
+            <div class="card-title">Derni&egrave;res observations <button type="button" class="action-link" id="dashClearObs" style="color:#b71c1c;">Tout effacer</button></div>
+            <div id="dashRecentObs"><p class="text-muted">Aucune observation.</p></div>
+        </div>
+        <div class="card no-print">
+            <div class="card-title">Donn&eacute;es (sauvegarde)</div>
+            <p class="text-muted mb-8">Tout est stock&eacute; dans ce navigateur uniquement. Exportez r&eacute;guli&egrave;rement.</p>
+            <div class="btn-row">
+                <button type="button" class="btn btn-sm btn-outline" id="btnExportJson">&#128190; Sauvegarde</button>
+                <button type="button" class="btn btn-sm btn-outline" id="btnExportCsv">&#128202; CSV</button>
+                <button type="button" class="btn btn-sm btn-outline" id="btnImport">&#128228; Restaurer</button>
+            </div>
+            <input type="file" id="importFile" accept="application/json,.json" class="sr-only" />
+        </div>
+    </section>
+
+    <section class="panel" id="tabEval" role="tabpanel" aria-labelledby="tabBtn-tabEval" tabindex="0">
+        <div class="card">
+            <div class="card-title">&Eacute;valuation individuelle</div>
+            <div class="form-group"><label for="evalStudent">Apprenti</label><select id="evalStudent"><option value="">&mdash; S&eacute;lectionner &mdash;</option></select></div>
+            <div class="form-group">
+                <label for="evalQuestion">Question (code)</label>
+                <select id="evalQuestion"><option value="">&mdash; Choisir &mdash;</option></select>
+                <p class="form-hint" id="evalQuestionHint">Aucune question s&eacute;lectionn&eacute;e.</p>
+            </div>
+            <div class="form-group">
+                <label id="evalScoreLabel">Score</label>
+                <div class="score-selector" id="evalScoreSelector" role="group" aria-labelledby="evalScoreLabel">
+                    <button type="button" class="score-btn" data-score="0" aria-pressed="false">0</button>
+                    <button type="button" class="score-btn" data-score="1" aria-pressed="false">1</button>
+                    <button type="button" class="score-btn" data-score="2" aria-pressed="false">2</button>
+                    <button type="button" class="score-btn" data-score="3" aria-pressed="false">3</button>
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary" id="evalSubmit">&#9989; Enregistrer</button>
+        </div>
+    </section>
+
+    <section class="panel" id="tabClass" role="tabpanel" aria-labelledby="tabBtn-tabClass" tabindex="0">
+        <div class="card">
+            <div class="card-title">Mode Classe</div>
+            <div class="form-group"><label for="classQuestion">Question (code)</label><select id="classQuestion"><option value="">&mdash; Choisir &mdash;</option></select></div>
+            <button type="button" class="btn btn-primary btn-sm" id="classApply">Appliquer</button>
+            <div class="class-header mt-8" id="classHeader" hidden><div class="info"><span id="classQuestionDisplay">&mdash;</span><small id="classQuestionComp">Comp&eacute;tence : &mdash;</small></div></div>
+            <div id="classStudentGrid" class="mt-8"><p class="text-muted">S&eacute;lectionnez une question et cliquez sur &laquo;&nbsp;Appliquer&nbsp;&raquo;.</p></div>
+            <button type="button" class="btn btn-success mt-12" id="classSubmitAll">&#128190; Enregistrer tous les scores</button>
+        </div>
+        <div class="card">
+            <div class="card-title">Apprentis <span class="text-muted" style="text-transform:none;" id="studentAdminCount">0</span></div>
+            <div class="inline-form mb-8">
+                <div class="form-group"><label for="newStudentName">Nom</label><input type="text" id="newStudentName" placeholder="Pr&eacute;nom Nom" autocomplete="off" /></div>
+                <div class="form-group narrow"><label for="newStudentClass">Classe</label><input type="text" id="newStudentClass" placeholder="TMELEC" autocomplete="off" /></div>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" id="studentAddBtn">&#10133; Ajouter</button>
+            <div id="studentAdminList" class="mt-12"></div>
+        </div>
+    </section>
+
+    <section class="panel" id="tabBank" role="tabpanel" aria-labelledby="tabBtn-tabBank" tabindex="0">
+        <div class="card">
+            <div class="card-title">Banque de questions <span class="text-muted" style="text-transform:none;font-size:0.7rem;" id="bankCount">0</span></div>
+            <div class="form-group"><label for="bankFilter">Filtrer</label><select id="bankFilter"><option value="all">Toutes</option><option value="APP">S'APPROPRIER</option><option value="ANA">ANALYSER</option><option value="REA">R&Eacute;ALISER</option><option value="VAL">VALIDER</option><option value="COM">COMMUNIQUER</option></select></div>
+            <div id="bankList"><p class="text-muted">Chargement&hellip;</p></div>
+        </div>
+        <div class="card">
+            <div class="card-title">Ajouter une question</div>
+            <div class="form-group"><label for="bankNewCode">Code (ex : SCI-APP-DIO-01)</label><input type="text" id="bankNewCode" placeholder="DISC-COMP-THEME-NN" autocomplete="off" /></div>
+            <div class="form-group"><label for="bankNewComp">Comp&eacute;tence</label><select id="bankNewComp"><option value="APP">S'APPROPRIER</option><option value="ANA">ANALYSER</option><option value="REA">R&Eacute;ALISER</option><option value="VAL">VALIDER</option><option value="COM">COMMUNIQUER</option></select></div>
+            <div class="form-group"><label for="bankNewText">&Eacute;nonc&eacute;</label><input type="text" id="bankNewText" placeholder="Votre question&hellip;" autocomplete="off" /></div>
+            <button type="button" class="btn btn-primary" id="bankAddBtn">&#10133; Ajouter</button>
+        </div>
+    </section>
+
+    <section class="panel" id="tabProfile" role="tabpanel" aria-labelledby="tabBtn-tabProfile" tabindex="0">
+        <div class="card no-print">
+            <div class="card-title">Profil</div>
+            <div class="form-group"><label for="profileStudent">Apprenti</label><select id="profileStudent"><option value="">&mdash; S&eacute;lectionner &mdash;</option></select></div>
+            <button type="button" class="btn btn-primary" id="profileLoad">Charger le profil</button>
+        </div>
+        <div id="profileContent" hidden>
+            <div class="card">
+                <div class="profile-header"><div class="profile-avatar" id="profileAvatar">&#128100;</div><div><div class="profile-name" id="profileName">&mdash;</div><div class="profile-class" id="profileClass">&mdash;</div></div></div>
+                <div class="gauge-grid" id="profileGauges"></div>
+                <div class="btn-row mt-12 no-print"><button type="button" class="btn btn-sm btn-outline" id="profilePrint">&#128424;&#65039; Imprimer</button><button type="button" class="btn btn-sm btn-danger" id="profileClearObs">&#128465;&#65039; Effacer</button></div>
+            </div>
+            <div class="card">
+                <div class="card-title">Historique <span class="text-muted" style="text-transform:none;" id="profileObsCount">0</span></div>
+                <div style="overflow-x:auto;"><table class="obs-table"><thead><tr><th scope="col">Date</th><th scope="col">Code</th><th scope="col">Comp.</th><th scope="col">Score</th></tr></thead><tbody id="profileObsBody"></tbody></table></div>
+            </div>
+            <div class="card"><div class="card-title">Rem&eacute;diation cibl&eacute;e</div><div id="profileRemed"><p class="text-muted">Chargez un profil.</p></div></div>
+            <div class="card"><div class="card-title">Pr&ecirc;t pour le CCF ?</div><div id="profileCCF"><p class="text-muted">Chargez un profil.</p></div></div>
+        </div>
+    </section>
+</div>
+
+<noscript><p style="max-width:500px;margin:0 auto;padding:16px;background:#fff;border-radius:12px;">Cette application n&eacute;cessite JavaScript.</p></noscript>
+
+<script>
+(function () {
+    'use strict';
+
+    /* ============================================================
+       MELEC Tracker - suivi de competences (100% local, hors ligne)
+       Donnees : localStorage, cle "melec_full_data" (compatible v1).
+       Auto-test : ouvrir index.html?selftest=1
+       ============================================================ */
+
+    var STORE_KEY = 'melec_full_data';
+    var UI_KEY = 'melec_ui_state';
+    var WINDOW_SIZE = 5;          // nb d'observations prises en compte par jauge
+    var CCF_MIN_OBS = 3;          // observations minimales par competence
+    var CCF_MIN_LEVEL = 70;       // % minimal par competence
+
+    var COMPS = [
+        { id: 'APP', full: "S'APPROPRIER" },
+        { id: 'ANA', full: 'ANALYSER' },
+        { id: 'REA', full: 'REALISER' },
+        { id: 'VAL', full: 'VALIDER' },
+        { id: 'COM', full: 'COMMUNIQUER' }
+    ];
+    var COMP_IDS = COMPS.map(function (c) { return c.id; });
+    var COMP_FULL = COMPS.reduce(function (m, c) { m[c.id] = c.full; return m; }, {});
+
+    var REMED = {
+        APP: { low: "🔍 Faire surligner donnees / question / unite avant tout calcul.", mid: "📌 Donner 3 mini-enonces avec extraction des informations.", high: "✅ Retirer progressivement le surlignage guide.", mastered: "🚀 Transfert vers tache complexe et CCF." },
+        ANA: { low: "🧠 Interdire le calcul 60 s : faire verbaliser la strategie.", mid: "📌 Proposer 2 methodes et faire choisir / justifier.", high: "✅ Rejouer la meme strategie dans un autre chapitre.", mastered: "🚀 Transfert vers tache complexe et CCF." },
+        REA: { low: "🔧 Reprendre une methode pas-a-pas avec exemple resolu.", mid: "📌 Faire 3 exercices tres courts de meme structure.", high: "✅ Changer valeurs puis contexte sans changer methode.", mastered: "🚀 Transfert vers tache complexe et CCF." },
+        VAL: { low: "✅ Installer le reflexe : unite - signe - ordre de grandeur - contexte.", mid: "📌 Donner volontairement des resultats absurdes a detecter.", high: "✅ Exiger une phrase de validation apres chaque calcul.", mastered: "🚀 Transfert vers tache complexe et CCF." },
+        COM: { low: "💬 Donner des amorces de phrases scientifiques.", mid: "📌 Faire produire une conclusion en 2 phrases max.", high: "✅ Retirer les amorces et exiger valeur + unite + interpretation.", mastered: "🚀 Transfert vers tache complexe et CCF." }
+    };
+
+    var data = { students: [], questions: [], observations: [] };
+    var obsIndex = null;              // cache : studentId -> comp -> observations triees
+    var evalScore = null;             // score selectionne dans l'onglet Evaluer
+    var currentClassQuestion = '';    // question reellement affichee en mode classe
+    var pendingScores = {};           // saisies non enregistrees du mode classe
+
+    /* ---------------------- utilitaires ---------------------- */
+
+    function $(id) { return document.getElementById(id); }
+
+    var ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    function esc(v) {
+        return String(v === null || v === undefined ? '' : v).replace(/[&<>"']/g, function (ch) { return ESC_MAP[ch]; });
+    }
+
+    function clampScore(v) {
+        var n = Math.round(Number(v));
+        return isFinite(n) && n >= 0 && n <= 3 ? n : null;
+    }
+
+    function generateId() {
+        return Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
+    }
+
+    function buzz(ms) {
+        if (navigator.vibrate) { try { navigator.vibrate(ms); } catch (e) { /* ignore */ } }
+    }
+
+    /* Un seul ecouteur "click" : sur mobile le viewport responsive supprime
+       le delai de 300 ms, et l'ancien couple click + touchend declenchait
+       deux fois chaque action (doublons d'observations). */
+    function on(el, fn) {
+        if (!el) { return; }
+        el.addEventListener('click', function (e) { e.preventDefault(); fn(e); });
+    }
+
+    function truncate(str, n) {
+        str = String(str || '');
+        return str.length > n ? str.slice(0, n) + '…' : str;
+    }
+
+    function formatDate(ts) {
+        var d = new Date(ts);
+        if (isNaN(d.getTime())) { return '?'; }
+        return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }) + ' ' +
+               d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function getStudent(id) {
+        for (var i = 0; i < data.students.length; i++) { if (data.students[i].id === id) { return data.students[i]; } }
+        return null;
+    }
+    function getStudentName(id) { var s = getStudent(id); return s ? s.name : 'Inconnu'; }
+    function getQuestion(code) {
+        for (var i = 0; i < data.questions.length; i++) { if (data.questions[i].code === code) { return data.questions[i]; } }
+        return null;
+    }
+    function getQuestionText(code) { var q = getQuestion(code); return q ? q.text : code; }
+    function getQuestionComp(code) { var q = getQuestion(code); return q ? q.comp : null; }
+    function getCompFull(c) { return COMP_FULL[c] || c || '?'; }
+    function getCompColor(c) { return COMP_IDS.indexOf(c) > -1 ? c.toLowerCase() : ''; }
+    function getLevelClass(pct) {
+        if (pct < 34) { return 'level-0'; }
+        if (pct < 67) { return 'level-1'; }
+        if (pct < 84) { return 'level-2'; }
+        return 'level-3';
+    }
+    function getRemediation(comp, pct) {
+        var m = REMED[comp] || REMED.APP;
+        if (pct < 34) { return m.low; }
+        if (pct < 67) { return m.mid; }
+        if (pct < 84) { return m.high; }
+        return m.mastered;
+    }
+
+    /* ---------------------- persistance ---------------------- */
+
+    /* Normalise une structure inconnue (fichier importe, stockage corrompu,
+       ancienne version) en un modele sur : types forces, doublons ecartes. */
+    function sanitize(raw) {
+        if (!raw || typeof raw !== 'object') { return null; }
+        var out = { students: [], questions: [], observations: [] };
+
+        var seenStudents = {};
+        (Array.isArray(raw.students) ? raw.students : []).forEach(function (s) {
+            if (!s || typeof s !== 'object') { return; }
+            var id = String(s.id === undefined || s.id === null ? '' : s.id).trim() || generateId();
+            if (seenStudents[id]) { return; }
+            seenStudents[id] = true;
+            out.students.push({
+                id: id,
+                name: String(s.name || '').trim() || 'Sans nom',
+                'class': String(s['class'] || '').trim()
+            });
+        });
+
+        var byCode = {};
+        (Array.isArray(raw.questions) ? raw.questions : []).forEach(function (q) {
+            if (!q || typeof q !== 'object') { return; }
+            var code = String(q.code || '').trim();
+            if (!code || byCode[code]) { return; }
+            var comp = String(q.comp || '').toUpperCase();
+            if (COMP_IDS.indexOf(comp) === -1) { comp = 'APP'; }
+            var item = { code: code, comp: comp, text: String(q.text || '').trim() || code };
+            byCode[code] = item;
+            out.questions.push(item);
+        });
+
+        (Array.isArray(raw.observations) ? raw.observations : []).forEach(function (o) {
+            if (!o || typeof o !== 'object') { return; }
+            var score = clampScore(o.score);
+            if (score === null) { return; }
+            var code = String(o.questionCode || '').trim();
+            var comp = String(o.comp || '').toUpperCase();
+            if (COMP_IDS.indexOf(comp) === -1) { comp = byCode[code] ? byCode[code].comp : ''; }
+            if (!comp) { return; }   // observation inexploitable (competence introuvable)
+            var date = Number(o.date);
+            out.observations.push({
+                id: String(o.id || '') || generateId(),
+                studentId: String(o.studentId || ''),
+                questionCode: code,
+                score: score,
+                comp: comp,
+                date: isFinite(date) && date > 0 ? date : Date.now()
+            });
+        });
+
+        return out;
+    }
+
+    function defaultQuestions() {
+        return [
+            { code: 'SCI-APP-DIO-01', comp: 'APP', text: 'Identifier entree alternative et pont de diodes.' },
+            { code: 'MAT-ANA-STAT-02', comp: 'ANA', text: 'Choisir le modele le plus adapte.' },
+            { code: 'SCI-REA-MOT-03', comp: 'REA', text: 'Mesurer U et I, calculer la puissance.' },
+            { code: 'MAT-VAL-PROB-04', comp: 'VAL', text: 'Verifier la somme des probabilites.' },
+            { code: 'SCI-COM-PONT-05', comp: 'COM', text: 'Expliquer le role du pont de diodes.' },
+            { code: 'SCI-REA-EXAO-07', comp: 'REA', text: 'Acquerir la tension en sortie du pont et afficher u = f(t).' },
+            { code: 'SCI-VAL-PONT-09', comp: 'VAL', text: 'La courbe comporte des alternances negatives. Est-ce conforme ?' }
+        ];
+    }
+
+    function loadData() {
+        var parsed = null;
+        try {
+            var raw = localStorage.getItem(STORE_KEY);
+            if (raw) { parsed = JSON.parse(raw); }
+        } catch (e) { parsed = null; }
+
+        var clean = sanitize(parsed);
+        if (clean && (clean.students.length || clean.questions.length || clean.observations.length)) {
+            data = clean;
+        } else {
+            data = { students: [], questions: defaultQuestions(), observations: [] };
+        }
+        obsIndex = null;
+        saveData(true);
+    }
+
+    function saveData(silent) {
+        obsIndex = null;
+        try {
+            localStorage.setItem(STORE_KEY, JSON.stringify(data));
+            return true;
+        } catch (e) {
+            console.warn('Sauvegarde impossible', e);
+            if (!silent) { toast('⚠️ Sauvegarde impossible (stockage plein ou navigation privee).', 'error', 4500); }
+            return false;
+        }
+    }
+
+    function loadUi() {
+        try { return JSON.parse(localStorage.getItem(UI_KEY)) || {}; } catch (e) { return {}; }
+    }
+    function saveUi(patch) {
+        try {
+            var ui = loadUi();
+            Object.keys(patch).forEach(function (k) { ui[k] = patch[k]; });
+            localStorage.setItem(UI_KEY, JSON.stringify(ui));
+        } catch (e) { /* non bloquant */ }
+    }
+
+    /* ---------------------- calcul des jauges ---------------------- */
+
+    /* Index construit une seule fois par rendu : evite de refiltrer et retrier
+       tout l'historique pour chaque couple (apprenti, competence). */
+    function index() {
+        if (obsIndex) { return obsIndex; }
+        obsIndex = {};
+        data.observations.forEach(function (o) {
+            var per = obsIndex[o.studentId] || (obsIndex[o.studentId] = {});
+            (per[o.comp] || (per[o.comp] = [])).push(o);
+        });
+        Object.keys(obsIndex).forEach(function (sid) {
+            var per = obsIndex[sid];
+            Object.keys(per).forEach(function (c) { per[c].sort(function (a, b) { return a.date - b.date; }); });
+        });
+        return obsIndex;
+    }
+
+    function computeGauge(studentId, comp) {
+        var per = index()[studentId];
+        var list = per && per[comp] ? per[comp] : [];
+        if (!list.length) { return { level: 0, count: 0 }; }
+        var last = list.slice(-WINDOW_SIZE);
+        var total = last.reduce(function (s, o) { return s + o.score; }, 0);
+        return { level: Math.round((total / (last.length * 3)) * 100), count: last.length };
+    }
+
+    /* ---------------------- toast ---------------------- */
+
+    var toastTimer = null;
+    function toast(msg, type, duration) {
+        var el = $('toast');
+        if (!el) { return; }
+        el.textContent = msg;
+        el.className = 'toast' + (type && type !== 'info' ? ' ' + type : '');
+        clearTimeout(toastTimer);
+        void el.offsetWidth;
+        el.classList.add('show');
+        toastTimer = setTimeout(function () { el.classList.remove('show'); }, duration || 2500);
+    }
+
+    /* ---------------------- rendus ---------------------- */
+
+    function renderAll() {
+        renderDashboard();
+        renderSelects();
+        renderStudentAdmin();
+        renderBank();
+        renderClassGrid();
+        if (!$('profileContent').hidden) { renderProfile($('profileStudent').value); }
+        $('studentCount').textContent = data.students.length + ' app.';
+    }
+
+    function classAverages() {
+        var out = {};
+        COMP_IDS.forEach(function (c) {
+            var sum = 0, n = 0;
+            data.students.forEach(function (s) {
+                var g = computeGauge(s.id, c);
+                if (g.count > 0) { sum += g.level; n++; }
+            });
+            out[c] = n ? Math.round(sum / n) : 0;
+        });
+        return out;
+    }
+
+    function renderDashboard() {
+        var overall = classAverages();
+
+        COMP_IDS.forEach(function (c) {
+            var pct = overall[c];
+            var fill = $('gauge' + c), val = $('gaugeVal' + c);
+            if (fill) { fill.style.width = pct + '%'; fill.className = 'gauge-fill ' + getLevelClass(pct); }
+            if (val) { val.textContent = pct + '%'; }
+        });
+
+        var weak = COMP_IDS
+            .map(function (c) { return { comp: c, pct: overall[c] }; })
+            .filter(function (w) { return w.pct > 0 && w.pct < 67; })
+            .sort(function (a, b) { return a.pct - b.pct; })
+            .slice(0, 2);
+
+        $('dashRemed').innerHTML = weak.length
+            ? weak.map(function (w) {
+                return '<div class="remed-card"><div class="title">⚠️ ' + esc(getCompFull(w.comp)) + ' (' + w.pct + '%)</div>' +
+                       '<div class="desc">' + esc(getRemediation(w.comp, w.pct)) + '</div></div>';
+            }).join('')
+            : '<p class="text-muted">✅ Aucune competence fragile detectee.</p>';
+
+        var recent = data.observations.slice().sort(function (a, b) { return b.date - a.date; }).slice(0, 8);
+        $('dashRecentObs').innerHTML = recent.length
+            ? recent.map(function (o) {
+                return '<div class="obs-line"><span class="who"><strong>' + esc(getStudentName(o.studentId)) + '</strong> — ' +
+                       esc(truncate(getQuestionText(o.questionCode), 30)) + '</span>' +
+                       '<span class="meta"><span class="comp-badge ' + getCompColor(o.comp) + '">' + esc(o.comp) + '</span> <strong>' + o.score + '/3</strong></span></div>';
+            }).join('')
+            : '<p class="text-muted">Aucune observation.</p>';
+    }
+
+    function fillSelect(sel, items, placeholder, valueOf, labelOf) {
+        if (!sel) { return; }
+        var cur = sel.value;
+        var html = '<option value="">' + placeholder + '</option>';
+        var found = false;
+        items.forEach(function (it) {
+            var v = valueOf(it);
+            if (v === cur) { found = true; }
+            html += '<option value="' + esc(v) + '">' + esc(labelOf(it)) + '</option>';
+        });
+        sel.innerHTML = html;
+        sel.value = found ? cur : '';
+    }
+
+    function renderSelects() {
+        var students = data.students.slice().sort(function (a, b) { return a.name.localeCompare(b.name, 'fr'); });
+        var questions = data.questions.slice().sort(function (a, b) { return a.code.localeCompare(b.code, 'fr'); });
+
+        ['evalStudent', 'profileStudent'].forEach(function (id) {
+            fillSelect($(id), students, '— Selectionner —',
+                function (s) { return s.id; },
+                function (s) { return s.name + (s['class'] ? ' (' + s['class'] + ')' : ''); });
+        });
+        ['evalQuestion', 'classQuestion'].forEach(function (id) {
+            fillSelect($(id), questions, '— Choisir —',
+                function (q) { return q.code; },
+                function (q) { return q.code + ' — ' + truncate(q.text, 45); });
+        });
+        updateEvalHint();
+    }
+
+    function updateEvalHint() {
+        var code = $('evalQuestion').value;
+        var q = code ? getQuestion(code) : null;
+        $('evalQuestionHint').textContent = q
+            ? 'Competence : ' + getCompFull(q.comp) + ' — ' + truncate(q.text, 70)
+            : 'Aucune question selectionnee.';
+    }
+
+    function renderStudentAdmin() {
+        var box = $('studentAdminList');
+        $('studentAdminCount').textContent = data.students.length + ' apprenti(s)';
+        if (!data.students.length) {
+            box.innerHTML = '<p class="text-muted">Aucun apprenti. Ajoutez-les ci-dessus pour activer les jauges.</p>';
+            return;
+        }
+        var counts = {};
+        data.observations.forEach(function (o) { counts[o.studentId] = (counts[o.studentId] || 0) + 1; });
+        box.innerHTML = data.students.slice()
+            .sort(function (a, b) { return a.name.localeCompare(b.name, 'fr'); })
+            .map(function (s) {
+                return '<div class="list-row"><span class="name">' + esc(s.name) +
+                       '<small>' + esc(s['class'] || 'sans classe') + ' — ' + (counts[s.id] || 0) + ' obs.</small></span>' +
+                       '<button type="button" class="icon-btn" data-del-student="' + esc(s.id) +
+                       '" aria-label="Supprimer ' + esc(s.name) + '">✖</button></div>';
+            }).join('');
+    }
+
+    function renderBank() {
+        var filter = $('bankFilter').value;
+        var qs = data.questions.filter(function (q) { return filter === 'all' || q.comp === filter; });
+        $('bankCount').textContent = qs.length + ' question(s)';
+        var container = $('bankList');
+        if (!qs.length) {
+            container.innerHTML = '<p class="text-muted">Aucune question.</p>';
+            return;
+        }
+        container.innerHTML = qs.slice()
+            .sort(function (a, b) { return a.code.localeCompare(b.code, 'fr'); })
+            .map(function (q) {
+                return '<div class="qbank-item"><span class="code">' + esc(q.code) + '</span>' +
+                       '<span class="text">' + esc(q.text) + '</span>' +
+                       '<span class="tag comp-badge ' + getCompColor(q.comp) + '">' + esc(q.comp) + '</span>' +
+                       '<button type="button" class="icon-btn" data-del-question="' + esc(q.code) +
+                       '" aria-label="Supprimer la question ' + esc(q.code) + '">✖</button></div>';
+            }).join('');
+    }
+
+    function paintScoreGroup(group, selected) {
+        Array.prototype.forEach.call(group.querySelectorAll('.score-btn'), function (b) {
+            var sc = parseInt(b.dataset.score, 10);
+            var isOn = sc === selected;
+            b.className = 'score-btn' + (isOn ? ' selected-' + sc : '');
+            b.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+        });
+    }
+
+    function pendingCount(code) {
+        var map = pendingScores[code];
+        return map ? Object.keys(map).length : 0;
+    }
+
+    function renderClassGrid() {
+        var container = $('classStudentGrid');
+        var header = $('classHeader');
+
+        if (!currentClassQuestion || !getQuestion(currentClassQuestion)) {
+            currentClassQuestion = '';
+            header.hidden = true;
+            container.innerHTML = '<p class="text-muted">Selectionnez une question et cliquez sur « Appliquer ».</p>';
+            return;
+        }
+
+        var qCode = currentClassQuestion;
+        var text = getQuestionText(qCode);
+        header.hidden = false;
+        $('classQuestionDisplay').textContent = qCode + ' — ' + truncate(text, 40);
+        $('classQuestionComp').textContent = 'Competence : ' + getCompFull(getQuestionComp(qCode));
+
+        if (!data.students.length) {
+            container.innerHTML = '<p class="text-muted">Ajoutez des apprentis (carte ci-dessous).</p>';
+            return;
+        }
+
+        var scores = pendingScores[qCode] || (pendingScores[qCode] = {});
+        container.innerHTML = data.students.slice()
+            .sort(function (a, b) { return a.name.localeCompare(b.name, 'fr'); })
+            .map(function (s) {
+                var val = scores[s.id];
+                var btns = [0, 1, 2, 3].map(function (sc) {
+                    var isOn = sc === val;
+                    return '<button type="button" class="score-btn' + (isOn ? ' selected-' + sc : '') +
+                           '" data-score="' + sc + '" aria-pressed="' + (isOn ? 'true' : 'false') +
+                           '" aria-label="' + esc(s.name) + ' : score ' + sc + '">' + sc + '</button>';
+                }).join('');
+                return '<div class="student-row"><span class="name">' + esc(s.name) + '</span>' +
+                       '<div class="score-selector" role="group" data-student="' + esc(s.id) + '">' + btns + '</div></div>';
+            }).join('');
+    }
+
+    function renderProfile(studentId) {
+        var container = $('profileContent');
+        var student = studentId ? getStudent(studentId) : null;
+        if (!student) {
+            container.hidden = true;
+            if (studentId) { toast('Apprenti introuvable.', 'warning'); }
+            return;
+        }
+        container.hidden = false;
+
+        $('profileAvatar').textContent = student.name.charAt(0).toUpperCase() || '?';
+        $('profileName').textContent = student.name;
+        $('profileClass').textContent = student['class'] || '—';
+
+        $('profileGauges').innerHTML = COMPS.map(function (c) {
+            var g = computeGauge(studentId, c.id);
+            return '<div class="gauge-item"><div class="gauge-label">' + c.id +
+                   ' <span class="sub">' + (g.count ? g.count + ' obs.' : 'aucune') + '</span></div>' +
+                   '<div class="gauge-track"><div class="gauge-fill ' + getLevelClass(g.level) +
+                   '" style="width:' + g.level + '%;"></div></div>' +
+                   '<div class="gauge-value">' + g.level + '%</div></div>';
+        }).join('');
+
+        var obs = data.observations
+            .filter(function (o) { return o.studentId === studentId; })
+            .sort(function (a, b) { return b.date - a.date; });
+        $('profileObsCount').textContent = obs.length + ' obs.';
+        $('profileObsBody').innerHTML = obs.length
+            ? obs.slice(0, 20).map(function (o) {
+                return '<tr><td>' + esc(formatDate(o.date)) + '</td>' +
+                       '<td><code style="font-size:0.7rem;">' + esc(o.questionCode) + '</code></td>' +
+                       '<td><span class="comp-badge ' + getCompColor(o.comp) + '">' + esc(o.comp) + '</span></td>' +
+                       '<td><strong>' + o.score + '/3</strong></td></tr>';
+            }).join('')
+            : '<tr><td colspan="4" class="text-muted">Aucune</td></tr>';
+
+        var weak = COMP_IDS.map(function (c) {
+            var g = computeGauge(studentId, c);
+            return { comp: c, pct: g.level, count: g.count };
+        }).filter(function (w) { return w.count >= 2 && w.pct < 67; })
+          .sort(function (a, b) { return a.pct - b.pct; })
+          .slice(0, 2);
+
+        $('profileRemed').innerHTML = weak.length
+            ? weak.map(function (w) {
+                return '<div class="remed-card"><div class="title">⚠️ ' + esc(getCompFull(w.comp)) + ' (' + w.pct + '%)</div>' +
+                       '<div class="desc">' + esc(getRemediation(w.comp, w.pct)) + '</div></div>';
+            }).join('')
+            : '<p class="text-muted">✅ Aucune competence fragile (ou pas assez d\'observations).</p>';
+
+        var ready = true, details = [];
+        COMP_IDS.forEach(function (c) {
+            var g = computeGauge(studentId, c);
+            if (g.count < CCF_MIN_OBS) {
+                ready = false;
+                details.push('⚠️ ' + getCompFull(c) + ' : ' + g.count + ' obs (min ' + CCF_MIN_OBS + ')');
+            } else if (g.level < CCF_MIN_LEVEL) {
+                ready = false;
+                details.push('⚠️ ' + getCompFull(c) + ' : ' + g.level + '% (<' + CCF_MIN_LEVEL + ')');
+            } else {
+                details.push('✅ ' + getCompFull(c) + ' : ' + g.level + '%');
+            }
+        });
+        $('profileCCF').innerHTML = ready
+            ? '<div class="ccf-card ready">🎯 Pret pour le CCF — toutes les competences sont >= ' + CCF_MIN_LEVEL + '% avec au moins ' + CCF_MIN_OBS + ' observations.</div>'
+            : '<div class="ccf-card pending"><strong>⏳ Preparation en cours</strong><ul style="margin:8px 0 0 16px;font-size:0.8rem;">' +
+              details.map(function (d) { return '<li>' + esc(d) + '</li>'; }).join('') + '</ul></div>';
+    }
+
+    /* ---------------------- import / export ---------------------- */
+
+    function download(filename, mime, content) {
+        try {
+            var blob = new Blob([content], { type: mime });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 0);
+            return true;
+        } catch (e) {
+            console.warn(e);
+            toast('Export impossible sur ce navigateur.', 'error');
+            return false;
+        }
+    }
+
+    function stamp() {
+        var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };
+        return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes());
+    }
+
+    function csvCell(v) { return '"' + String(v === null || v === undefined ? '' : v).replace(/"/g, '""') + '"'; }
+
+    function observationsToCsv() {
+        var rows = [['date', 'apprenti', 'classe', 'code', 'competence', 'score']];
+        data.observations.slice().sort(function (a, b) { return a.date - b.date; }).forEach(function (o) {
+            var s = getStudent(o.studentId);
+            rows.push([
+                new Date(o.date).toISOString(),
+                s ? s.name : 'Inconnu',
+                s ? s['class'] : '',
+                o.questionCode,
+                o.comp,
+                o.score
+            ]);
+        });
+        return '﻿' + rows.map(function (r) { return r.map(csvCell).join(';'); }).join('\r\n');
+    }
+
+    /* ---------------------- evenements ---------------------- */
+
+    function activateTab(tabId, focusBtn) {
+        var buttons = document.querySelectorAll('#tabBar button');
+        Array.prototype.forEach.call(buttons, function (b) {
+            var on = b.dataset.tab === tabId;
+            b.classList.toggle('active', on);
+            b.setAttribute('aria-selected', on ? 'true' : 'false');
+            b.tabIndex = on ? 0 : -1;
+            if (on && focusBtn) { b.focus(); }
+        });
+        Array.prototype.forEach.call(document.querySelectorAll('.panel'), function (p) {
+            p.classList.toggle('active', p.id === tabId);
+        });
+        saveUi({ tab: tabId });
+    }
+
+    function bindEvents() {
+        /* --- onglets (clic + fleches clavier) --- */
+        var tabButtons = Array.prototype.slice.call(document.querySelectorAll('#tabBar button'));
+        tabButtons.forEach(function (btn, i) {
+            on(btn, function () { activateTab(btn.dataset.tab, false); buzz(8); });
+            btn.addEventListener('keydown', function (e) {
+                var delta = e.key === 'ArrowRight' ? 1 : (e.key === 'ArrowLeft' ? -1 : 0);
+                if (!delta) { return; }
+                e.preventDefault();
+                var next = tabButtons[(i + delta + tabButtons.length) % tabButtons.length];
+                activateTab(next.dataset.tab, true);
+            });
+        });
+
+        /* --- onglet Evaluer --- */
+        var evalSelector = $('evalScoreSelector');
+        evalSelector.addEventListener('click', function (e) {
+            var btn = e.target.closest('.score-btn');
+            if (!btn) { return; }
+            e.preventDefault();
+            var sc = parseInt(btn.dataset.score, 10);
+            evalScore = (evalScore === sc) ? null : sc;   // re-clic = deselection
+            paintScoreGroup(evalSelector, evalScore);
+            buzz(10);
+        });
+
+        $('evalQuestion').addEventListener('change', updateEvalHint);
+
+        on($('evalSubmit'), function () {
+            var studentId = $('evalStudent').value;
+            var qCode = $('evalQuestion').value;
+            if (!studentId || !qCode || evalScore === null) {
+                toast('Choisissez un apprenti, une question et un score.', 'warning');
+                return;
+            }
+            var comp = getQuestionComp(qCode);
+            if (!comp) { toast('Question inconnue.', 'error'); return; }
+
+            data.observations.push({
+                id: generateId(), studentId: studentId, questionCode: qCode,
+                score: evalScore, comp: comp, date: Date.now()
+            });
+            if (!saveData()) { data.observations.pop(); return; }
+
+            toast('✅ Observation enregistree pour ' + getStudentName(studentId), 'success');
+            evalScore = null;
+            paintScoreGroup(evalSelector, null);
+            renderAll();
+            buzz(20);
+        });
+
+        /* --- mode classe --- */
+        var classSelect = $('classQuestion');
+        function applyClassQuestion() {
+            var next = classSelect.value;
+            if (currentClassQuestion && next !== currentClassQuestion && pendingCount(currentClassQuestion)) {
+                if (!confirm('Des scores non enregistres existent pour ' + currentClassQuestion + '. Les abandonner ?')) {
+                    classSelect.value = currentClassQuestion;
+                    return;
+                }
+                delete pendingScores[currentClassQuestion];
+            }
+            currentClassQuestion = next;
+            renderClassGrid();
+        }
+        classSelect.addEventListener('change', applyClassQuestion);
+        on($('classApply'), function () { applyClassQuestion(); buzz(8); });
+
+        /* Delegation : un seul ecouteur pour toute la grille (pas de fuite
+           d'ecouteurs a chaque rendu, meme avec 30 apprentis). */
+        $('classStudentGrid').addEventListener('click', function (e) {
+            var btn = e.target.closest('.score-btn');
+            if (!btn || !currentClassQuestion) { return; }
+            e.preventDefault();
+            var group = btn.closest('.score-selector');
+            var sid = group.dataset.student;
+            var sc = parseInt(btn.dataset.score, 10);
+            var map = pendingScores[currentClassQuestion] || (pendingScores[currentClassQuestion] = {});
+            if (map[sid] === sc) { delete map[sid]; } else { map[sid] = sc; }
+            paintScoreGroup(group, map[sid] === undefined ? null : map[sid]);
+            buzz(10);
+        });
+
+        on($('classSubmitAll'), function () {
+            var qCode = currentClassQuestion;
+            if (!qCode) { toast('Selectionnez une question puis « Appliquer ».', 'warning'); return; }
+            var comp = getQuestionComp(qCode);
+            if (!comp) { toast('Question inconnue.', 'error'); return; }
+
+            var scores = pendingScores[qCode] || {};
+            var now = Date.now();
+            var added = data.students.reduce(function (acc, s) {
+                var sc = clampScore(scores[s.id]);
+                if (sc === null) { return acc; }
+                acc.push({ id: generateId(), studentId: s.id, questionCode: qCode, score: sc, comp: comp, date: now });
+                return acc;
+            }, []);
+
+            if (!added.length) { toast('Aucun score selectionne.', 'warning'); return; }
+
+            data.observations = data.observations.concat(added);
+            if (!saveData()) {
+                data.observations = data.observations.slice(0, data.observations.length - added.length);
+                return;
+            }
+            delete pendingScores[qCode];
+            toast('✅ ' + added.length + ' observation(s) enregistree(s).', 'success');
+            renderAll();
+            buzz(20);
+        });
+
+        /* --- gestion des apprentis --- */
+        on($('studentAddBtn'), function () {
+            var nameEl = $('newStudentName'), classEl = $('newStudentClass');
+            var name = nameEl.value.trim();
+            if (!name) { toast('Entrez un nom.', 'warning'); nameEl.focus(); return; }
+            var klass = classEl.value.trim() || (loadUi().lastClass || '');
+            if (data.students.some(function (s) { return s.name.toLowerCase() === name.toLowerCase(); })) {
+                if (!confirm('Un apprenti nomme "' + name + '" existe deja. L\'ajouter quand meme ?')) { return; }
+            }
+            data.students.push({ id: generateId(), name: name, 'class': klass });
+            if (!saveData()) { data.students.pop(); return; }
+            saveUi({ lastClass: klass });
+            nameEl.value = '';
+            classEl.value = klass;
+            toast('✅ ' + name + ' ajoute.', 'success');
+            renderAll();
+            nameEl.focus();
+            buzz(15);
+        });
+
+        $('studentAdminList').addEventListener('click', function (e) {
+            var btn = e.target.closest('[data-del-student]');
+            if (!btn) { return; }
+            e.preventDefault();
+            var id = btn.dataset.delStudent;
+            var s = getStudent(id);
+            if (!s) { return; }
+            var n = data.observations.filter(function (o) { return o.studentId === id; }).length;
+            if (!confirm('Supprimer ' + s.name + (n ? ' et ses ' + n + ' observation(s)' : '') + ' ?')) { return; }
+            data.students = data.students.filter(function (st) { return st.id !== id; });
+            data.observations = data.observations.filter(function (o) { return o.studentId !== id; });
+            saveData();
+            toast('Apprenti supprime.', 'info');
+            if ($('profileStudent').value === id) { $('profileContent').hidden = true; }
+            renderAll();
+        });
+
+        /* --- banque de questions --- */
+        $('bankFilter').addEventListener('change', renderBank);
+
+        on($('bankAddBtn'), function () {
+            var codeEl = $('bankNewCode'), textEl = $('bankNewText');
+            var code = codeEl.value.trim();
+            var comp = $('bankNewComp').value;
+            var text = textEl.value.trim();
+            if (!code) { toast('Entrez un code.', 'warning'); codeEl.focus(); return; }
+            if (!text) { toast('Entrez un enonce.', 'warning'); textEl.focus(); return; }
+            if (getQuestion(code)) { toast('Ce code existe deja.', 'warning'); return; }
+            if (COMP_IDS.indexOf(comp) === -1) { comp = 'APP'; }
+
+            data.questions.push({ code: code, comp: comp, text: text });
+            if (!saveData()) { data.questions.pop(); return; }
+            toast('✅ Question ajoutee : ' + code, 'success');
+            codeEl.value = '';
+            textEl.value = '';
+            renderAll();
+            buzz(15);
+        });
+
+        $('bankList').addEventListener('click', function (e) {
+            var btn = e.target.closest('[data-del-question]');
+            if (!btn) { return; }
+            e.preventDefault();
+            var code = btn.dataset.delQuestion;
+            if (!confirm('Supprimer la question ' + code + ' ? Les observations deja enregistrees sont conservees.')) { return; }
+            data.questions = data.questions.filter(function (q) { return q.code !== code; });
+            delete pendingScores[code];
+            if (currentClassQuestion === code) { currentClassQuestion = ''; }
+            saveData();
+            toast('Question supprimee.', 'info');
+            renderAll();
+        });
+
+        /* --- profil --- */
+        on($('profileLoad'), function () { renderProfile($('profileStudent').value); buzz(8); });
+        on($('profilePrint'), function () { window.print(); });
+        on($('profileClearObs'), function () {
+            var id = $('profileStudent').value;
+            if (!id) { return; }
+            var n = data.observations.filter(function (o) { return o.studentId === id; }).length;
+            if (!n) { toast('Aucune observation a effacer.', 'warning'); return; }
+            if (!confirm('Effacer les ' + n + ' observation(s) de ' + getStudentName(id) + ' ?')) { return; }
+            data.observations = data.observations.filter(function (o) { return o.studentId !== id; });
+            saveData();
+            toast('Observations effacees.', 'info');
+            renderAll();
+            renderProfile(id);
+            buzz(10);
+        });
+
+        /* --- tableau de bord : effacement global + sauvegardes --- */
+        on($('dashClearObs'), function () {
+            if (!data.observations.length) { toast('Aucune observation.', 'warning'); return; }
+            if (!confirm('Effacer les ' + data.observations.length + ' observations de TOUS les apprentis ? Cette action est definitive.')) { return; }
+            data.observations = [];
+            saveData();
+            toast('Toutes les observations effacees.', 'info');
+            renderAll();
+            buzz(10);
+        });
+
+        on($('btnExportJson'), function () {
+            download('melec-tracker-' + stamp() + '.json', 'application/json',
+                JSON.stringify({ version: 2, exportedAt: new Date().toISOString(), data: data }, null, 2));
+            toast('Sauvegarde generee.', 'success');
+        });
+
+        on($('btnExportCsv'), function () {
+            if (!data.observations.length) { toast('Aucune observation a exporter.', 'warning'); return; }
+            download('melec-observations-' + stamp() + '.csv', 'text/csv;charset=utf-8', observationsToCsv());
+            toast('CSV genere.', 'success');
+        });
+
+        on($('btnImport'), function () { $('importFile').click(); });
+
+        $('importFile').addEventListener('change', function (e) {
+            var file = e.target.files && e.target.files[0];
+            if (!file) { return; }
+            var reader = new FileReader();
+            reader.onload = function () {
+                var payload = null;
+                try { payload = JSON.parse(reader.result); } catch (err) { payload = null; }
+                var clean = sanitize(payload && payload.data ? payload.data : payload);
+                if (!clean) { toast('Fichier illisible.', 'error'); return; }
+                if (!confirm('Remplacer les donnees actuelles par : ' + clean.students.length + ' apprenti(s), ' +
+                             clean.questions.length + ' question(s), ' + clean.observations.length + ' observation(s) ?')) { return; }
+                data = clean;
+                pendingScores = {};
+                currentClassQuestion = '';
+                saveData();
+                $('profileContent').hidden = true;
+                renderAll();
+                toast('✅ Donnees restaurees.', 'success');
+            };
+            reader.onerror = function () { toast('Lecture du fichier impossible.', 'error'); };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
+    }
+
+    /* ---------------------- auto-test (index.html?selftest=1) ---------------------- */
+
+    function selfTest() {
+        var results = [];
+        function check(name, cond) { results.push({ name: name, ok: !!cond }); }
+        var backupData = data, backupIndex = obsIndex;
+
+        check('getLevelClass(0) = level-0', getLevelClass(0) === 'level-0');
+        check('getLevelClass(33) = level-0', getLevelClass(33) === 'level-0');
+        check('getLevelClass(34) = level-1', getLevelClass(34) === 'level-1');
+        check('getLevelClass(66) = level-1', getLevelClass(66) === 'level-1');
+        check('getLevelClass(67) = level-2', getLevelClass(67) === 'level-2');
+        check('getLevelClass(83) = level-2', getLevelClass(83) === 'level-2');
+        check('getLevelClass(84) = level-3', getLevelClass(84) === 'level-3');
+        check('getLevelClass(100) = level-3', getLevelClass(100) === 'level-3');
+
+        check('esc neutralise le HTML', esc('<img src=x onerror=alert(1)>') === '&lt;img src=x onerror=alert(1)&gt;');
+        check('esc gere les guillemets', esc('a"b\'c&d') === 'a&quot;b&#39;c&amp;d');
+
+        check('clampScore("2") = 2', clampScore('2') === 2);
+        check('clampScore(4) = null', clampScore(4) === null);
+        check('clampScore(-1) = null', clampScore(-1) === null);
+        check('clampScore("abc") = null', clampScore('abc') === null);
+        check('clampScore(0) = 0', clampScore(0) === 0);
+
+        check('remediation basse APP', getRemediation('APP', 10) === REMED.APP.low);
+        check('remediation maitrisee COM', getRemediation('COM', 90) === REMED.COM.mastered);
+
+        var bad = sanitize({ students: [{ id: 'a', name: 'A' }, { id: 'a', name: 'Doublon' }, null],
+                             questions: [{ code: 'Q1', comp: 'ZZZ', text: 'x' }, { code: 'Q1', comp: 'REA', text: 'doublon' }],
+                             observations: [{ studentId: 'a', questionCode: 'Q1', score: '3', date: 1 },
+                                            { studentId: 'a', questionCode: 'Q1', score: 9, date: 2 },
+                                            { studentId: 'a', questionCode: 'INCONNU', score: 2, date: 3 }] });
+        check('sanitize deduplique les apprentis', bad.students.length === 1);
+        check('sanitize deduplique les codes', bad.questions.length === 1);
+        check('sanitize corrige une competence invalide', bad.questions[0].comp === 'APP');
+        check('sanitize garde les scores valides', bad.observations.length === 1 && bad.observations[0].score === 3);
+        check('sanitize accepte un objet vide', sanitize({}).students.length === 0);
+        check('sanitize refuse null', sanitize(null) === null);
+
+        function withData(obs) {
+            data = { students: [{ id: 's1', name: 'T', 'class': 'X' }], questions: [], observations: obs };
+            obsIndex = null;
+        }
+        var mk = function (score, date) { return { id: 'o' + date, studentId: 's1', questionCode: 'Q', score: score, comp: 'REA', date: date }; };
+
+        withData([]);
+        var g0 = computeGauge('s1', 'REA');
+        check('jauge sans observation = 0% / 0', g0.level === 0 && g0.count === 0);
+
+        withData([mk(3, 1), mk(3, 2), mk(3, 3), mk(3, 4), mk(3, 5)]);
+        var g1 = computeGauge('s1', 'REA');
+        check('cinq 3/3 = 100%', g1.level === 100 && g1.count === 5);
+
+        withData([mk(0, 1), mk(3, 2), mk(3, 3), mk(3, 4), mk(3, 5), mk(3, 6)]);
+        check('seules les 5 dernieres comptent', computeGauge('s1', 'REA').level === 100);
+
+        withData([mk(1, 2), mk(2, 1)]);
+        var g2 = computeGauge('s1', 'REA');
+        check('ordre chronologique respecte (1+2)/6 = 50%', g2.level === 50 && g2.count === 2);
+
+        withData([mk(3, 1)]);
+        check('autre competence non impactee', computeGauge('s1', 'APP').count === 0);
+
+        check('csvCell echappe les guillemets', csvCell('a"b') === '"a""b"');
+        check('generateId unique', generateId() !== generateId());
+        check('truncate ajoute les points de suspension', truncate('abcdefgh', 3) === 'abc…');
+
+        data = backupData;
+        obsIndex = backupIndex;
+
+        var failed = results.filter(function (r) { return !r.ok; });
+        var box = document.createElement('div');
+        box.id = 'selfTest';
+        box.innerHTML = '<strong>Auto-test MELEC Tracker : ' + (results.length - failed.length) + '/' + results.length +
+            (failed.length ? ' <span class="ko">ECHECS</span>' : ' <span class="ok">OK</span>') + '</strong><br />' +
+            results.map(function (r) {
+                return '<span class="' + (r.ok ? 'ok' : 'ko') + '">' + (r.ok ? '✓' : '✗') + ' ' + esc(r.name) + '</span>';
+            }).join('<br />');
+        document.body.appendChild(box);
+        console.log('[selftest] ' + (results.length - failed.length) + '/' + results.length + ' reussis', failed);
+        return { total: results.length, passed: results.length - failed.length, failed: failed };
+    }
+
+    /* ---------------------- demarrage ---------------------- */
+
+    function init() {
+        loadData();
+        bindEvents();
+
+        var ui = loadUi();
+        if (ui.tab && $(ui.tab)) { activateTab(ui.tab, false); }
+        if (ui.lastClass) { $('newStudentClass').value = ui.lastClass; }
+
+        renderAll();
+
+        if (data.students.length) {
+            $('evalStudent').value = data.students[0].id;
+            $('profileStudent').value = data.students[0].id;
+        } else {
+            toast('Ajoutez vos apprentis dans l\'onglet Classe.', 'info', 3500);
+        }
+
+        if (/[?&]selftest=1/.test(location.search)) { selfTest(); }
+        else { toast('📊 MELEC Tracker pret', 'info', 1200); }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    /* Mise en cache hors connexion (installation sur l'ecran d'accueil).
+       Uniquement en https ou sur localhost : en ouverture directe du fichier
+       (file://), les service workers sont interdits et l'app fonctionne deja
+       sans reseau puisque tout est dans cette page. */
+    if ('serviceWorker' in navigator &&
+        (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('./sw.js').catch(function (e) { console.warn('SW non enregistre', e); });
+        });
+    }
+
+    /* API de debogage : getters pour toujours refleter l'etat courant. */
+    window.__tracker = {
+        get data() { return data; },
+        save: saveData,
+        render: renderAll,
+        toast: toast,
+        selfTest: selfTest,
+        computeGauge: computeGauge,
+        sanitize: sanitize
+    };
+})();
+</script>
+</body>
+</html>

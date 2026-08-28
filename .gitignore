@@ -1,0 +1,4 @@
+# artefacts locaux
+*.zip
+Thumbs.db
+.DS_Store
