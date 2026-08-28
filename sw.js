@@ -3,7 +3,7 @@
    avec repli sur index.html pour toute navigation hors connexion.
    Bumper CACHE_VERSION a chaque modification d'index.html pour forcer la MAJ. */
 
-var CACHE_VERSION = 'melec-v1';
+var CACHE_VERSION = 'melec-v2';
 var ASSETS = [
     './',
     './index.html',

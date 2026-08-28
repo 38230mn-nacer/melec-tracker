@@ -39,11 +39,34 @@ utiliser la méthode PWA.
 
 ## Vérification
 
-Ouvrir `index.html?selftest=1` : un panneau affiche le résultat des 31 tests unitaires
+Ouvrir `index.html?selftest=1` : un panneau affiche le résultat des 44 tests unitaires
 (seuils de jauges, échappement HTML, validation des scores, normalisation des données,
-fenêtre glissante des 5 dernières observations). Attendu : **31/31 OK**.
+fenêtre glissante des 5 dernières observations, intégrité du lot de questions et
+idempotence de la fusion). Attendu : **44/44 OK**.
 
 Depuis la console : `window.__tracker.selfTest()`.
+
+## Banque de questions
+
+Un lot **Terminale Bac Pro MELEC** de 80 items est intégré au fichier : 40 en sciences
+physiques, 40 en mathématiques (groupement A), sur 16 thèmes × 5 compétences.
+
+| Sciences physiques | Mathématiques |
+|---|---|
+| `ALT` alternatif sinusoïdal · `PUI` puissances et cos φ · `TRI` triphasé · `MAS` moteur asynchrone | `CAL` calcul et notation scientifique · `FON` fonctions et lecture graphique · `SUI` suites · `DER` dérivée |
+| `RED` redressement et filtrage · `SEC` sécurité électrique · `ENE` énergie et rendement · `MES` mesures et EXAO | `TRG` trigonométrie et sinusoïdes · `ST1` stats 1 variable · `ST2` stats 2 variables · `PRO` probabilités |
+
+Codage : `DISCIPLINE-COMPÉTENCE-THÈME-NN` (ex. `SCI-VAL-MAS-19`).
+
+- **Installation neuve** : les 80 questions sont présentes d'emblée.
+- **Installation existante** : onglet *Banque* → **📚 Ajouter le lot à ma banque**.
+  Seuls les codes absents sont ajoutés ; les questions personnelles, les apprentis et
+  les observations ne sont **jamais** modifiés. Cliquer deux fois ne crée aucun doublon.
+- **Conséquence** : si un code existe déjà, son énoncé n'est pas écrasé par celui du lot.
+  Pour reprendre la version du lot, supprimer d'abord la question (✖), puis relancer l'ajout.
+- **Recherche** : champ *Rechercher*, insensible aux accents (`securite` trouve « sécurité »),
+  portant sur le code et l'énoncé. Combinable avec le filtre par compétence.
+- Les listes déroulantes *Évaluer* et *Classe* regroupent les questions par compétence.
 
 ## Règles de calcul
 

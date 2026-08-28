@@ -231,8 +231,15 @@
     <section class="panel" id="tabBank" role="tabpanel" aria-labelledby="tabBtn-tabBank" tabindex="0">
         <div class="card">
             <div class="card-title">Banque de questions <span class="text-muted" style="text-transform:none;font-size:0.7rem;" id="bankCount">0</span></div>
-            <div class="form-group"><label for="bankFilter">Filtrer</label><select id="bankFilter"><option value="all">Toutes</option><option value="APP">S'APPROPRIER</option><option value="ANA">ANALYSER</option><option value="REA">R&Eacute;ALISER</option><option value="VAL">VALIDER</option><option value="COM">COMMUNIQUER</option></select></div>
+            <div class="form-group"><label for="bankFilter">Filtrer par comp&eacute;tence</label><select id="bankFilter"><option value="all">Toutes</option><option value="APP">S'APPROPRIER</option><option value="ANA">ANALYSER</option><option value="REA">R&Eacute;ALISER</option><option value="VAL">VALIDER</option><option value="COM">COMMUNIQUER</option></select></div>
+            <div class="form-group"><label for="bankSearch">Rechercher</label><input type="text" id="bankSearch" placeholder="code, mot-cl&eacute; (ex : triphas&eacute;, MAS, glissement)" autocomplete="off" /></div>
             <div id="bankList"><p class="text-muted">Chargement&hellip;</p></div>
+        </div>
+        <div class="card">
+            <div class="card-title">Lot Terminale MELEC</div>
+            <p class="text-muted mb-8">80 questions pr&ecirc;tes &agrave; l'emploi : 40 en sciences physiques, 40 en math&eacute;matiques, r&eacute;parties sur 16 th&egrave;mes et les 5 comp&eacute;tences. Les codes d&eacute;j&agrave; pr&eacute;sents ne sont pas dupliqu&eacute;s.</p>
+            <button type="button" class="btn btn-outline" id="bankLoadCatalog">&#128218; Ajouter le lot &agrave; ma banque</button>
+            <p class="form-hint" id="bankCatalogState">&mdash;</p>
         </div>
         <div class="card">
             <div class="card-title">Ajouter une question</div>
@@ -337,6 +344,12 @@
         el.addEventListener('click', function (e) { e.preventDefault(); fn(e); });
     }
 
+    /* Recherche insensible aux accents : « securite » doit trouver « sécurité ». */
+    function fold(str) {
+        str = String(str || '').toLowerCase();
+        return str.normalize ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : str;
+    }
+
     function truncate(str, n) {
         str = String(str || '');
         return str.length > n ? str.slice(0, n) + '…' : str;
@@ -431,16 +444,129 @@
         return out;
     }
 
-    function defaultQuestions() {
-        return [
-            { code: 'SCI-APP-DIO-01', comp: 'APP', text: 'Identifier entree alternative et pont de diodes.' },
-            { code: 'MAT-ANA-STAT-02', comp: 'ANA', text: 'Choisir le modele le plus adapte.' },
-            { code: 'SCI-REA-MOT-03', comp: 'REA', text: 'Mesurer U et I, calculer la puissance.' },
-            { code: 'MAT-VAL-PROB-04', comp: 'VAL', text: 'Verifier la somme des probabilites.' },
-            { code: 'SCI-COM-PONT-05', comp: 'COM', text: 'Expliquer le role du pont de diodes.' },
-            { code: 'SCI-REA-EXAO-07', comp: 'REA', text: 'Acquerir la tension en sortie du pont et afficher u = f(t).' },
-            { code: 'SCI-VAL-PONT-09', comp: 'VAL', text: 'La courbe comporte des alternances negatives. Est-ce conforme ?' }
-        ];
+    /* ---------------------- lot Terminale Bac Pro MELEC ----------------------
+       80 items courts, evaluables sur l'echelle 0-3, repartis sur 16 themes
+       (8 en mathematiques groupement A, 8 en sciences physiques) et sur les
+       5 competences. Format compact : [code, competence, enonce]. */
+    var CATALOG = [
+        /* --- SCIENCES : courant alternatif sinusoidal --- */
+        ['SCI-APP-ALT-01', 'APP', "Relever la période et la valeur maximale de la tension sur l'oscillogramme."],
+        ['SCI-ANA-ALT-02', 'ANA', "Relier valeur maximale et valeur efficace avant de choisir la relation à utiliser."],
+        ['SCI-REA-ALT-03', 'REA', "Calculer la valeur efficace d'une tension de valeur maximale 325 V."],
+        ['SCI-VAL-ALT-04', 'VAL', "Vérifier que la valeur efficace calculée est compatible avec le réseau 230 V."],
+        ['SCI-COM-ALT-05', 'COM', "Expliquer pourquoi le multimètre affiche 230 V alors que le maximum vaut 325 V."],
+        /* --- SCIENCES : puissances et facteur de puissance --- */
+        ['SCI-APP-PUI-06', 'APP', "Relever sur la plaque signalétique la puissance nominale et le facteur de puissance."],
+        ['SCI-ANA-PUI-07', 'ANA', "Choisir entre P = U·I, P = U·I·cos φ et P = √3·U·I·cos φ selon le montage."],
+        ['SCI-REA-PUI-08', 'REA', "Calculer la puissance active absorbée (U = 230 V, I = 6 A, cos φ = 0,85)."],
+        ['SCI-VAL-PUI-09', 'VAL', "Contrôler que la puissance active trouvée est inférieure à la puissance apparente."],
+        ['SCI-COM-PUI-10', 'COM', "Expliquer l'intérêt de relever le facteur de puissance pour un abonné industriel."],
+        /* --- SCIENCES : reseau triphase --- */
+        ['SCI-APP-TRI-11', 'APP', "Identifier sur le schéma le couplage étoile ou triangle du récepteur triphasé."],
+        ['SCI-ANA-TRI-12', 'ANA', "Justifier le couplage d'une plaque 400/690 V raccordée à un réseau triphasé 400 V."],
+        ['SCI-REA-TRI-13', 'REA', "Calculer la tension simple V d'un réseau triphasé de tension composée U = 400 V."],
+        ['SCI-VAL-TRI-14', 'VAL', "Vérifier en triphasé la cohérence entre U, V et le rapport racine de 3."],
+        ['SCI-COM-TRI-15', 'COM', "Expliquer la conséquence d'un couplage triangle au lieu d'étoile sur un moteur triphasé."],
+        /* --- SCIENCES : moteur asynchrone --- */
+        ['SCI-APP-MAS-16', 'APP', "Relever sur la plaque la vitesse nominale et le nombre de paires de pôles."],
+        ['SCI-ANA-MAS-17', 'ANA', "Relier la vitesse de synchronisme à la fréquence et au nombre de paires de pôles."],
+        ['SCI-REA-MAS-18', 'REA', "Calculer le glissement d'un moteur (ns = 1500 tr/min, n = 1440 tr/min)."],
+        ['SCI-VAL-MAS-19', 'VAL', "Contrôler qu'un glissement de 4 % est plausible en charge nominale."],
+        ['SCI-COM-MAS-20', 'COM', "Expliquer ce que devient l'énergie absorbée non transmise à l'arbre."],
+        /* --- SCIENCES : redressement et filtrage --- */
+        ['SCI-APP-RED-21', 'APP', "Repérer sur le schéma l'entrée alternative, le pont de diodes et la charge."],
+        ['SCI-ANA-RED-22', 'ANA', "Prévoir l'allure de la tension redressée avant de lancer l'acquisition."],
+        ['SCI-REA-RED-23', 'REA', "Acquérir la tension en sortie du pont et afficher u = f(t) sur l'EXAO."],
+        ['SCI-VAL-RED-24', 'VAL', "La courbe présente des alternances négatives : contrôler la conformité du montage."],
+        ['SCI-COM-RED-25', 'COM', "Expliquer le rôle du condensateur de filtrage placé en sortie du pont."],
+        /* --- SCIENCES : securite electrique --- */
+        ['SCI-APP-SEC-26', 'APP', "Relever le calibre du disjoncteur et la sensibilité du différentiel du tableau."],
+        ['SCI-ANA-SEC-27', 'ANA', "Distinguer contact direct et contact indirect dans la situation décrite."],
+        ['SCI-REA-SEC-28', 'REA', "Mesurer la résistance de la prise de terre et la comparer à la valeur limite."],
+        ['SCI-VAL-SEC-29', 'VAL', "Vérifier qu'un différentiel 30 mA protège les personnes dans le cas étudié."],
+        ['SCI-COM-SEC-30', 'COM', "Rédiger la consigne de sécurité à afficher avant l'intervention sur le coffret."],
+        /* --- SCIENCES : energie et rendement --- */
+        ['SCI-APP-ENE-31', 'APP', "Relever la puissance et la durée de fonctionnement nécessaires au calcul d'énergie."],
+        ['SCI-ANA-ENE-32', 'ANA', "Choisir entre kWh et joule pour exprimer l'énergie facturée par le fournisseur."],
+        ['SCI-REA-ENE-33', 'REA', "Calculer l'énergie consommée en kWh par un appareil de 2,2 kW pendant 3 h 30."],
+        ['SCI-VAL-ENE-34', 'VAL', "Contrôler qu'un rendement calculé ne dépasse pas 100 %."],
+        ['SCI-COM-ENE-35', 'COM', "Expliquer à un client l'écart entre puissance absorbée et puissance utile."],
+        /* --- SCIENCES : mesures et EXAO --- */
+        ['SCI-APP-MES-36', 'APP', "Identifier le calibre et le mode (AC/DC) à sélectionner sur le multimètre."],
+        ['SCI-ANA-MES-37', 'ANA', "Choisir entre pince ampèremétrique et multimètre en série pour mesurer l'intensité."],
+        ['SCI-REA-MES-38', 'REA', "Réaliser la mesure de l'intensité en respectant le branchement en série."],
+        ['SCI-VAL-MES-39', 'VAL', "Comparer la mesure obtenue à la valeur calculée et estimer l'écart relatif."],
+        ['SCI-COM-MES-40', 'COM', "Présenter les résultats dans un tableau avec grandeurs, valeurs et unités."],
+
+        /* --- MATHS : calcul numerique, notation scientifique, pourcentages --- */
+        ['MAT-APP-CAL-01', 'APP', "Relever sur la fiche technique la puissance et l'écrire en notation scientifique."],
+        ['MAT-ANA-CAL-02', 'ANA', "Un prix augmente de 8 % puis baisse de 8 % : prévoir s'il revient à sa valeur initiale."],
+        ['MAT-REA-CAL-03', 'REA', "Calculer la section d'un conducteur avec S = ρ·L/R en gérant les puissances de 10."],
+        ['MAT-VAL-CAL-04', 'VAL', "Un calcul donne 4500 A dans une prise domestique : contrôler l'ordre de grandeur."],
+        ['MAT-COM-CAL-05', 'COM', "Rédiger la phrase-réponse d'un coût annuel avec valeur, unité et arrondi justifié."],
+        /* --- MATHS : fonctions et lecture graphique --- */
+        ['MAT-APP-FON-06', 'APP', "Lire sur la courbe la valeur de la tension à l'instant t = 20 ms."],
+        ['MAT-ANA-FON-07', 'ANA', "Choisir entre lecture graphique et résolution algébrique pour le point de fonctionnement."],
+        ['MAT-REA-FON-08', 'REA', "Déterminer graphiquement le point de fonctionnement d'un dipôle et d'un générateur."],
+        ['MAT-VAL-FON-09', 'VAL', "Vérifier que le point de fonctionnement lu appartient bien aux deux courbes."],
+        ['MAT-COM-FON-10', 'COM', "Décrire en une phrase l'évolution de la puissance en fonction de la vitesse."],
+        /* --- MATHS : suites numeriques --- */
+        ['MAT-APP-SUI-11', 'APP', "Repérer dans l'énoncé si l'évolution décrite est arithmétique ou géométrique."],
+        ['MAT-ANA-SUI-12', 'ANA', "Justifier la raison à utiliser pour modéliser une baisse de 3 % par an."],
+        ['MAT-REA-SUI-13', 'REA', "Calculer u10 pour une suite géométrique de premier terme 1200 et de raison 0,97."],
+        ['MAT-VAL-SUI-14', 'VAL', "Contrôler qu'une suite décroissante ne donne pas un terme négatif au rang demandé."],
+        ['MAT-COM-SUI-15', 'COM', "Expliquer ce que représente le rang n dans le contexte de maintenance étudié."],
+        /* --- MATHS : derivee et variations --- */
+        ['MAT-APP-DER-16', 'APP', "Identifier la fonction à dériver et la variable dans l'énoncé technique."],
+        ['MAT-ANA-DER-17', 'ANA', "Relier le signe de la dérivée au sens de variation avant de conclure."],
+        ['MAT-REA-DER-18', 'REA', "Calculer la dérivée de P(x) = −2x² + 40x puis résoudre P'(x) = 0."],
+        ['MAT-VAL-DER-19', 'VAL', "Vérifier à l'aide du tableau de variations que la valeur trouvée est un maximum."],
+        ['MAT-COM-DER-20', 'COM', "Rédiger la conclusion : pour quelle valeur la puissance transmise est-elle maximale ?"],
+        /* --- MATHS : trigonometrie et signaux sinusoidaux --- */
+        ['MAT-APP-TRG-21', 'APP', "Relever amplitude, pulsation et déphasage dans u(t) = 325·sin(314·t)."],
+        ['MAT-ANA-TRG-22', 'ANA', "Relier la pulsation à la fréquence avant tout calcul sur un signal sinusoïdal."],
+        ['MAT-REA-TRG-23', 'REA', "Calculer la fréquence d'une tension u(t) = 325·sin(314·t)."],
+        ['MAT-VAL-TRG-24', 'VAL', "Contrôler que la fréquence obtenue est cohérente avec un réseau 50 Hz."],
+        ['MAT-COM-TRG-25', 'COM', "Expliquer la différence entre valeur maximale et valeur efficace d'une sinusoïde."],
+        /* --- MATHS : statistiques a une variable --- */
+        ['MAT-APP-ST1-26', 'APP', "Relever l'effectif total et les valeurs extrêmes d'une série de mesures."],
+        ['MAT-ANA-ST1-27', 'ANA', "Choisir entre moyenne et médiane pour une série comportant une valeur aberrante."],
+        ['MAT-REA-ST1-28', 'REA', "Calculer moyenne et écart-type d'une série de 20 mesures à la calculatrice."],
+        ['MAT-VAL-ST1-29', 'VAL', "Comparer l'écart-type obtenu à la tolérance annoncée par le constructeur."],
+        ['MAT-COM-ST1-30', 'COM', "Commenter en deux phrases une boîte à moustaches de temps d'intervention."],
+        /* --- MATHS : statistiques a deux variables --- */
+        ['MAT-APP-ST2-31', 'APP', "Identifier les deux variables et leurs unités avant de construire le nuage de points."],
+        ['MAT-ANA-ST2-32', 'ANA', "Décider si un ajustement affine est pertinent au vu de la forme du nuage."],
+        ['MAT-REA-ST2-33', 'REA', "Tracer le nuage de points et obtenir l'équation de la droite d'ajustement au tableur."],
+        ['MAT-VAL-ST2-34', 'VAL', "Vérifier une prévision du modèle en la comparant à une mesure réelle."],
+        ['MAT-COM-ST2-35', 'COM', "Rédiger une prévision de consommation en précisant les limites du modèle."],
+        /* --- MATHS : probabilites --- */
+        ['MAT-APP-PRO-36', 'APP', "Repérer dans l'énoncé les effectifs à placer dans un tableau à double entrée."],
+        ['MAT-ANA-PRO-37', 'ANA', "Choisir entre arbre pondéré et tableau pour organiser l'expérience décrite."],
+        ['MAT-REA-PRO-38', 'REA', "Calculer la probabilité qu'un composant prélevé au hasard soit défectueux."],
+        ['MAT-VAL-PRO-39', 'VAL', "Contrôler que la somme des probabilités des branches d'un même nœud vaut 1."],
+        ['MAT-COM-PRO-40', 'COM', "Interpréter en langage courant une probabilité de 0,04 sur un lot de disjoncteurs."]
+    ];
+
+    function catalogQuestions() {
+        return CATALOG.map(function (row) { return { code: row[0], comp: row[1], text: row[2] }; });
+    }
+
+    function defaultQuestions() { return catalogQuestions(); }
+
+    /* Fusionne le lot dans la banque existante : seuls les codes absents sont
+       ajoutes, les questions et observations deja saisies ne sont pas touchees. */
+    function mergeCatalog() {
+        var before = data.questions.length;
+        var added = 0;
+        catalogQuestions().forEach(function (q) {
+            if (!getQuestion(q.code)) { data.questions.push(q); added++; }
+        });
+        if (added && !saveData()) {
+            data.questions.length = before;   // ecriture refusee : on restaure
+            return { added: 0, skipped: CATALOG.length, failed: true };
+        }
+        return { added: added, skipped: CATALOG.length - added, failed: false };
     }
 
     function loadData() {
@@ -605,12 +731,39 @@
                 function (s) { return s.id; },
                 function (s) { return s.name + (s['class'] ? ' (' + s['class'] + ')' : ''); });
         });
-        ['evalQuestion', 'classQuestion'].forEach(function (id) {
-            fillSelect($(id), questions, '— Choisir —',
-                function (q) { return q.code; },
-                function (q) { return q.code + ' — ' + truncate(q.text, 45); });
-        });
+        ['evalQuestion', 'classQuestion'].forEach(function (id) { fillQuestionSelect($(id), questions); });
         updateEvalHint();
+        updateCatalogState();
+    }
+
+    /* Questions regroupees par competence : avec 80 items, une liste plate
+       devient illisible sur telephone. */
+    function fillQuestionSelect(sel, questions) {
+        if (!sel) { return; }
+        var cur = sel.value;
+        var found = false;
+        var html = '<option value="">— Choisir —</option>';
+        COMPS.forEach(function (c) {
+            var group = questions.filter(function (q) { return q.comp === c.id; });
+            if (!group.length) { return; }
+            html += '<optgroup label="' + esc(c.id + ' — ' + c.full) + '">';
+            group.forEach(function (q) {
+                if (q.code === cur) { found = true; }
+                html += '<option value="' + esc(q.code) + '">' + esc(q.code + ' — ' + truncate(q.text, 45)) + '</option>';
+            });
+            html += '</optgroup>';
+        });
+        sel.innerHTML = html;
+        sel.value = found ? cur : '';
+    }
+
+    function updateCatalogState() {
+        var el = $('bankCatalogState');
+        if (!el) { return; }
+        var present = CATALOG.filter(function (row) { return !!getQuestion(row[0]); }).length;
+        el.textContent = present === CATALOG.length
+            ? '✅ Lot déjà présent en totalité (' + CATALOG.length + ' questions).'
+            : present + ' / ' + CATALOG.length + ' questions du lot présentes dans votre banque.';
     }
 
     function updateEvalHint() {
@@ -642,11 +795,16 @@
 
     function renderBank() {
         var filter = $('bankFilter').value;
-        var qs = data.questions.filter(function (q) { return filter === 'all' || q.comp === filter; });
-        $('bankCount').textContent = qs.length + ' question(s)';
+        var search = fold(($('bankSearch').value || '').trim());
+        var qs = data.questions.filter(function (q) {
+            if (filter !== 'all' && q.comp !== filter) { return false; }
+            if (!search) { return true; }
+            return fold(q.code + ' ' + q.text).indexOf(search) > -1;
+        });
+        $('bankCount').textContent = qs.length + ' / ' + data.questions.length;
         var container = $('bankList');
         if (!qs.length) {
-            container.innerHTML = '<p class="text-muted">Aucune question.</p>';
+            container.innerHTML = '<p class="text-muted">Aucune question ne correspond' + (search ? ' à « ' + esc(search) + ' »' : '') + '.</p>';
             return;
         }
         container.innerHTML = qs.slice()
@@ -991,6 +1149,19 @@
 
         /* --- banque de questions --- */
         $('bankFilter').addEventListener('change', renderBank);
+        $('bankSearch').addEventListener('input', renderBank);
+
+        on($('bankLoadCatalog'), function () {
+            var res = mergeCatalog();
+            if (res.failed) { return; }
+            if (!res.added) {
+                toast('Le lot est déjà entièrement présent.', 'warning');
+                return;
+            }
+            toast('✅ ' + res.added + ' question(s) ajoutée(s)' + (res.skipped ? ', ' + res.skipped + ' déjà présente(s).' : '.'), 'success', 3500);
+            renderAll();
+            buzz(20);
+        });
 
         on($('bankAddBtn'), function () {
             var codeEl = $('bankNewCode'), textEl = $('bankNewText');
@@ -1156,6 +1327,46 @@
         withData([mk(3, 1)]);
         check('autre competence non impactee', computeGauge('s1', 'APP').count === 0);
 
+        /* --- lot Terminale MELEC --- */
+        var cat = catalogQuestions();
+        var codes = {}, dup = 0, parComp = {}, textesOk = true, sci = 0, mat = 0;
+        cat.forEach(function (q) {
+            if (codes[q.code]) { dup++; }
+            codes[q.code] = true;
+            parComp[q.comp] = (parComp[q.comp] || 0) + 1;
+            if (!q.text || q.text.length > 100) { textesOk = false; }
+            if (q.code.indexOf('SCI-') === 0) { sci++; }
+            if (q.code.indexOf('MAT-') === 0) { mat++; }
+        });
+        check('catalogue de 80 questions', cat.length === 80);
+        check('aucun code en double', dup === 0);
+        check('40 sciences / 40 maths', sci === 40 && mat === 40);
+        check('16 questions par competence', COMP_IDS.every(function (c) { return parComp[c] === 16; }));
+        check('competences toutes valides', cat.every(function (q) { return COMP_IDS.indexOf(q.comp) > -1; }));
+        check('enonces presents et courts', textesOk);
+        check('code coherent avec la competence', cat.every(function (q) { return q.code.indexOf('-' + q.comp + '-') > -1; }));
+
+        var rawBackup = null;
+        try { rawBackup = localStorage.getItem(STORE_KEY); } catch (e) { rawBackup = null; }
+        var realSave = saveData;
+        saveData = function () { return true; };          // aucun ecrit pendant le test
+        data = { students: [], questions: [], observations: [] };
+        obsIndex = null;
+        var m1 = mergeCatalog();
+        check('fusion : 80 ajoutees dans une banque vide', m1.added === 80 && m1.skipped === 0);
+        var m2 = mergeCatalog();
+        check('fusion idempotente : 0 ajout au second passage', m2.added === 0 && m2.skipped === 80);
+        check('banque a bien 80 questions apres double fusion', data.questions.length === 80);
+        data = { students: [], questions: [{ code: 'SCI-APP-ALT-01', comp: 'APP', text: 'perso' }], observations: [] };
+        obsIndex = null;
+        var m3 = mergeCatalog();
+        check('fusion respecte une question existante', m3.added === 79 && getQuestion('SCI-APP-ALT-01').text === 'perso');
+        saveData = realSave;
+        try { if (rawBackup !== null) { localStorage.setItem(STORE_KEY, rawBackup); } } catch (e) { /* ignore */ }
+
+        check('recherche insensible aux accents', fold('Sécurité ÉLECTRIQUE') === 'securite electrique');
+        check('recherche : le mot triphase est present dans le lot',
+            cat.filter(function (q) { return fold(q.text).indexOf('triphase') > -1; }).length >= 2);
         check('csvCell echappe les guillemets', csvCell('a"b') === '"a""b"');
         check('generateId unique', generateId() !== generateId());
         check('truncate ajoute les points de suspension', truncate('abcdefgh', 3) === 'abc…');
