@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Merci ! Tes fiches sont prêtes — Kulture Académie</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#16215B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/store.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="wrap header__inner">
+    <a class="logo" href="index.html">
+      <span class="logo__mark" aria-hidden="true">🎓</span>
+      <span class="logo__txt">Kulture Académie<small>Apprendre vite, comprendre mieux</small></span>
+    </a>
+  </div>
+</header>
+
+<div class="page-head">
+  <div class="wrap">
+    <h1>Merci 🎉 Tes fiches sont prêtes.</h1>
+    <p id="recap">Nous préparons tes liens de téléchargement…</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap-narrow">
+    <h2>Tes téléchargements</h2>
+    <ul class="download-list" id="telechargements">
+      <li>Chargement…</li>
+    </ul>
+
+    <div class="card" style="padding:1.4rem;margin-top:1.6rem">
+      <h3 style="margin-top:0">Et maintenant ?</h3>
+      <ol style="padding-left:1.2rem">
+        <li><b>Télécharge tout de suite</b> sur un ordinateur : les liens restent valables 30 jours.</li>
+        <li><b>Imprime les fiches du chapitre en cours</b> et garde-les visibles pendant que tu travailles.</li>
+        <li><b>Mets les PNG dans un album « Révisions »</b> sur ton téléphone : trois minutes dans le bus, c'est une fiche.</li>
+      </ol>
+      <p class="mb-0">Un e-mail contenant ces mêmes liens vient de partir. Rien reçu au bout de 10 minutes ?
+        Vérifie tes spams, puis écris à <a href="mailto:contact@kulture-academie.fr">contact@kulture-academie.fr</a>.</p>
+    </div>
+
+    <div class="center" style="margin-top:2.4rem">
+      <h3>Complète ta collection</h3>
+      <p class="section-lead">Les acheteurs d'un pack niveau prennent souvent le pack complet ensuite —
+        la différence de prix est plus faible qu'ils ne le croient.</p>
+      <a class="btn btn--gold" href="index.html#packs">Voir les autres packs</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__bottom" style="border:0;margin:0">
+      <span>© <span class="annee">2026</span> Kulture Académie</span>
+      <span><a href="mentions.html">Mentions légales</a> · <a href="cgv.html">CGV</a> · <a href="index.html">Accueil</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>document.querySelectorAll('.annee').forEach(e => e.textContent = new Date().getFullYear());</script>
+<script type="module" src="assets/js/page-merci.js"></script>
+</body>
+</html>

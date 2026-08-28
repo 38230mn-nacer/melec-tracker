@@ -1,0 +1,15 @@
+# En-têtes servis par Cloudflare Pages (ignorés par les autres hébergeurs).
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), camera=(), microphone=(), interest-cohort=()
+
+/assets/*
+  Cache-Control: public, max-age=604800, must-revalidate
+
+/data/*
+  Cache-Control: public, max-age=300, must-revalidate
+
+/api/*
+  Cache-Control: no-store

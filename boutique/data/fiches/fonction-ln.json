@@ -1,0 +1,85 @@
+{
+  "id": "fonction-ln",
+  "titre": "Fonction logarithme népérien",
+  "niveau": "terminale",
+  "matiere": "maths",
+  "chapitre": "Fonction ln",
+  "sections": [
+    {
+      "n": 1,
+      "titre": "Définition",
+      "icone": "book",
+      "blocs": [
+        { "type": "texte", "html": "La fonction $\\ln$ est la fonction réciproque de la fonction exponentielle : pour tout $x > 0$ et tout $y \\in \\mathbb{R}$," },
+        { "type": "formule", "tex": "\\ln(x) = y \\iff \\mathrm{e}^{y} = x" },
+        { "type": "liste", "items": ["Ensemble de définition : $]0\\,;+\\infty[$", "Ensemble d'arrivée : $\\mathbb{R}$", "$\\ln(1) = 0$ et $\\ln(\\mathrm{e}) = 1$"] }
+      ]
+    },
+    {
+      "n": 2,
+      "titre": "Propriétés algébriques",
+      "icone": "key",
+      "blocs": [
+        { "type": "texte", "html": "Pour tous réels $a > 0$ et $b > 0$ et tout entier $n$ :" },
+        { "type": "formule", "tex": "\\ln(ab) = \\ln a + \\ln b" },
+        { "type": "formule", "tex": "\\ln\\!\\left(\\dfrac{a}{b}\\right) = \\ln a - \\ln b \\qquad \\ln\\!\\left(\\dfrac{1}{b}\\right) = -\\ln b" },
+        { "type": "formule", "tex": "\\ln(a^n) = n \\ln a \\qquad \\ln\\big(\\sqrt{a}\\big) = \\tfrac{1}{2}\\ln a" },
+        { "type": "encadre", "variante": "cle", "titre": "Le réflexe", "html": "$\\ln$ transforme les <b>produits en sommes</b>. C'est exactement ce qui permet de résoudre des équations où l'inconnue est en exposant." }
+      ]
+    },
+    {
+      "n": 3,
+      "titre": "Courbe et variations",
+      "icone": "chart",
+      "blocs": [
+        { "type": "graphe", "spec": { "type": "ln", "xmin": -0.5, "xmax": 6, "ymin": -3, "ymax": 2.5, "points": [[1, 0], [2.718, 1]] }, "legende": "La courbe passe par $(1\\,;0)$ et $(\\mathrm{e}\\,;1)$, admet l'axe des ordonnées pour asymptote verticale." },
+        { "type": "texte", "html": "$\\ln$ est <b>strictement croissante</b> sur $]0\\,;+\\infty[$. Par conséquent, pour $a>0$ et $b>0$ :" },
+        { "type": "formule", "tex": "\\ln a = \\ln b \\iff a = b \\qquad\\qquad \\ln a < \\ln b \\iff a < b" }
+      ]
+    },
+    {
+      "n": 4,
+      "titre": "Limites",
+      "icone": "target",
+      "blocs": [
+        { "type": "formule", "tex": "\\lim_{x \\to 0^{+}} \\ln x = -\\infty \\qquad \\lim_{x \\to +\\infty} \\ln x = +\\infty" },
+        { "type": "texte", "html": "<b>Croissances comparées</b> — au voisinage de l'infini, $x$ l'emporte toujours sur $\\ln x$ :" },
+        { "type": "formule", "tex": "\\lim_{x \\to +\\infty} \\dfrac{\\ln x}{x} = 0 \\qquad \\lim_{x \\to 0^{+}} x \\ln x = 0" }
+      ]
+    },
+    {
+      "n": 5,
+      "titre": "Dérivée",
+      "icone": "sign",
+      "blocs": [
+        { "type": "formule", "tex": "(\\ln x)' = \\dfrac{1}{x} \\quad \\text{sur } ]0\\,;+\\infty[" },
+        { "type": "texte", "html": "Si $u$ est dérivable et <b>strictement positive</b> sur un intervalle $I$ :" },
+        { "type": "formule", "tex": "\\big(\\ln u\\big)' = \\dfrac{u'}{u}" },
+        { "type": "encadre", "variante": "exemple", "titre": "Exemple", "html": "$f(x) = \\ln(x^2 + 1)$ donne $f'(x) = \\dfrac{2x}{x^2+1}$, du signe de $x$." }
+      ]
+    },
+    {
+      "n": 6,
+      "titre": "Résoudre une équation",
+      "icone": "steps",
+      "blocs": [
+        { "type": "etapes", "items": [
+          { "titre": "Chercher le domaine", "html": "Résoudre $\\ln(2x - 1) = 3$ impose $2x - 1 > 0$, donc $x > \\tfrac{1}{2}$." },
+          { "titre": "Composer par $\\exp$", "html": "$2x - 1 = \\mathrm{e}^{3}$." },
+          { "titre": "Isoler", "html": "$x = \\dfrac{\\mathrm{e}^{3} + 1}{2} \\approx 10{,}54$." },
+          { "titre": "Vérifier l'appartenance au domaine", "html": "$10{,}54 > \\tfrac{1}{2}$ : la solution est acceptée." }
+        ] }
+      ]
+    }
+  ],
+  "astuces": [
+    "Pour une inéquation avec $\\ln$, écris le domaine <b>avant</b> tout calcul : c'est un point du barème.",
+    "$\\ln$ étant strictement croissante, elle conserve le sens des inégalités — pas besoin de changer de sens.",
+    "Pour $a^{x} = b$, passe au $\\ln$ : $x = \\dfrac{\\ln b}{\\ln a}$."
+  ],
+  "erreurs": [
+    "Écrire $\\ln(a + b) = \\ln a + \\ln b$ : <b>faux</b>. La propriété ne concerne que les produits.",
+    "Oublier la condition $u > 0$ avant de dériver $\\ln u$.",
+    "Simplifier $\\dfrac{\\ln a}{\\ln b}$ en $\\ln\\!\\left(\\dfrac{a}{b}\\right)$ : ce sont deux objets différents."
+  ]
+}

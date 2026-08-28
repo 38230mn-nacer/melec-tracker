@@ -1,0 +1,68 @@
+{
+  "id": "tableau-periodique",
+  "titre": "Tableau périodique et électrons de valence",
+  "niveau": "seconde",
+  "matiere": "physique-chimie",
+  "chapitre": "Constitution de la matière",
+  "sections": [
+    {
+      "n": 1,
+      "titre": "Configuration électronique",
+      "icone": "book",
+      "blocs": [
+        { "type": "texte", "html": "Les électrons se répartissent dans des <b>couches</b> ($1$, $2$, $3$…) et des <b>sous-couches</b> ($s$, $p$) que l'on remplit par énergie croissante." },
+        { "type": "formule", "tex": "1s^2 \\quad 2s^2 \\quad 2p^6 \\quad 3s^2 \\quad 3p^6" },
+        { "type": "encadre", "variante": "exemple", "titre": "Exemple", "html": "Le chlore $\\mathrm{Cl}$ ($Z = 17$) : $1s^2\\,2s^2\\,2p^6\\,3s^2\\,3p^5$ — soit <b>7 électrons de valence</b> sur la couche 3." }
+      ]
+    },
+    {
+      "n": 2,
+      "titre": "Lire le tableau",
+      "icone": "chart",
+      "blocs": [
+        { "type": "schema", "nom": "tableau-periodique", "legende": "Les 3 premières périodes : la colonne donne le nombre d'électrons de valence" },
+        { "type": "liste", "items": ["<b>Ligne (période)</b> : numéro de la dernière couche occupée", "<b>Colonne (famille)</b> : même nombre d'électrons de valence, donc mêmes propriétés chimiques"] }
+      ]
+    },
+    {
+      "n": 3,
+      "titre": "Règles du duet et de l'octet",
+      "icone": "key",
+      "blocs": [
+        { "type": "encadre", "variante": "cle", "titre": "Le principe", "html": "Un atome évolue de façon à saturer sa couche externe : <b>2 électrons</b> (duet) pour $Z \\leqslant 4$, <b>8 électrons</b> (octet) au-delà." },
+        { "type": "tableau", "entetes": ["Atome", "Électrons de valence", "Ion formé", "Règle"], "lignes": [["$\\mathrm{Na}$ ($Z=11$)", "1", "$\\mathrm{Na^+}$", "octet"], ["$\\mathrm{Mg}$ ($Z=12$)", "2", "$\\mathrm{Mg^{2+}}$", "octet"], ["$\\mathrm{O}$ ($Z=8$)", "6", "$\\mathrm{O^{2-}}$", "octet"], ["$\\mathrm{Cl}$ ($Z=17$)", "7", "$\\mathrm{Cl^-}$", "octet"], ["$\\mathrm{Li}$ ($Z=3$)", "1", "$\\mathrm{Li^+}$", "duet"]] }
+      ]
+    },
+    {
+      "n": 4,
+      "titre": "Les familles à connaître",
+      "icone": "target",
+      "blocs": [
+        { "type": "tableau", "entetes": ["Famille", "Colonne", "Valence", "Comportement"], "lignes": [["Alcalins", "1re", "1", "perdent 1 électron, très réactifs"], ["Halogènes", "17e", "7", "gagnent 1 électron, très réactifs"], ["Gaz nobles", "18e", "8 (ou 2)", "couche saturée : inertes"]] }
+      ]
+    },
+    {
+      "n": 5,
+      "titre": "Méthode",
+      "icone": "steps",
+      "blocs": [
+        { "type": "etapes", "items": [
+          { "titre": "Lire $Z$", "html": "Le numéro atomique donne le nombre d'électrons de l'atome neutre." },
+          { "titre": "Écrire la configuration", "html": "Remplir dans l'ordre $1s\\,2s\\,2p\\,3s\\,3p$ jusqu'à épuiser les $Z$ électrons." },
+          { "titre": "Compter la valence", "html": "Additionner les électrons de la couche de numéro le plus élevé." },
+          { "titre": "Prévoir l'ion", "html": "Gagner ou perdre le nombre minimal d'électrons pour atteindre 8 (ou 2)." }
+        ] }
+      ]
+    }
+  ],
+  "astuces": [
+    "Le numéro de colonne (1 à 2, puis 13 à 18) donne directement la valence : colonne 16 $\\rightarrow$ 6 électrons de valence.",
+    "Un ion positif = atome qui a <b>perdu</b> des électrons. Le signe suit le nombre d'électrons perdus.",
+    "Un gaz noble ne forme jamais d'ion : sa couche est déjà pleine."
+  ],
+  "erreurs": [
+    "Confondre nombre de <b>protons</b> ($Z$) et nombre de <b>neutrons</b> ($A - Z$).",
+    "Compter tous les électrons au lieu des seuls électrons de valence.",
+    "Écrire $\\mathrm{O^{2+}}$ : l'oxygène gagne 2 électrons, il forme $\\mathrm{O^{2-}}$."
+  ]
+}

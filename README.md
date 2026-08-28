@@ -99,3 +99,15 @@ Constantes modifiables en haut du script : `WINDOW_SIZE`, `CCF_MIN_OBS`, `CCF_MI
 ```
 
 Format identique à la version précédente : les données déjà saisies sont reprises telles quelles.
+
+---
+
+## Boutique Kulture Académie (`boutique/`)
+
+Projet distinct hébergé dans ce dépôt : le site de vente de fiches de révision
+(maths et physique-chimie, Seconde → Terminale) avec paiement Stripe intégré.
+Voir [`boutique/README.md`](boutique/README.md) pour l'utilisation,
+[`boutique/DEPLOIEMENT.md`](boutique/DEPLOIEMENT.md) pour la mise en ligne et
+[`boutique/MARKETING.md`](boutique/MARKETING.md) pour la stratégie commerciale.
+
+Le suivi MELEC (`index.html`, `sw.js`, `manifest.webmanifest`…) n'est pas modifié.

@@ -1,0 +1,80 @@
+{
+  "id": "vecteurs",
+  "titre": "Vecteurs : définition et représentation",
+  "niveau": "seconde",
+  "matiere": "maths",
+  "chapitre": "Géométrie vectorielle",
+  "sections": [
+    {
+      "n": 1,
+      "titre": "Définition",
+      "icone": "book",
+      "blocs": [
+        { "type": "texte", "html": "Un vecteur représente un <b>déplacement</b>. Si $A$ et $B$ sont deux points, le vecteur $\\vec{AB}$ est la translation qui transforme $A$ en $B$." },
+        { "type": "schema", "nom": "vecteur-repere", "legende": "Le vecteur $\\vec{AB}$ dans un repère orthonormé" }
+      ]
+    },
+    {
+      "n": 2,
+      "titre": "Les 3 éléments d'un vecteur",
+      "icone": "key",
+      "blocs": [
+        { "type": "liste", "items": ["<b>Direction</b> : celle de la droite $(AB)$", "<b>Sens</b> : de $A$ vers $B$", "<b>Norme</b> : la longueur $AB$, notée $\\|\\vec{AB}\\|$"] },
+        { "type": "encadre", "variante": "cle", "titre": "Attention au vocabulaire", "html": "Direction et sens ne sont <b>pas</b> synonymes. $\\vec{AB}$ et $\\vec{BA}$ ont la même direction mais des sens opposés." }
+      ]
+    },
+    {
+      "n": 3,
+      "titre": "Égalité et parallélogramme",
+      "icone": "target",
+      "blocs": [
+        { "type": "texte", "html": "Deux vecteurs sont égaux s'ils ont la <b>même direction</b>, le <b>même sens</b> et la <b>même norme</b>." },
+        { "type": "formule", "tex": "\\vec{AB} = \\vec{CD} \\iff ABDC \\text{ est un parallélogramme}" },
+        { "type": "texte", "html": "Attention à l'ordre des sommets : c'est $ABDC$, pas $ABCD$." }
+      ]
+    },
+    {
+      "n": 4,
+      "titre": "Coordonnées dans un repère",
+      "icone": "chart",
+      "blocs": [
+        { "type": "texte", "html": "Dans un repère orthonormé, si $A(x_A\\,;y_A)$ et $B(x_B\\,;y_B)$ :" },
+        { "type": "formule", "tex": "\\vec{AB}\\begin{pmatrix} x_B - x_A \\\\ y_B - y_A \\end{pmatrix} \\qquad \\|\\vec{AB}\\| = \\sqrt{(x_B - x_A)^2 + (y_B - y_A)^2}" },
+        { "type": "encadre", "variante": "exemple", "titre": "Exemple", "html": "$A(1\\,;2)$ et $B(4\\,;6)$ : $\\vec{AB}\\begin{pmatrix} 3 \\\\ 4 \\end{pmatrix}$ et $\\|\\vec{AB}\\| = \\sqrt{9 + 16} = 5$." }
+      ]
+    },
+    {
+      "n": 5,
+      "titre": "Somme et relation de Chasles",
+      "icone": "sign",
+      "blocs": [
+        { "type": "formule", "tex": "\\vec{AB} + \\vec{BC} = \\vec{AC}" },
+        { "type": "texte", "html": "En coordonnées, on additionne composante par composante :" },
+        { "type": "formule", "tex": "\\vec{u}\\begin{pmatrix} x \\\\ y \\end{pmatrix} + \\vec{v}\\begin{pmatrix} x' \\\\ y' \\end{pmatrix} = \\begin{pmatrix} x + x' \\\\ y + y' \\end{pmatrix}" },
+        { "type": "texte", "html": "Deux vecteurs $\\vec{u}$ et $\\vec{v}$ sont <b>colinéaires</b> s'il existe un réel $k$ tel que $\\vec{v} = k\\,\\vec{u}$ : ils portent alors des directions parallèles." }
+      ]
+    },
+    {
+      "n": 6,
+      "titre": "Exemples rapides",
+      "icone": "steps",
+      "blocs": [
+        { "type": "etapes", "items": [
+          { "titre": "Trouver un point image", "html": "$C$ image de $A(1\\,;2)$ par la translation de vecteur $\\vec{u}\\begin{pmatrix} 3 \\\\ -1 \\end{pmatrix}$ : $C(4\\,;1)$." },
+          { "titre": "Montrer un parallélogramme", "html": "Calculer $\\vec{AB}$ et $\\vec{DC}$ ; s'ils sont égaux, $ABCD$ est un parallélogramme." },
+          { "titre": "Tester la colinéarité", "html": "$\\vec{u}\\begin{pmatrix} 2 \\\\ 3 \\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix} 6 \\\\ 9 \\end{pmatrix}$ : $\\vec{v} = 3\\vec{u}$, donc colinéaires." }
+        ] }
+      ]
+    }
+  ],
+  "astuces": [
+    "Toujours partir du point de départ vers le point d'arrivée : $\\vec{AB}$ = arrivée $-$ départ.",
+    "Pour les coordonnées, écris la soustraction en colonne : une erreur de signe en moins.",
+    "Un vecteur n'a pas de position fixe : on peut le dessiner n'importe où dans le plan."
+  ],
+  "erreurs": [
+    "Confondre $\\vec{AB}$ et $\\vec{BA}$ : les coordonnées sont opposées.",
+    "Écrire $\\vec{AB}\\begin{pmatrix} x_A - x_B \\\\ y_A - y_B \\end{pmatrix}$ : c'est l'inverse.",
+    "Oublier la racine carrée dans le calcul de la norme."
+  ]
+}

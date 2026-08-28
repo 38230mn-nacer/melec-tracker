@@ -1,0 +1,463 @@
+{
+  "version": 1,
+  "devise": "EUR",
+  "symbole": "€",
+  "marque": {
+    "nom": "Kulture Académie",
+    "baseline": "Apprendre vite, comprendre mieux.",
+    "promesse": "Des fiches de révision hyper visuelles en maths et physique-chimie, de la Seconde à la Terminale.",
+    "email": "contact@kulture-academie.fr",
+    "instagram": "https://www.instagram.com/kulture_academie/",
+    "tiktok": "https://www.tiktok.com/@kulture_academie",
+    "youtube": "https://www.youtube.com/@kulture_academie",
+    "url": "https://kulture-academie.fr"
+  },
+  "matieres": [
+    {
+      "id": "maths",
+      "nom": "Mathématiques",
+      "court": "Maths",
+      "couleur": "#0E8F8C",
+      "icone": "√x"
+    },
+    {
+      "id": "physique-chimie",
+      "nom": "Physique-Chimie",
+      "court": "Physique-Chimie",
+      "couleur": "#7B3FA0",
+      "icone": "⚛"
+    }
+  ],
+  "niveaux": [
+    {
+      "id": "seconde",
+      "nom": "Seconde",
+      "court": "2nde",
+      "ordre": 1,
+      "couleur": "#F2B705"
+    },
+    {
+      "id": "premiere",
+      "nom": "Première",
+      "court": "1re",
+      "ordre": 2,
+      "couleur": "#E4572E"
+    },
+    {
+      "id": "terminale",
+      "nom": "Terminale",
+      "court": "Tale",
+      "ordre": 3,
+      "couleur": "#2D6CDF"
+    }
+  ],
+  "produits": [
+    {
+      "id": "pack-lycee-complet",
+      "type": "pack",
+      "nom": "Pack Lycée Complet",
+      "sous_titre": "Les 301 fiches, de la Seconde à la Terminale",
+      "accroche": "Une seule collection pour tout le lycée. Tu n'auras plus jamais à chercher une fiche ailleurs.",
+      "prix": 2990,
+      "prix_barre": 4470,
+      "niveaux": [
+        "seconde",
+        "premiere",
+        "terminale"
+      ],
+      "matieres": [
+        "maths",
+        "physique-chimie"
+      ],
+      "nb_fiches": 301,
+      "badge": "LE PLUS COMPLET",
+      "mise_en_avant": true,
+      "meilleure_vente": true,
+      "couleur": "#16215B",
+      "inclus": [
+        "301 fiches de révision maths + physique-chimie",
+        "Les 3 niveaux : Seconde, Première, Terminale",
+        "Format PDF haute définition (impression A4) + PNG pour le téléphone",
+        "Classement par niveau, matière et chapitre",
+        "Mises à jour du programme offertes à vie"
+      ],
+      "arguments": [
+        {
+          "titre": "3 ans de lycée couverts",
+          "texte": "Achetée une fois, la collection sert jusqu'au bac. Le coût réel : moins de 10 € par année scolaire."
+        },
+        {
+          "titre": "Zéro chapitre manquant",
+          "texte": "Toutes les notions du tronc commun scientifique, du repérage en Seconde aux primitives en Terminale."
+        },
+        {
+          "titre": "Le format qui fait réviser",
+          "texte": "Une notion = une page. Couleurs, encadrés, erreurs classiques : la mémoire visuelle fait le reste."
+        }
+      ],
+      "apercus": [
+        "second-degre",
+        "fonction-ln",
+        "vecteurs",
+        "titrage"
+      ],
+      "fichier": {
+        "cle": "packs/pack-lycee-complet.zip",
+        "poids_mo": 186
+      }
+    },
+    {
+      "id": "pack-seconde",
+      "type": "pack",
+      "nom": "Pack Seconde",
+      "sous_titre": "114 fiches maths & physique-chimie",
+      "accroche": "L'année qui décide de ta spécialité. Autant en faire une année propre.",
+      "prix": 1490,
+      "prix_barre": 2490,
+      "niveaux": [
+        "seconde"
+      ],
+      "matieres": [
+        "maths",
+        "physique-chimie"
+      ],
+      "nb_fiches": 114,
+      "couleur": "#F2B705",
+      "inclus": [
+        "114 fiches couvrant tout le programme de Seconde",
+        "Maths : calcul, fonctions, vecteurs, statistiques, probabilités",
+        "Physique-Chimie : mouvements, ondes, atomes, transformations",
+        "PDF A4 + PNG téléphone",
+        "Mises à jour offertes à vie"
+      ],
+      "arguments": [
+        {
+          "titre": "Les bases qui manquent en Première",
+          "texte": "80 % des blocages de Première viennent de trois chapitres de Seconde. Ils sont tous là."
+        },
+        {
+          "titre": "Prêt pour le choix de spé",
+          "texte": "Voir la matière en entier sur 114 pages aide à choisir sa spécialité en connaissance de cause."
+        }
+      ],
+      "apercus": [
+        "vecteurs",
+        "tableau-periodique"
+      ],
+      "fichier": {
+        "cle": "packs/pack-seconde.zip",
+        "poids_mo": 68
+      }
+    },
+    {
+      "id": "pack-premiere",
+      "type": "pack",
+      "nom": "Pack Première",
+      "sous_titre": "107 fiches maths & physique-chimie",
+      "accroche": "L'année du second degré, de la dérivation et des premières épreuves qui comptent.",
+      "prix": 1490,
+      "prix_barre": 2490,
+      "niveaux": [
+        "premiere"
+      ],
+      "matieres": [
+        "maths",
+        "physique-chimie"
+      ],
+      "nb_fiches": 107,
+      "couleur": "#E4572E",
+      "inclus": [
+        "107 fiches couvrant tout le programme de Première spécialité",
+        "Maths : second degré, dérivation, suites, produit scalaire, probabilités",
+        "Physique-Chimie : énergie, ondes, dosages, couleur des objets",
+        "PDF A4 + PNG téléphone",
+        "Mises à jour offertes à vie"
+      ],
+      "arguments": [
+        {
+          "titre": "Le second degré, enfin clair",
+          "texte": "Discriminant, forme canonique, signe du trinôme : trois fiches et le chapitre est réglé."
+        },
+        {
+          "titre": "Contrôle continu",
+          "texte": "Les notes de Première comptent pour le bac. Autant les jouer avec les bonnes fiches."
+        }
+      ],
+      "apercus": [
+        "second-degre",
+        "couleur-objets"
+      ],
+      "fichier": {
+        "cle": "packs/pack-premiere.zip",
+        "poids_mo": 64
+      }
+    },
+    {
+      "id": "pack-terminale",
+      "type": "pack",
+      "nom": "Pack Terminale",
+      "sous_titre": "80 fiches maths & physique-chimie",
+      "accroche": "Objectif bac : les notions les plus rentables, ramassées sur 80 pages.",
+      "prix": 1490,
+      "prix_barre": 2490,
+      "niveaux": [
+        "terminale"
+      ],
+      "matieres": [
+        "maths",
+        "physique-chimie"
+      ],
+      "nb_fiches": 80,
+      "couleur": "#2D6CDF",
+      "inclus": [
+        "80 fiches couvrant le programme de Terminale spécialité",
+        "Maths : limites, ln et exp, primitives, suites, géométrie dans l'espace, lois de probabilité",
+        "Physique-Chimie : mécanique, fluides, radioactivité, titrages, ondes",
+        "PDF A4 + PNG téléphone",
+        "Mises à jour offertes à vie"
+      ],
+      "arguments": [
+        {
+          "titre": "Calibré pour l'épreuve",
+          "texte": "Chaque fiche signale ce qui tombe réellement au bac et les pièges du barème."
+        },
+        {
+          "titre": "Révision de dernière minute",
+          "texte": "Une fiche = une page = 4 minutes. La veille de l'épreuve, c'est le bon format."
+        }
+      ],
+      "apercus": [
+        "fonction-ln",
+        "ecoulement-fluide"
+      ],
+      "fichier": {
+        "cle": "packs/pack-terminale.zip",
+        "poids_mo": 54
+      }
+    },
+    {
+      "id": "pack-maths-lycee",
+      "type": "pack",
+      "nom": "Pack Maths Lycée",
+      "sous_titre": "168 fiches de maths, Seconde → Terminale",
+      "accroche": "Pour celles et ceux qui ne jurent que par les maths.",
+      "prix": 1990,
+      "prix_barre": 3490,
+      "niveaux": [
+        "seconde",
+        "premiere",
+        "terminale"
+      ],
+      "matieres": [
+        "maths"
+      ],
+      "nb_fiches": 168,
+      "couleur": "#0E8F8C",
+      "inclus": [
+        "168 fiches de mathématiques sur les 3 niveaux",
+        "Calcul, fonctions, suites, dérivation, probabilités, géométrie",
+        "Méthodes et erreurs classiques sur chaque fiche",
+        "PDF A4 + PNG téléphone",
+        "Mises à jour offertes à vie"
+      ],
+      "arguments": [
+        {
+          "titre": "Une progression continue",
+          "texte": "Les notions se répondent d'un niveau à l'autre : les fiches sont pensées comme un seul fil."
+        }
+      ],
+      "apercus": [
+        "second-degre",
+        "fonction-ln",
+        "vecteurs"
+      ],
+      "fichier": {
+        "cle": "packs/pack-maths-lycee.zip",
+        "poids_mo": 104
+      }
+    },
+    {
+      "id": "pack-pc-lycee",
+      "type": "pack",
+      "nom": "Pack Physique-Chimie Lycée",
+      "sous_titre": "133 fiches de physique-chimie, Seconde → Terminale",
+      "accroche": "La matière où tout se joue sur la méthode. Elle est sur chaque fiche.",
+      "prix": 1990,
+      "prix_barre": 3490,
+      "niveaux": [
+        "seconde",
+        "premiere",
+        "terminale"
+      ],
+      "matieres": [
+        "physique-chimie"
+      ],
+      "nb_fiches": 133,
+      "couleur": "#7B3FA0",
+      "inclus": [
+        "133 fiches de physique-chimie sur les 3 niveaux",
+        "Mécanique, énergie, ondes, optique, fluides, radioactivité",
+        "Chimie : transformations, titrages, familles organiques, spectres",
+        "PDF A4 + PNG téléphone",
+        "Mises à jour offertes à vie"
+      ],
+      "arguments": [
+        {
+          "titre": "Les schémas font le travail",
+          "texte": "Un montage de titrage compris en un coup d'œil vaut trois relectures de cours."
+        }
+      ],
+      "apercus": [
+        "titrage",
+        "tableau-periodique",
+        "ecoulement-fluide"
+      ],
+      "fichier": {
+        "cle": "packs/pack-pc-lycee.zip",
+        "poids_mo": 88
+      }
+    },
+    {
+      "id": "sprint-bac",
+      "type": "mini-pack",
+      "nom": "Sprint Bac",
+      "sous_titre": "30 fiches Terminale + le plan de révision des 15 derniers jours",
+      "accroche": "Il te reste deux semaines. Voilà exactement quoi réviser, dans quel ordre.",
+      "prix": 990,
+      "prix_barre": 1490,
+      "niveaux": [
+        "terminale"
+      ],
+      "matieres": [
+        "maths",
+        "physique-chimie"
+      ],
+      "nb_fiches": 30,
+      "badge": "OFFRE DÉCOUVERTE",
+      "couleur": "#E4572E",
+      "inclus": [
+        "Les 30 fiches les plus rentables au bac (maths + physique-chimie)",
+        "Le planning jour par jour des 15 derniers jours",
+        "La check-list des formules à connaître par cœur",
+        "PDF A4 + PNG téléphone"
+      ],
+      "arguments": [
+        {
+          "titre": "Trié par rentabilité",
+          "texte": "Classement des chapitres par fréquence d'apparition aux épreuves des dernières sessions."
+        }
+      ],
+      "apercus": [
+        "fonction-ln"
+      ],
+      "fichier": {
+        "cle": "packs/sprint-bac.zip",
+        "poids_mo": 22
+      }
+    }
+  ],
+  "order_bump": {
+    "id": "bonus-methodes",
+    "nom": "60 méthodes types bac corrigées",
+    "sous_titre": "Le geste exact attendu par le correcteur, exercice par exercice",
+    "prix": 690,
+    "prix_barre": 1490,
+    "nb_fiches": 60,
+    "texte": "Ajoute les 60 méthodes types bac corrigées à ta commande pour 6,90 € au lieu de 14,90 €.",
+    "fichier": {
+      "cle": "packs/bonus-methodes.zip",
+      "poids_mo": 31
+    }
+  },
+  "remises": [
+    {
+      "seuil": 2,
+      "pourcentage": 10,
+      "libelle": "-10 % dès 2 packs"
+    },
+    {
+      "seuil": 3,
+      "pourcentage": 15,
+      "libelle": "-15 % dès 3 packs"
+    }
+  ],
+  "_avis_note": "Témoignages de démonstration. Remplace-les par de vrais avis clients avant la mise en ligne : publier des avis inventés est interdit (pratique commerciale trompeuse, art. L121-2 du Code de la consommation).",
+  "avis": [
+    {
+      "prenom": "Lina",
+      "niveau": "Terminale",
+      "note": 5,
+      "texte": "J'ai imprimé les fiches de maths et je les ai mises au mur. Je suis passée de 11 à 15 de moyenne en un trimestre.",
+      "verifie": true
+    },
+    {
+      "prenom": "Mehdi",
+      "niveau": "Première",
+      "note": 5,
+      "texte": "Le second degré, je n'avais jamais compris. La fiche avec le tableau de signes m'a débloqué en 10 minutes.",
+      "verifie": true
+    },
+    {
+      "prenom": "Sarah",
+      "niveau": "Parent d'élève",
+      "note": 5,
+      "texte": "Ma fille refusait d'ouvrir son cours. Les fiches, elle les lit. Rien que ça, ça valait le prix.",
+      "verifie": true
+    },
+    {
+      "prenom": "Tom",
+      "niveau": "Seconde",
+      "note": 5,
+      "texte": "Format téléphone parfait, je révise dans le bus. Les erreurs classiques m'ont évité de perdre des points bêtement.",
+      "verifie": true
+    },
+    {
+      "prenom": "Inès",
+      "niveau": "Terminale",
+      "note": 5,
+      "texte": "Les fiches de physique sont plus claires que mon manuel. Le titrage enfin compris grâce au schéma.",
+      "verifie": true
+    },
+    {
+      "prenom": "Nathan",
+      "niveau": "Première",
+      "note": 4,
+      "texte": "Très bon rapport qualité-prix. J'aurais aimé encore plus d'exercices, mais pour réviser c'est parfait.",
+      "verifie": true
+    }
+  ],
+  "faq": [
+    {
+      "q": "Comment je reçois mes fiches ?",
+      "r": "Immédiatement. Dès le paiement validé, la page de téléchargement s'ouvre et un e-mail avec tes liens arrive dans la foulée. Aucun délai, aucune livraison à attendre."
+    },
+    {
+      "q": "Les fiches sont-elles à jour du programme ?",
+      "r": "Oui, elles suivent les programmes officiels du lycée général (tronc commun et spécialité maths / physique-chimie). Chaque mise à jour du programme donne lieu à une nouvelle version, envoyée gratuitement à tous les acheteurs."
+    },
+    {
+      "q": "Je peux les imprimer ?",
+      "r": "Oui. Chaque fiche est fournie en PDF haute définition au format A4, pensé pour l'impression noir et blanc comme couleur, et en PNG pour la lecture sur téléphone."
+    },
+    {
+      "q": "C'est pour quel niveau exactement ?",
+      "r": "De la Seconde à la Terminale, filière générale. Les fiches de Première et Terminale couvrent la spécialité maths et la spécialité physique-chimie."
+    },
+    {
+      "q": "Et si ça ne me convient pas ?",
+      "r": "Tu es remboursé sur simple demande par e-mail dans les 30 jours, sans justification. Tu gardes les fiches déjà téléchargées."
+    },
+    {
+      "q": "Le paiement est-il sécurisé ?",
+      "r": "Le paiement est traité par Stripe, la plateforme utilisée par des millions de sites. Aucune donnée bancaire ne transite par ce site ni n'y est stockée."
+    },
+    {
+      "q": "Y aura-t-il d'autres matières ?",
+      "r": "Oui. SVT, SES et NSI sont en préparation, ainsi que les niveaux collège. Les acheteurs sont prévenus en avant-première et bénéficient d'un tarif réservé."
+    }
+  ],
+  "garantie": {
+    "titre": "Satisfait ou remboursé 30 jours",
+    "texte": "Si les fiches ne t'aident pas, un e-mail suffit : tu es remboursé intégralement, et tu gardes ce que tu as téléchargé."
+  }
+}

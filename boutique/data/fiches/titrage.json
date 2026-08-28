@@ -1,0 +1,70 @@
+{
+  "id": "titrage",
+  "titre": "Titrage colorimétrique",
+  "niveau": "terminale",
+  "matiere": "physique-chimie",
+  "chapitre": "Suivi d'une transformation",
+  "sections": [
+    {
+      "n": 1,
+      "titre": "Principe",
+      "icone": "book",
+      "blocs": [
+        { "type": "texte", "html": "Titrer, c'est déterminer la quantité de matière d'une espèce (le <b>réactif titré</b>) en la faisant réagir avec une solution de concentration connue (le <b>réactif titrant</b>)." },
+        { "type": "encadre", "variante": "cle", "titre": "La réaction support doit être", "html": "<b>totale</b>, <b>rapide</b> et <b>unique</b>. Sans ces trois conditions, le titrage n'a aucune valeur." }
+      ]
+    },
+    {
+      "n": 2,
+      "titre": "Montage",
+      "icone": "chart",
+      "blocs": [
+        { "type": "schema", "nom": "titrage-montage", "legende": "Burette graduée contenant le titrant, bécher contenant le titré + agitateur magnétique" },
+        { "type": "liste", "items": ["<b>Burette</b> : solution titrante, concentration connue $C_{\\text{tit}}$", "<b>Bécher</b> : volume précis $V_{\\text{A}}$ de solution titrée, prélevé à la pipette jaugée", "<b>Agitateur magnétique</b> : homogénéise le mélange en permanence"] }
+      ]
+    },
+    {
+      "n": 3,
+      "titre": "Équivalence",
+      "icone": "target",
+      "blocs": [
+        { "type": "texte", "html": "À l'équivalence, les réactifs ont été introduits dans les <b>proportions stœchiométriques</b> : ils sont tous deux entièrement consommés." },
+        { "type": "texte", "html": "Pour une réaction d'équation $a\\,A + b\\,B \\rightarrow \\text{produits}$ :" },
+        { "type": "formule", "tex": "\\dfrac{n_A}{a} = \\dfrac{n_B}{b} \\qquad \\text{soit} \\qquad \\dfrac{C_A V_A}{a} = \\dfrac{C_B V_{\\text{éq}}}{b}" },
+        { "type": "encadre", "variante": "cle", "titre": "Cas le plus fréquent", "html": "Si $a = b = 1$, la relation se simplifie en $C_A V_A = C_B V_{\\text{éq}}$." }
+      ]
+    },
+    {
+      "n": 4,
+      "titre": "Repérage de l'équivalence",
+      "icone": "sign",
+      "blocs": [
+        { "type": "texte", "html": "Dans un titrage <b>colorimétrique</b>, l'équivalence est repérée par un changement de couleur <b>persistant</b> : la première goutte en excès colore durablement le mélange." },
+        { "type": "tableau", "entetes": ["Avant l'équivalence", "À l'équivalence", "Après"], "lignes": [["le titrant est limitant, il disparaît", "changement de teinte persistant", "le titrant s'accumule, la couleur s'intensifie"]] }
+      ]
+    },
+    {
+      "n": 5,
+      "titre": "Exploitation chiffrée",
+      "icone": "steps",
+      "blocs": [
+        { "type": "etapes", "items": [
+          { "titre": "Écrire l'équation support", "html": "Exemple : $\\mathrm{I_2} + 2\\,\\mathrm{S_2O_3^{2-}} \\rightarrow 2\\,\\mathrm{I^-} + \\mathrm{S_4O_6^{2-}}$." },
+          { "titre": "Traduire l'équivalence", "html": "$\\dfrac{n(\\mathrm{I_2})}{1} = \\dfrac{n(\\mathrm{S_2O_3^{2-}})}{2}$, donc $n(\\mathrm{I_2}) = \\dfrac{C_{\\text{tit}} V_{\\text{éq}}}{2}$." },
+          { "titre": "Calculer la concentration", "html": "$C(\\mathrm{I_2}) = \\dfrac{C_{\\text{tit}} V_{\\text{éq}}}{2\\,V_A}$." },
+          { "titre": "Vérifier l'ordre de grandeur", "html": "$V_{\\text{éq}}$ doit tomber entre 5 et 20 mL : sinon, la dilution du titré est à revoir." }
+        ] }
+      ]
+    }
+  ],
+  "astuces": [
+    "Lis toujours la burette <b>au bas du ménisque</b>, l'œil à la hauteur de la graduation.",
+    "Fais un titrage rapide pour encadrer $V_{\\text{éq}}$, puis un titrage précis goutte à goutte.",
+    "Le facteur stœchiométrique se lit directement dans l'équation : ne le déduis jamais de mémoire."
+  ],
+  "erreurs": [
+    "Appliquer $C_A V_A = C_B V_B$ alors que les coefficients ne valent pas 1.",
+    "Confondre $V_A$ (volume prélevé de titré) et $V_{\\text{éq}}$ (volume versé à l'équivalence).",
+    "Oublier de convertir les volumes : mL et L dans la même formule donnent un facteur $10^{3}$ d'erreur."
+  ]
+}
