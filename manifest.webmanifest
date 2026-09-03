@@ -1,7 +1,7 @@
 {
-  "name": "MELEC Tracker — évaluation par compétences",
-  "short_name": "MELEC Tracker",
-  "description": "Suivi des compétences APP/ANA/REA/VAL/COM en Bac Pro MELEC. Fonctionne hors connexion.",
+  "name": "DeltaTracker — copilote pédagogique local-first",
+  "short_name": "DeltaTracker",
+  "description": "Suivi pédagogique, compétences, évaluations et progression pour collège, lycée, Bac Pro MELEC et BTS Électrotechnique.",
   "lang": "fr",
   "dir": "ltr",
   "start_url": "./index.html",
@@ -10,10 +10,28 @@
   "orientation": "portrait",
   "background_color": "#f4f6fa",
   "theme_color": "#1a4b8c",
-  "categories": ["education", "productivity"],
+  "categories": [
+    "education",
+    "productivity"
+  ],
   "icons": [
-    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "./icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

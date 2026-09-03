@@ -1,19 +1,19 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="light" />
-    <meta name="description" content="Suivi des competences APP/ANA/REA/VAL/COM en Bac Pro MELEC, 100% hors ligne." />
+    <meta name="description" content="Suivi pédagogique local-first : collège, lycée, Bac Pro MELEC et BTS Électrotechnique." />
     <meta name="theme-color" content="#1a4b8c" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="MELEC Tracker" />
+    <meta name="apple-mobile-web-app-title" content="DeltaTracker" />
     <!-- PWA : ignore si le fichier est ouvert seul (file://), actif si servi en https -->
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png" />
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
-    <title>MELEC Tracker</title>
+    <title>DeltaTracker</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f4f6fa; padding: 16px 12px 80px; color: #1a1a2e; touch-action: manipulation; }
@@ -140,8 +140,8 @@
 <body>
 <div class="container">
     <header class="app-header no-print">
-        <h1>&#128202; MELEC Tracker <small>&Eacute;valuation par comp&eacute;tences</small></h1>
-        <span class="badge" id="studentCount">0 app.</span>
+        <h1>&#128202; DeltaTracker <small>&Eacute;valuation par comp&eacute;tences</small></h1>
+        <span class="badge" id="studentCount">0 élève(s)</span>
     </header>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -189,7 +189,7 @@
     <section class="panel" id="tabEval" role="tabpanel" aria-labelledby="tabBtn-tabEval" tabindex="0">
         <div class="card">
             <div class="card-title">&Eacute;valuation individuelle</div>
-            <div class="form-group"><label for="evalStudent">Apprenti</label><select id="evalStudent"><option value="">&mdash; S&eacute;lectionner &mdash;</option></select></div>
+            <div class="form-group"><label for="evalStudent">Élève / apprenti</label><select id="evalStudent"><option value="">&mdash; S&eacute;lectionner &mdash;</option></select></div>
             <div class="form-group">
                 <label for="evalQuestion">Question (code)</label>
                 <select id="evalQuestion"><option value="">&mdash; Choisir &mdash;</option></select>
@@ -218,10 +218,10 @@
             <button type="button" class="btn btn-success mt-12" id="classSubmitAll">&#128190; Enregistrer tous les scores</button>
         </div>
         <div class="card">
-            <div class="card-title">Apprentis <span class="text-muted" style="text-transform:none;" id="studentAdminCount">0</span></div>
+            <div class="card-title">Élèves / apprentis <span class="text-muted" style="text-transform:none;" id="studentAdminCount">0</span></div>
             <div class="inline-form mb-8">
-                <div class="form-group"><label for="newStudentName">Nom</label><input type="text" id="newStudentName" placeholder="Pr&eacute;nom Nom" autocomplete="off" /></div>
-                <div class="form-group narrow"><label for="newStudentClass">Classe</label><input type="text" id="newStudentClass" placeholder="TMELEC" autocomplete="off" /></div>
+                <div class="form-group"><label for="newStudentName">Nom</label><input type="text" id="newStudentName" placeholder="Prénom Nom" autocomplete="off" /></div>
+                <div class="form-group narrow"><label for="newStudentClass">Classe</label><input type="text" id="newStudentClass" placeholder="Ex : 3e, 1re Spé, TMELEC" autocomplete="off" /></div>
             </div>
             <button type="button" class="btn btn-primary btn-sm" id="studentAddBtn">&#10133; Ajouter</button>
             <div id="studentAdminList" class="mt-12"></div>
@@ -253,7 +253,7 @@
     <section class="panel" id="tabProfile" role="tabpanel" aria-labelledby="tabBtn-tabProfile" tabindex="0">
         <div class="card no-print">
             <div class="card-title">Profil</div>
-            <div class="form-group"><label for="profileStudent">Apprenti</label><select id="profileStudent"><option value="">&mdash; S&eacute;lectionner &mdash;</option></select></div>
+            <div class="form-group"><label for="profileStudent">Élève / apprenti</label><select id="profileStudent"><option value="">&mdash; S&eacute;lectionner &mdash;</option></select></div>
             <button type="button" class="btn btn-primary" id="profileLoad">Charger le profil</button>
         </div>
         <div id="profileContent" hidden>
@@ -279,7 +279,7 @@
     'use strict';
 
     /* ============================================================
-       MELEC Tracker - suivi de competences (100% local, hors ligne)
+       DeltaTracker - suivi de competences (100% local, hors ligne)
        Donnees : localStorage, cle "melec_full_data" (compatible v1).
        Auto-test : ouvrir index.html?selftest=1
        ============================================================ */
@@ -406,7 +406,11 @@
             out.students.push({
                 id: id,
                 name: String(s.name || '').trim() || 'Sans nom',
-                'class': String(s['class'] || '').trim()
+                'class': String(s['class'] || '').trim(),
+                track: String(s.track || '').trim(),
+                level: String(s.level || '').trim(),
+                subjects: Array.isArray(s.subjects) ? s.subjects.map(function(x){ return String(x || '').trim(); }).filter(Boolean) : [],
+                safeId: String(s.safeId || '').trim()
             });
         });
 
@@ -659,7 +663,7 @@
         renderBank();
         renderClassGrid();
         if (!$('profileContent').hidden) { renderProfile($('profileStudent').value); }
-        $('studentCount').textContent = data.students.length + ' app.';
+        $('studentCount').textContent = data.students.length + ' élève(s)';
     }
 
     function classAverages() {
@@ -776,7 +780,7 @@
 
     function renderStudentAdmin() {
         var box = $('studentAdminList');
-        $('studentAdminCount').textContent = data.students.length + ' apprenti(s)';
+        $('studentAdminCount').textContent = data.students.length + ' élève(s)';
         if (!data.students.length) {
             box.innerHTML = '<p class="text-muted">Aucun apprenti. Ajoutez-les ci-dessus pour activer les jauges.</p>';
             return;
@@ -1377,7 +1381,7 @@
         var failed = results.filter(function (r) { return !r.ok; });
         var box = document.createElement('div');
         box.id = 'selfTest';
-        box.innerHTML = '<strong>Auto-test MELEC Tracker : ' + (results.length - failed.length) + '/' + results.length +
+        box.innerHTML = '<strong>Auto-test DeltaTracker : ' + (results.length - failed.length) + '/' + results.length +
             (failed.length ? ' <span class="ko">ECHECS</span>' : ' <span class="ok">OK</span>') + '</strong><br />' +
             results.map(function (r) {
                 return '<span class="' + (r.ok ? 'ok' : 'ko') + '">' + (r.ok ? '✓' : '✗') + ' ' + esc(r.name) + '</span>';
@@ -1407,7 +1411,7 @@
         }
 
         if (/[?&]selftest=1/.test(location.search)) { selfTest(); }
-        else { toast('📊 MELEC Tracker pret', 'info', 1200); }
+        else { toast('📊 DeltaTracker pret', 'info', 1200); }
     }
 
     if (document.readyState === 'loading') {
@@ -1439,5 +1443,33 @@
     };
 })();
 </script>
+<script src="./melec-v41-engine.js"></script>
+<script src="./melec-v41-addon.js"></script>
+<script src="./melec-v42-quality.js"></script>
+
+<script src="./melec-v43-cfai-assets.js"></script>
+<script src="./melec-v44-word-cfai.js"></script>
+<script src="./melec-v44-correction-express.js"></script>
+<script src="./melec-v45-latex-pipeline.js"></script>
+<script src="./melec-v46-cover-cfai.js"></script>
+<script src="./melec-v47-math-beautifier-oneclick.js"></script>
+
+
+
+<script src="./delta-v1.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

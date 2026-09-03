@@ -1,0 +1,140 @@
+{
+  "version": "2026-09-02",
+  "provenance": {
+    "maths": "Synthèse Drive Programmes_Mathematiques_College_Lycee.md — référentiels EN, à conserver avec ses dates d'application.",
+    "sciences_college_lycee": "Source officielle détaillée non identifiée de façon suffisamment fiable dans le Drive pendant cette passe : couverture laissée vide plutôt que complétée par supposition.",
+    "melec": "Thèmes de la banque MELEC actuellement intégrée à DeltaTracker (codes MAT/SCI), utilisés pour le pilotage de couverture. Ne remplace pas le texte officiel du BO."
+  },
+  "tracks": {
+    "college": {
+      "label": "Collège",
+      "levels": {
+        "6e": {
+          "maths": [
+            "Nombres, calculs et résolution de problèmes",
+            "Grandeurs et mesures",
+            "Espace et géométrie",
+            "Organisation et gestion de données et probabilités",
+            "Proportionnalité",
+            "Pensée informatique"
+          ]
+        },
+        "5e": {
+          "maths": [
+            "Nombres relatifs",
+            "Fractions",
+            "Puissances carré et cube",
+            "Calcul littéral et équations simples",
+            "Repérage et géométrie",
+            "Statistiques et probabilités",
+            "Proportionnalité et fonctions",
+            "Pensée informatique"
+          ]
+        },
+        "4e": {
+          "maths": [
+            "Nombres relatifs : multiplication et division",
+            "Fractions : opérations complètes",
+            "Puissances",
+            "Racine carrée",
+            "Équations du premier degré",
+            "Pythagore",
+            "Statistiques",
+            "Probabilités",
+            "Proportionnalité",
+            "Pensée informatique"
+          ]
+        },
+        "3e": {
+          "maths": [
+            "Fractions irréductibles",
+            "Puissances et notation scientifique",
+            "Équations produit nul",
+            "Inéquations",
+            "Identités remarquables",
+            "Thalès",
+            "Trigonométrie",
+            "Vecteurs",
+            "Statistiques et probabilités",
+            "Fonctions linéaires et affines",
+            "Fonction carré",
+            "Pensée informatique"
+          ]
+        }
+      }
+    },
+    "lycee": {
+      "label": "Lycée",
+      "levels": {
+        "2de": {
+          "maths": [
+            "Analyse : fonctions et variations",
+            "Géométrie : vecteurs et repérage",
+            "Statistiques et probabilités",
+            "Algorithmique et programmation Python",
+            "Logique et raisonnement"
+          ]
+        },
+        "1re": {
+          "maths": [
+            "Algèbre et analyse : suites, fonctions, dérivation",
+            "Géométrie",
+            "Statistiques et probabilités",
+            "Algorithmique et programmation"
+          ]
+        },
+        "Tle": {
+          "maths": [
+            "Analyse : limites, continuité, dérivation, intégration",
+            "Suites numériques",
+            "Géométrie dans l'espace",
+            "Probabilités conditionnelles",
+            "Algorithmique avancée"
+          ]
+        }
+      }
+    },
+    "melec": {
+      "label": "Bac Pro MELEC",
+      "levels": {
+        "1MELEC": {
+          "maths": [],
+          "sciences": []
+        },
+        "TMELEC": {
+          "maths": [
+            "Calcul numérique et notation scientifique",
+            "Fonctions et lecture graphique",
+            "Suites numériques",
+            "Dérivation et variations",
+            "Trigonométrie et signaux",
+            "Statistiques à une variable",
+            "Statistiques à deux variables et ajustement",
+            "Probabilités"
+          ],
+          "sciences": [
+            "Tension alternative et signaux",
+            "Puissance électrique et facteur de puissance",
+            "Réseaux triphasés et couplages",
+            "Machine asynchrone",
+            "Diodes, redressement et filtrage",
+            "Sécurité électrique et protections",
+            "Énergie électrique",
+            "Mesures électriques et multimètre"
+          ]
+        }
+      }
+    },
+    "bts": {
+      "label": "BTS Électrotechnique",
+      "levels": {
+        "BTS1": {
+          "maths": []
+        },
+        "BTS2": {
+          "maths": []
+        }
+      }
+    }
+  }
+}

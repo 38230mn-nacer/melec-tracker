@@ -1,4 +1,31 @@
-# artefacts locaux
-*.zip
+# DeltaTracker — données locales / sensibles
+data/
+rosters/
+_private/
+*.local.db
+.env
+.env.*
+*.backup
+*.backup_*
+*.disabled
+
+# Exports et sauvegardes contenant potentiellement des données nominatives
+DeltaTracker_BACKUP_COMPLET_*.json
+DeltaTracker_BACKUP_*.json
+DeltaTracker_SAFE_*.json
+*.csv
+*.xlsx
+*.xls
+
+# Documents générés localement
+Eval_*_Sujet_*.docx
+Eval_*_Corrige_*.docx
+*_FINAL_LATEX_*.docx
+*_V1_LATEX_*.docx
+
+# Fichiers temporaires
+~$*
+*.tmp
+*.temp
 Thumbs.db
 .DS_Store
