@@ -136,6 +136,13 @@
         }
         @media print { .no-print { display: none !important; } body { background: #fff; padding: 10px; } .card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; } }
     </style>
+
+<style>
+@media (max-width: 620px) {
+  #studentFilters { grid-template-columns: 1fr !important; }
+}
+</style>
+
 </head>
 <body>
 <div class="container">
@@ -224,6 +231,24 @@
                 <div class="form-group narrow"><label for="newStudentClass">Classe</label><input type="text" id="newStudentClass" placeholder="Ex : 3e, 1re Spé, TMELEC" autocomplete="off" /></div>
             </div>
             <button type="button" class="btn btn-primary btn-sm" id="studentAddBtn">&#10133; Ajouter</button>
+            <div id="studentFilters" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:14px;margin-bottom:8px;">
+                <div class="form-group" style="min-width:0;">
+                    <label for="studentClassFilter">Classe</label>
+                    <select id="studentClassFilter" style="width:100%;min-width:0;">
+                        <option value="all">Toutes les classes</option>
+                    </select>
+                </div>
+                <div class="form-group" style="min-width:0;">
+                    <label for="studentStudentFilter">Élève / apprenti</label>
+                    <select id="studentStudentFilter" style="width:100%;min-width:0;">
+                        <option value="all">Tous les élèves</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;flex-wrap:wrap;">
+                <div id="studentFilterState" class="text-muted" style="font-size:0.82rem;"></div>
+                <button type="button" id="studentFilterReset" class="btn btn-sm" style="padding:7px 10px;">Réinitialiser</button>
+            </div>
             <div id="studentAdminList" class="mt-12"></div>
         </div>
     </section>
@@ -780,15 +805,73 @@
 
     function renderStudentAdmin() {
         var box = $('studentAdminList');
-        $('studentAdminCount').textContent = data.students.length + ' élève(s)';
+        var classEl = $('studentClassFilter');
+        var studentEl = $('studentStudentFilter');
+        var stateEl = $('studentFilterState');
+
         if (!data.students.length) {
+            $('studentAdminCount').textContent = '0 élève(s)';
+            if (classEl) { classEl.innerHTML = '<option value="all">Toutes les classes</option>'; }
+            if (studentEl) { studentEl.innerHTML = '<option value="all">Tous les élèves</option>'; }
+            if (stateEl) { stateEl.textContent = ''; }
             box.innerHTML = '<p class="text-muted">Aucun apprenti. Ajoutez-les ci-dessus pour activer les jauges.</p>';
             return;
         }
+
+        var classes = data.students
+            .map(function (s) { return (s['class'] || '').trim(); })
+            .filter(function (v, i, a) { return v && a.indexOf(v) === i; })
+            .sort(function (a, b) { return a.localeCompare(b, 'fr'); });
+
+        var selectedClass = classEl ? classEl.value : 'all';
+        var selectedStudent = studentEl ? studentEl.value : 'all';
+
+        if (classEl) {
+            classEl.innerHTML = '<option value="all">Toutes les classes</option>' +
+                classes.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
+            classEl.value = classes.indexOf(selectedClass) > -1 ? selectedClass : 'all';
+            selectedClass = classEl.value;
+        }
+
+        var eligibleStudents = data.students.filter(function (s) {
+            return selectedClass === 'all' || (s['class'] || '') === selectedClass;
+        }).slice().sort(function (a, b) {
+            return a.name.localeCompare(b.name, 'fr');
+        });
+
+        if (studentEl) {
+            studentEl.innerHTML = '<option value="all">Tous les élèves</option>' +
+                eligibleStudents.map(function (s) {
+                    return '<option value="' + esc(s.id) + '">' + esc(s.name) + '</option>';
+                }).join('');
+            if (eligibleStudents.some(function (s) { return s.id === selectedStudent; })) {
+                studentEl.value = selectedStudent;
+            } else {
+                studentEl.value = 'all';
+                selectedStudent = 'all';
+            }
+        }
+
+        var filtered = eligibleStudents.filter(function (s) {
+            return selectedStudent === 'all' || s.id === selectedStudent;
+        });
+
+        $('studentAdminCount').textContent = data.students.length + ' élève(s)';
+        if (stateEl) {
+            var active = selectedClass !== 'all' || selectedStudent !== 'all';
+            stateEl.textContent = active
+                ? filtered.length + ' affiché(s) sur ' + data.students.length
+                : 'Tous les élèves sont affichés.';
+        }
+
+        if (!filtered.length) {
+            box.innerHTML = '<p class="text-muted">Aucun élève ne correspond aux filtres.</p>';
+            return;
+        }
+
         var counts = {};
         data.observations.forEach(function (o) { counts[o.studentId] = (counts[o.studentId] || 0) + 1; });
-        box.innerHTML = data.students.slice()
-            .sort(function (a, b) { return a.name.localeCompare(b.name, 'fr'); })
+        box.innerHTML = filtered
             .map(function (s) {
                 return '<div class="list-row"><span class="name">' + esc(s.name) +
                        '<small>' + esc(s['class'] || 'sans classe') + ' — ' + (counts[s.id] || 0) + ' obs.</small></span>' +
@@ -1133,6 +1216,28 @@
             nameEl.focus();
             buzz(15);
         });
+
+        var studentClassFilterEl = $('studentClassFilter');
+        var studentStudentFilterEl = $('studentStudentFilter');
+        var studentFilterResetEl = $('studentFilterReset');
+
+        if (studentClassFilterEl) {
+            studentClassFilterEl.addEventListener('change', function () {
+                if (studentStudentFilterEl) { studentStudentFilterEl.value = 'all'; }
+                renderStudentAdmin();
+            });
+        }
+        if (studentStudentFilterEl) {
+            studentStudentFilterEl.addEventListener('change', renderStudentAdmin);
+        }
+        if (studentFilterResetEl) {
+            studentFilterResetEl.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (studentClassFilterEl) { studentClassFilterEl.value = 'all'; }
+                if (studentStudentFilterEl) { studentStudentFilterEl.value = 'all'; }
+                renderStudentAdmin();
+            });
+        }
 
         $('studentAdminList').addEventListener('click', function (e) {
             var btn = e.target.closest('[data-del-student]');

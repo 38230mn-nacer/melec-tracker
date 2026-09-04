@@ -1,5 +1,5 @@
-/* DeltaTracker 1.0.0 Consolidated RC */
-const CACHE_VERSION='deltatracker-1.0.0-consolidated-rc-1';
+/* DeltaTracker 1.0.1 — Student filters */
+const CACHE_VERSION='deltatracker-1.0.1c-student-filter-events-3';
 const ASSETS=["./", "./index.html", "./manifest.webmanifest", "./curriculum.json", "./delta-v1.js", "./apple-touch-icon.png", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./melec-v41-engine.js", "./melec-v41-addon.js", "./melec-v42-quality.js", "./melec-v43-cfai-assets.js", "./melec-v44-correction-express.js", "./melec-v44-word-cfai.js", "./melec-v45-latex-pipeline.js", "./melec-v46-cover-cfai.js", "./melec-v47-math-beautifier-oneclick.js"];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE_VERSION).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>k===CACHE_VERSION?null:caches.delete(k)))).then(()=>self.clients.claim())));
