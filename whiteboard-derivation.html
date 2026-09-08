@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maths au Cube — Dérivation en mouvement</title>
+<style>
+:root{
+  --bg:#0b1220; --panel:#101a30; --canvasbg:#0d1526; --ink:#eef2ff; --muted:#93a0c2;
+  --grid:#1e2c4c; --axis:#3a4a72; --line:#25335a;
+  --green:#22c55e; --blue:#3b82f6; --orange:#fb923c; --red:#f87171;
+  --btn:#16213d; --btnActive:#1a4b8c;
+}
+html[data-theme="light"]{
+  --bg:#f2f5fb; --panel:#ffffff; --canvasbg:#ffffff; --ink:#101425; --muted:#5a6584;
+  --grid:#e3e9f6; --axis:#a9b6d6; --line:#c7d1ea;
+  --btn:#e9edf7; --btnActive:#1a4b8c;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,Arial,sans-serif;overflow:hidden;}
+button{font-family:inherit;cursor:pointer;}
+.topbar{height:60px;display:flex;align-items:center;gap:14px;padding:0 14px;background:var(--panel);border-bottom:1px solid var(--line);}
+.brand{font-weight:800;font-size:1.05rem;white-space:nowrap;}
+.modtabs{display:flex;gap:8px;flex:1;justify-content:center;flex-wrap:wrap;}
+.modtabs button{background:var(--btn);color:var(--ink);border:2px solid transparent;border-radius:12px;padding:10px 18px;font-size:0.95rem;font-weight:700;}
+.modtabs button.active{background:var(--btnActive);color:#fff;}
+.topactions{display:flex;gap:8px;}
+.topactions button{background:var(--btn);color:var(--ink);border:none;border-radius:10px;width:44px;height:44px;font-size:1.15rem;}
+#stage{position:relative;height:calc(100vh - 60px);}
+.module{position:absolute;inset:0;display:none;}
+.module.active{display:flex;}
+.module canvas{flex:1;width:100%;height:100%;display:block;background:var(--canvasbg);touch-action:none;}
+.side{width:340px;flex:0 0 340px;background:var(--panel);border-left:1px solid var(--line);padding:16px;overflow-y:auto;}
+.side h2{font-size:1.02rem;margin:0 0 4px;}
+.hint{color:var(--muted);font-size:0.82rem;margin:0 0 14px;line-height:1.4;}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:0.78rem;color:var(--muted);margin-bottom:14px;}
+.legend span{display:inline-flex;align-items:center;gap:5px;}
+.legend i{width:12px;height:12px;border-radius:50%;display:inline-block;}
+.grp{margin-bottom:16px;}
+.grp label{display:block;font-size:0.78rem;color:var(--muted);margin-bottom:6px;font-weight:600;}
+.presetRow{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.presetRow button{flex:1 1 auto;background:var(--btn);border:2px solid transparent;border-radius:10px;padding:8px 10px;font-size:0.78rem;color:var(--ink);text-align:left;}
+.presetRow button.active{border-color:var(--blue);background:var(--btnActive);color:#fff;}
+input[type=range]{width:100%;}
+.rowBtns{display:flex;gap:8px;margin-bottom:14px;}
+.rowBtns button{flex:1;background:var(--btn);border:none;border-radius:10px;padding:12px 8px;font-weight:700;font-size:0.85rem;color:var(--ink);}
+.rowBtns button.primary{background:var(--btnActive);color:#fff;}
+.stats{display:flex;flex-direction:column;gap:8px;}
+.stat{display:flex;justify-content:space-between;align-items:baseline;background:var(--btn);border-radius:10px;padding:8px 12px;}
+.stat .k{font-size:0.78rem;color:var(--muted);}
+.stat .v{font-size:1.05rem;font-weight:700;font-variant-numeric:tabular-nums;}
+.stat.reveal .v{color:var(--blue);}
+.subtabs{display:flex;gap:6px;margin-bottom:14px;}
+.subtabs button{flex:1;background:var(--btn);border:none;border-radius:10px;padding:9px 6px;font-size:0.8rem;font-weight:700;color:var(--ink);}
+.subtabs button.active{background:var(--btnActive);color:#fff;}
+.reflex{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);padding:8px 16px;display:flex;gap:18px;flex-wrap:wrap;font-size:0.78rem;color:var(--muted);z-index:5;}
+.reflex.hidden{display:none;}
+.reflex b{color:var(--ink);}
+@media (max-width:900px){
+  .side{width:270px;flex:0 0 270px;}
+  .brand span{display:none;}
+}
+@media (max-width:680px){
+  .module.active{flex-direction:column;}
+  .side{width:100%;flex:0 0 auto;max-height:42vh;}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">🟢🔵🟠 <span>Maths au Cube — Dérivation en mouvement</span></div>
+  <nav class="modtabs" id="modTabs">
+    <button data-mod="A" class="active" type="button">① Dérivée = pente</button>
+    <button data-mod="B" type="button">② Mécanique</button>
+    <button data-mod="C" type="button">③ Électrotechnique</button>
+  </nav>
+  <div class="topactions">
+    <button id="btnHelp" type="button" title="Repère pédagogique (H)">❔</button>
+    <button id="btnTheme" type="button" title="Thème clair / sombre (T)">🌓</button>
+    <button id="btnFull" type="button" title="Plein écran (F)">⛶</button>
+  </div>
+</header>
+
+<main id="stage">
+
+  <section class="module active" id="modA">
+    <canvas id="cvA"></canvas>
+    <div class="side">
+      <h2>Le nombre dérivé, c'est une pente</h2>
+      <p class="hint">Glissez le point A sur la courbe. Réduisez h : la sécante (AB) devient la tangente en A.</p>
+      <div class="legend">
+        <span><i style="background:var(--green)"></i>courbe f</span>
+        <span><i style="background:var(--orange)"></i>sécante (taux moyen)</span>
+        <span><i style="background:var(--blue)"></i>tangente (f')</span>
+      </div>
+      <div class="grp">
+        <label>Fonction étudiée</label>
+        <div class="presetRow" id="presetA"></div>
+      </div>
+      <div class="grp">
+        <label>Position de A : x₀ = <span id="lblX0"></span></label>
+        <input type="range" id="rngX0" min="-4" max="4" step="0.02">
+      </div>
+      <div class="grp">
+        <label>Écart h = <span id="lblH"></span></label>
+        <input type="range" id="rngH" min="0.02" max="2.2" step="0.01">
+      </div>
+      <div class="rowBtns">
+        <button class="primary" id="btnAnimH" type="button">▶ Animer h → 0</button>
+        <button id="btnResetA" type="button">↺ Réinitialiser</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><span class="k">f(x₀)</span><span class="v" id="stAf0">—</span></div>
+        <div class="stat"><span class="k">f(x₀+h)</span><span class="v" id="stAf1">—</span></div>
+        <div class="stat"><span class="k">Taux moyen = [f(x₀+h)−f(x₀)] / h</span><span class="v" id="stATaux">—</span></div>
+        <div class="stat reveal" id="stATangRow" style="display:none;"><span class="k">f'(x₀) — nombre dérivé</span><span class="v" id="stADeriv">—</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="module" id="modB">
+    <canvas id="cvB"></canvas>
+    <div class="side">
+      <h2>Position → vitesse → accélération</h2>
+      <p class="hint">v(t) = x'(t) est la pente instantanée de x(t). a(t) = v'(t) est la pente instantanée de v(t).</p>
+      <div class="legend">
+        <span><i style="background:var(--green)"></i>x(t) position</span>
+        <span><i style="background:var(--blue)"></i>v(t) vitesse</span>
+        <span><i style="background:var(--orange)"></i>a(t) accélération</span>
+      </div>
+      <div class="grp">
+        <label>Mouvement</label>
+        <div class="presetRow" id="presetB"></div>
+      </div>
+      <div class="rowBtns">
+        <button class="primary" id="btnPlayB" type="button">▶ Lecture</button>
+        <button id="btnResetB" type="button">↺ t = 0</button>
+      </div>
+      <div class="grp">
+        <label>Temps t = <span id="lblTB"></span> s</label>
+        <input type="range" id="rngTB" min="0" max="10" step="0.01">
+      </div>
+      <div class="grp">
+        <label>Vitesse d'animation</label>
+        <div class="presetRow" id="speedB">
+          <button data-sp="0.5" type="button">×0.5</button>
+          <button data-sp="1" class="active" type="button">×1</button>
+          <button data-sp="2" type="button">×2</button>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><span class="k">x(t)</span><span class="v" id="stBx">—</span></div>
+        <div class="stat"><span class="k">v(t) = x'(t)</span><span class="v" id="stBv">—</span></div>
+        <div class="stat"><span class="k">a(t) = v'(t)</span><span class="v" id="stBa">—</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="module" id="modC">
+    <canvas id="cvC"></canvas>
+    <div class="side">
+      <h2>La dérivée dans un système électrique</h2>
+      <div class="subtabs" id="subC">
+        <button data-sub="rc" class="active" type="button">Charge / décharge RC</button>
+        <button data-sub="ind" type="button">Alternateur (induction)</button>
+      </div>
+      <p class="hint" id="hintC"></p>
+      <div class="legend" id="legendC"></div>
+      <div class="grp" id="rcModeGrp">
+        <label>Régime</label>
+        <div class="presetRow" id="rcMode">
+          <button data-rc="charge" class="active" type="button">Charge</button>
+          <button data-rc="decharge" type="button">Décharge</button>
+        </div>
+      </div>
+      <div class="rowBtns">
+        <button class="primary" id="btnPlayC" type="button">▶ Lecture</button>
+        <button id="btnResetC" type="button">↺ t = 0</button>
+      </div>
+      <div class="grp">
+        <label>Temps t = <span id="lblTC"></span> s</label>
+        <input type="range" id="rngTC" min="0" max="10" step="0.01">
+      </div>
+      <div class="stats" id="statsC"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="reflex" id="reflexBar">
+  <span><b>JE VOIS</b> une grandeur qui varie</span>
+  <span><b>JE PENSE</b> à sa vitesse de variation instantanée</span>
+  <span><b>JE FAIS</b> la dérivée</span>
+  <span><b>JE VÉRIFIE</b> le sens physique du résultat</span>
+</footer>
+
+<script>
+(function(){
+"use strict";
+
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function fmt(v,d){
+  if(d===undefined) d=2;
+  if(!isFinite(v)) return "—";
+  var s=v.toFixed(d);
+  if(s==="-0.00"||s==="-0.0"||s==="-0") s=s.slice(1);
+  return s.replace("-","−");
+}
+function cssVar(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
+
+/* ---------- canvas sizing ---------- */
+function attachCanvas(canvas){
+  var st={canvas:canvas, ctx:canvas.getContext("2d"), w:0, h:0};
+  function sync(){
+    var dpr=window.devicePixelRatio||1;
+    var rect=canvas.getBoundingClientRect();
+    var w=Math.max(1,Math.round(rect.width));
+    var h=Math.max(1,Math.round(rect.height));
+    canvas.width=Math.round(w*dpr);
+    canvas.height=Math.round(h*dpr);
+    st.ctx.setTransform(dpr,0,0,dpr,0,0);
+    st.w=w; st.h=h;
+  }
+  new ResizeObserver(sync).observe(canvas);
+  sync();
+  return st;
+}
+
+/* ---------- chart helpers ---------- */
+function makeView(rect,domain){
+  var sx=rect.w/(domain.xmax-domain.xmin);
+  var sy=rect.h/(domain.ymax-domain.ymin);
+  return {
+    px:function(x){ return rect.x+(x-domain.xmin)*sx; },
+    py:function(y){ return rect.y+rect.h-(y-domain.ymin)*sy; },
+    toX:function(px){ return domain.xmin+(px-rect.x)/sx; }
+  };
+}
+function drawAxes(ctx,rect,domain,view,xstep,ystep,xlabel,ylabel){
+  ctx.save();
+  ctx.strokeStyle=cssVar("--grid"); ctx.lineWidth=1; ctx.font="11px Segoe UI, Arial";
+  ctx.fillStyle=cssVar("--muted");
+  var x;
+  for(x=Math.ceil(domain.xmin/xstep)*xstep; x<=domain.xmax+1e-9; x+=xstep){
+    var px=view.px(x);
+    ctx.beginPath(); ctx.moveTo(px,rect.y); ctx.lineTo(px,rect.y+rect.h); ctx.stroke();
+  }
+  var y;
+  for(y=Math.ceil(domain.ymin/ystep)*ystep; y<=domain.ymax+1e-9; y+=ystep){
+    var py=view.py(y);
+    ctx.beginPath(); ctx.moveTo(rect.x,py); ctx.lineTo(rect.x+rect.w,py); ctx.stroke();
+  }
+  ctx.strokeStyle=cssVar("--axis"); ctx.lineWidth=1.6;
+  if(domain.ymin<=0 && domain.ymax>=0){
+    var y0=view.py(0);
+    ctx.beginPath(); ctx.moveTo(rect.x,y0); ctx.lineTo(rect.x+rect.w,y0); ctx.stroke();
+  }
+  if(domain.xmin<=0 && domain.xmax>=0){
+    var x0=view.px(0);
+    ctx.beginPath(); ctx.moveTo(x0,rect.y); ctx.lineTo(x0,rect.y+rect.h); ctx.stroke();
+  }
+  if(xlabel){ ctx.fillStyle=cssVar("--muted"); ctx.font="12px Segoe UI, Arial"; ctx.fillText(xlabel, rect.x+rect.w-18, rect.y+rect.h-6); }
+  if(ylabel){ ctx.fillStyle=cssVar("--muted"); ctx.font="12px Segoe UI, Arial"; ctx.fillText(ylabel, rect.x+4, rect.y+12); }
+  ctx.restore();
+}
+function drawCurve(ctx,view,domain,fn,color,lw,n){
+  ctx.save();
+  ctx.strokeStyle=color; ctx.lineWidth=lw||3; ctx.lineJoin="round"; ctx.lineCap="round";
+  ctx.beginPath();
+  var N=n||220, started=false, i;
+  for(i=0;i<=N;i++){
+    var x=domain.xmin+(domain.xmax-domain.xmin)*i/N;
+    var y=fn(x);
+    if(!isFinite(y)){ started=false; continue; }
+    var px=view.px(x), py=view.py(clamp(y,domain.ymin-2,domain.ymax+2));
+    if(!started){ ctx.moveTo(px,py); started=true; } else { ctx.lineTo(px,py); }
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+function drawDot(ctx,view,x,y,color,r){
+  ctx.save();
+  ctx.fillStyle=color;
+  ctx.beginPath(); ctx.arc(view.px(x),view.py(y),r||6,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+function drawVCursor(ctx,rect,view,x,color){
+  ctx.save();
+  ctx.strokeStyle=color; ctx.lineWidth=1.4; ctx.setLineDash([5,4]);
+  var px=view.px(x);
+  ctx.beginPath(); ctx.moveTo(px,rect.y); ctx.lineTo(px,rect.y+rect.h); ctx.stroke();
+  ctx.restore();
+}
+function panelLabel(ctx,rect,text){
+  ctx.save();
+  ctx.fillStyle=cssVar("--muted"); ctx.font="700 12px Segoe UI, Arial";
+  ctx.fillText(text, rect.x+8, rect.y+16);
+  ctx.restore();
+}
+function rangeOf(fn,tmin,tmax,n){
+  var lo=Infinity, hi=-Infinity, i;
+  for(i=0;i<=n;i++){
+    var t=tmin+(tmax-tmin)*i/n;
+    var v=fn(t);
+    if(isFinite(v)){ if(v<lo) lo=v; if(v>hi) hi=v; }
+  }
+  if(lo===hi){ lo-=1; hi+=1; }
+  var pad=(hi-lo)*0.18;
+  return {ymin:lo-pad, ymax:hi+pad};
+}
+
+/* ==================================================================== */
+/* MODULE A — dérivée = pente locale                                    */
+/* ==================================================================== */
+var presetsA=[
+  {name:"Parabole  f(x)=0.5x²−1", f:function(x){return 0.5*x*x-1;}, df:function(x){return x;}, domain:{xmin:-4,xmax:4,ymin:-3,ymax:7}, xstep:1, ystep:2},
+  {name:"Cubique  f(x)=0.15x³−x+1", f:function(x){return 0.15*x*x*x-x+1;}, df:function(x){return 0.45*x*x-1;}, domain:{xmin:-4,xmax:4,ymin:-4,ymax:5}, xstep:1, ystep:2},
+  {name:"Sinusoïde  f(x)=2sin(x)", f:function(x){return 2*Math.sin(x);}, df:function(x){return 2*Math.cos(x);}, domain:{xmin:-6.3,xmax:6.3,ymin:-3,ymax:3}, xstep:Math.PI/2, ystep:1},
+  {name:"Décharge  f(x)=4e^(−x/2)", f:function(x){return 4*Math.exp(-x/2);}, df:function(x){return -2*Math.exp(-x/2);}, domain:{xmin:-1,xmax:6,ymin:-1,ymax:9}, xstep:1, ystep:2}
+];
+var stateA={presetIdx:0, x0:1, h:1.5, animating:false, animStart:0, h0:1.5, revealed:false, dragging:false};
+
+function clampAx0(){
+  var d=presetsA[stateA.presetIdx].domain;
+  stateA.x0=clamp(stateA.x0, d.xmin+0.15, d.xmax-0.35);
+  var maxH=d.xmax-stateA.x0-0.05;
+  stateA.h=clamp(stateA.h, 0.02, Math.max(0.05,Math.min(2.2,maxH)));
+}
+
+var cvA=attachCanvas(document.getElementById("cvA"));
+var lastViewA=null;
+
+function renderA(){
+  var ctx=cvA.ctx, w=cvA.w, h=cvA.h;
+  ctx.clearRect(0,0,w,h);
+  var preset=presetsA[stateA.presetIdx];
+  var rect={x:44,y:16,w:w-64,h:h-46};
+  var view=makeView(rect,preset.domain);
+  lastViewA=view;
+  drawAxes(ctx,rect,preset.domain,view,preset.xstep,preset.ystep,"x","f(x)");
+  drawCurve(ctx,view,preset.domain,preset.f,cssVar("--green"),3.5);
+
+  var x0=stateA.x0, hh=stateA.h;
+  var y0=preset.f(x0), y1=preset.f(x0+hh);
+
+  if(stateA.revealed){
+    var m=preset.df(x0);
+    var b=y0-m*x0;
+    drawCurve(ctx,view,preset.domain,function(x){return m*x+b;},cssVar("--blue"),3);
+  } else {
+    ctx.save();
+    ctx.strokeStyle=cssVar("--orange"); ctx.lineWidth=2.6;
+    ctx.beginPath(); ctx.moveTo(view.px(x0),view.py(y0)); ctx.lineTo(view.px(x0+hh),view.py(y1)); ctx.stroke();
+    var slope=(y1-y0)/hh;
+    var bx=y0-slope*x0;
+    ctx.setLineDash([6,5]); ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(view.px(preset.domain.xmin),view.py(slope*preset.domain.xmin+bx));
+    ctx.lineTo(view.px(preset.domain.xmax),view.py(slope*preset.domain.xmax+bx)); ctx.stroke();
+    ctx.restore();
+  }
+
+  drawDot(ctx,view,x0,y0,cssVar("--green"),7);
+  drawDot(ctx,view,x0+hh,y1,cssVar("--orange"),6);
+  ctx.save();
+  ctx.fillStyle=cssVar("--ink"); ctx.font="700 13px Segoe UI, Arial";
+  ctx.fillText("A", view.px(x0)+8, view.py(y0)-8);
+  ctx.fillText("B", view.px(x0+hh)+8, view.py(y1)-8);
+  ctx.restore();
+
+  document.getElementById("stAf0").textContent=fmt(y0);
+  document.getElementById("stAf1").textContent=fmt(y1);
+  document.getElementById("stATaux").textContent=fmt((y1-y0)/hh);
+  document.getElementById("lblX0").textContent=fmt(x0);
+  document.getElementById("lblH").textContent=fmt(hh,2);
+  var tangRow=document.getElementById("stATangRow");
+  if(stateA.revealed){
+    tangRow.style.display="";
+    document.getElementById("stADeriv").textContent=fmt(preset.df(x0));
+  } else {
+    tangRow.style.display="none";
+  }
+}
+
+function buildPresetButtons(containerId, list, activeIdxGetter, onPick){
+  var el=document.getElementById(containerId);
+  el.innerHTML="";
+  list.forEach(function(p,i){
+    var b=document.createElement("button");
+    b.type="button"; b.textContent=p.name;
+    if(i===activeIdxGetter()) b.className="active";
+    b.addEventListener("click",function(){ onPick(i); });
+    el.appendChild(b);
+  });
+}
+function refreshPresetButtons(containerId, idx){
+  var el=document.getElementById(containerId);
+  Array.prototype.forEach.call(el.children,function(b,i){ b.classList.toggle("active", i===idx); });
+}
+
+buildPresetButtons("presetA", presetsA, function(){return stateA.presetIdx;}, function(i){
+  stateA.presetIdx=i; stateA.revealed=false; stateA.animating=false;
+  var d=presetsA[i].domain;
+  document.getElementById("rngX0").min=d.xmin+0.15; document.getElementById("rngX0").max=d.xmax-0.35;
+  stateA.x0=clamp((d.xmin+d.xmax)/2, d.xmin+0.15, d.xmax-0.35);
+  document.getElementById("rngX0").value=stateA.x0;
+  stateA.h=1.4; document.getElementById("rngH").value=stateA.h;
+  clampAx0();
+  refreshPresetButtons("presetA", i);
+});
+
+document.getElementById("rngX0").min=-3.85; document.getElementById("rngX0").max=3.65; document.getElementById("rngX0").value=1;
+document.getElementById("rngH").value=1.5;
+document.getElementById("rngX0").addEventListener("input",function(e){
+  stateA.x0=parseFloat(e.target.value); stateA.revealed=false; clampAx0();
+});
+document.getElementById("rngH").addEventListener("input",function(e){
+  stateA.h=parseFloat(e.target.value); stateA.revealed=false; stateA.animating=false;
+  document.getElementById("btnAnimH").textContent="▶ Animer h → 0";
+});
+document.getElementById("btnResetA").addEventListener("click",function(){
+  stateA.h=1.5; stateA.revealed=false; stateA.animating=false;
+  document.getElementById("rngH").value=1.5;
+  document.getElementById("btnAnimH").textContent="▶ Animer h → 0";
+  clampAx0();
+});
+document.getElementById("btnAnimH").addEventListener("click",function(){
+  if(stateA.animating) return;
+  stateA.animating=true; stateA.h0=stateA.h; stateA.animStart=performance.now();
+  this.textContent="… en cours";
+});
+
+var draggingA=false;
+document.getElementById("cvA").addEventListener("pointerdown",function(e){
+  if(!lastViewA) return;
+  draggingA=true; this.setPointerCapture(e.pointerId);
+  moveA(e);
+});
+document.getElementById("cvA").addEventListener("pointermove",function(e){ if(draggingA) moveA(e); });
+document.getElementById("cvA").addEventListener("pointerup",function(){ draggingA=false; });
+document.getElementById("cvA").addEventListener("pointerleave",function(){ draggingA=false; });
+function moveA(e){
+  var rect=e.target.getBoundingClientRect();
+  var px=e.clientX-rect.left;
+  stateA.x0=lastViewA.toX(px); stateA.revealed=false; stateA.animating=false;
+  document.getElementById("btnAnimH").textContent="▶ Animer h → 0";
+  clampAx0();
+  document.getElementById("rngX0").value=stateA.x0;
+}
+
+/* ==================================================================== */
+/* MODULE B — position / vitesse / accélération                        */
+/* ==================================================================== */
+var presetsB=[
+  {name:"Départ arrêté, accélération constante", period:8, loop:false,
+    x:function(t){return -3+0.075*t*t;}, v:function(t){return 0.15*t;}, a:function(t){return 0.15;}},
+  {name:"Freinage progressif", period:7, loop:false,
+    x:function(t){var ts=5.5; if(t>ts) t=ts; return -3.5+1.1*t-0.1*t*t;},
+    v:function(t){var ts=5.5; if(t>ts) return 0; return 1.1-0.2*t;},
+    a:function(t){var ts=5.5; return t>ts?0:-0.2;}},
+  {name:"Oscillation mécanique (vibration)", period:10, loop:true,
+    x:function(t){return 1.8*Math.cos(1.3*t);},
+    v:function(t){return -1.8*1.3*Math.sin(1.3*t);},
+    a:function(t){return -1.8*1.3*1.3*Math.cos(1.3*t);}}
+];
+var stateB={presetIdx:0, t:0, playing:false, speed:1};
+var rangesB=[];
+function computeRangesB(){
+  rangesB=presetsB.map(function(p){
+    return {x:rangeOf(p.x,0,p.period,240), v:rangeOf(p.v,0,p.period,240), a:rangeOf(p.a,0,p.period,240)};
+  });
+}
+computeRangesB();
+
+var cvB=attachCanvas(document.getElementById("cvB"));
+
+function renderB(){
+  var ctx=cvB.ctx, w=cvB.w, h=cvB.h;
+  ctx.clearRect(0,0,w,h);
+  var preset=presetsB[stateB.presetIdx];
+  var rg=rangesB[stateB.presetIdx];
+  var t=stateB.t;
+
+  var railRect={x:40,y:14,w:w-60,h:Math.max(60,h*0.16)};
+  var railDomain={xmin:-4,xmax:4,ymin:-1,ymax:1};
+  var railView=makeView(railRect,railDomain);
+  ctx.save();
+  ctx.strokeStyle=cssVar("--axis"); ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(railView.px(-4),railView.py(0)); ctx.lineTo(railView.px(4),railView.py(0)); ctx.stroke();
+  ctx.restore();
+  var xNow=preset.x(t);
+  drawDot(ctx,railView,clamp(xNow,-4,4),0,cssVar("--green"),12);
+  panelLabel(ctx,railRect,"Trajectoire (x en mètres)");
+
+  var chartsTop=railRect.y+railRect.h+10;
+  var chartH=(h-chartsTop-16)/3-8;
+  var domX={xmin:0,xmax:preset.period,ymin:rg.x.ymin,ymax:rg.x.ymax};
+  var domV={xmin:0,xmax:preset.period,ymin:rg.v.ymin,ymax:rg.v.ymax};
+  var domA={xmin:0,xmax:preset.period,ymin:rg.a.ymin,ymax:rg.a.ymax};
+  var rX={x:44,y:chartsTop,w:w-64,h:chartH};
+  var rV={x:44,y:chartsTop+chartH+12,w:w-64,h:chartH};
+  var rA={x:44,y:chartsTop+2*(chartH+12),w:w-64,h:chartH};
+
+  [[rX,domX,preset.x,cssVar("--green"),"x(t)  position",xNow],
+   [rV,domV,preset.v,cssVar("--blue"),"v(t) = x'(t)  vitesse",preset.v(t)],
+   [rA,domA,preset.a,cssVar("--orange"),"a(t) = v'(t)  accélération",preset.a(t)]
+  ].forEach(function(item){
+    var r=item[0], dom=item[1], fn=item[2], col=item[3], label=item[4], val=item[5];
+    drawAxes(ctx,r,dom,makeView(r,dom),Math.max(1,Math.round(preset.period/6)),(dom.ymax-dom.ymin)/4||1,"t","");
+    var view=makeView(r,dom);
+    drawCurve(ctx,view,dom,fn,col,2.6,200);
+    drawVCursor(ctx,r,view,t,cssVar("--red"));
+    drawDot(ctx,view,t,val,col,5);
+    panelLabel(ctx,r,label);
+  });
+
+  document.getElementById("lblTB").textContent=fmt(t,2);
+  document.getElementById("stBx").textContent=fmt(xNow)+" m";
+  document.getElementById("stBv").textContent=fmt(preset.v(t))+" m/s";
+  document.getElementById("stBa").textContent=fmt(preset.a(t))+" m/s²";
+  document.getElementById("rngTB").max=preset.period;
+  if(!draggingTB) document.getElementById("rngTB").value=t;
+}
+
+buildPresetButtons("presetB", presetsB, function(){return stateB.presetIdx;}, function(i){
+  stateB.presetIdx=i; stateB.t=0; stateB.playing=false;
+  document.getElementById("btnPlayB").textContent="▶ Lecture";
+  refreshPresetButtons("presetB", i);
+});
+document.getElementById("btnPlayB").addEventListener("click",function(){
+  var preset=presetsB[stateB.presetIdx];
+  if(!preset.loop && stateB.t>=preset.period) stateB.t=0;
+  stateB.playing=!stateB.playing;
+  this.textContent=stateB.playing?"⏸ Pause":"▶ Lecture";
+});
+document.getElementById("btnResetB").addEventListener("click",function(){
+  stateB.t=0; stateB.playing=false;
+  document.getElementById("btnPlayB").textContent="▶ Lecture";
+});
+var draggingTB=false;
+var rngTB=document.getElementById("rngTB");
+rngTB.addEventListener("pointerdown",function(){ draggingTB=true; stateB.playing=false; document.getElementById("btnPlayB").textContent="▶ Lecture"; });
+rngTB.addEventListener("pointerup",function(){ draggingTB=false; });
+rngTB.addEventListener("input",function(e){ stateB.t=parseFloat(e.target.value); });
+Array.prototype.forEach.call(document.querySelectorAll("#speedB button"),function(b){
+  b.addEventListener("click",function(){
+    stateB.speed=parseFloat(b.dataset.sp);
+    Array.prototype.forEach.call(document.querySelectorAll("#speedB button"),function(x){x.classList.remove("active");});
+    b.classList.add("active");
+  });
+});
+
+/* ==================================================================== */
+/* MODULE C — dérivée en électrotechnique                               */
+/* ==================================================================== */
+var TAU=2, QMAX=5, OMEGA=1.0, PHIMAX=2.4;
+var modelsC={
+  rc:{
+    charge:{period:8, loop:false,
+      g:function(t){return QMAX*(1-Math.exp(-t/TAU));},
+      d:function(t){return (QMAX/TAU)*Math.exp(-t/TAU);}},
+    decharge:{period:8, loop:false,
+      g:function(t){return QMAX*Math.exp(-t/TAU);},
+      d:function(t){return -(QMAX/TAU)*Math.exp(-t/TAU);}}
+  },
+  ind:{period:2*2*Math.PI/OMEGA, loop:true,
+    g:function(t){return PHIMAX*Math.cos(OMEGA*t);},
+    d:function(t){return PHIMAX*OMEGA*Math.sin(OMEGA*t);}}
+};
+var stateC={sub:"rc", rcMode:"charge", t:0, playing:false};
+var rangesC={};
+function computeRangesC(){
+  rangesC.rc_charge={g:rangeOf(modelsC.rc.charge.g,0,modelsC.rc.charge.period,200), d:rangeOf(modelsC.rc.charge.d,0,modelsC.rc.charge.period,200)};
+  rangesC.rc_decharge={g:rangeOf(modelsC.rc.decharge.g,0,modelsC.rc.decharge.period,200), d:rangeOf(modelsC.rc.decharge.d,0,modelsC.rc.decharge.period,200)};
+  rangesC.ind={g:rangeOf(modelsC.ind.g,0,modelsC.ind.period,240), d:rangeOf(modelsC.ind.d,0,modelsC.ind.period,240)};
+}
+computeRangesC();
+
+function currentModelC(){
+  if(stateC.sub==="rc") return modelsC.rc[stateC.rcMode];
+  return modelsC.ind;
+}
+function currentRangeC(){
+  if(stateC.sub==="rc") return rangesC["rc_"+stateC.rcMode];
+  return rangesC.ind;
+}
+
+var cvC=attachCanvas(document.getElementById("cvC"));
+
+function drawCapacitor(ctx,cx,cy,ratio,color){
+  var w=54,h=90;
+  ctx.save();
+  ctx.strokeStyle=cssVar("--axis"); ctx.lineWidth=3;
+  ctx.strokeRect(cx-w/2,cy-h/2,w,h);
+  var fillH=h*clamp(ratio,0,1);
+  ctx.fillStyle=color;
+  ctx.fillRect(cx-w/2+3,cy+h/2-fillH-3,w-6,fillH);
+  ctx.restore();
+}
+function drawCoil(ctx,cx,cy,r,theta,color){
+  ctx.save();
+  ctx.translate(cx,cy);
+  ctx.strokeStyle=cssVar("--axis"); ctx.lineWidth=2;
+  ctx.beginPath(); ctx.ellipse(0,0,r*1.55,r*0.55,0,0,Math.PI*2); ctx.stroke();
+  var scaleX=Math.abs(Math.cos(theta));
+  ctx.strokeStyle=color; ctx.lineWidth=4;
+  ctx.beginPath(); ctx.ellipse(0,0,r*scaleX,r*0.85,0,0,Math.PI*2); ctx.stroke();
+  ctx.fillStyle=cssVar("--muted"); ctx.font="700 13px Segoe UI, Arial"; ctx.textAlign="center";
+  ctx.fillText("N",-r*1.85,4); ctx.fillText("S",r*1.85,4);
+  ctx.textAlign="left";
+  ctx.restore();
+}
+
+function renderC(){
+  var ctx=cvC.ctx, w=cvC.w, h=cvC.h;
+  ctx.clearRect(0,0,w,h);
+  var model=currentModelC(), rg=currentRangeC(), t=stateC.t;
+  var sceneRect={x:0,y:0,w:w,h:Math.max(140,h*0.42)};
+
+  if(stateC.sub==="rc"){
+    var q=model.g(t), i=model.d(t), ratio=q/QMAX;
+    var cx=sceneRect.w*0.5, cy=sceneRect.h*0.5;
+    ctx.save();
+    ctx.strokeStyle=cssVar("--axis"); ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.moveTo(cx-160,cy); ctx.lineTo(cx-90,cy);
+    ctx.moveTo(cx+30,cy); ctx.lineTo(cx+160,cy);
+    ctx.moveTo(cx-160,cy); ctx.lineTo(cx-160,cy-46); ctx.lineTo(cx+160,cy-46); ctx.lineTo(cx+160,cy);
+    ctx.stroke();
+    ctx.font="700 20px Segoe UI, Arial"; ctx.fillStyle=cssVar("--muted");
+    ctx.fillText("R", cx-130, cy-8);
+    ctx.restore();
+    drawCapacitor(ctx, cx, cy, ratio, cssVar("--green"));
+    ctx.save();
+    ctx.fillStyle=cssVar("--ink"); ctx.font="700 13px Segoe UI, Arial";
+    ctx.fillText("q = "+fmt(q)+" u.a.", cx-26, cy+62);
+    ctx.restore();
+    var arrowColor=cssVar("--blue");
+    var dir=i>=0?1:-1;
+    ctx.save();
+    ctx.strokeStyle=arrowColor; ctx.fillStyle=arrowColor; ctx.lineWidth=3;
+    var ay=cy-46-16;
+    ctx.beginPath(); ctx.moveTo(cx-40*dir,ay); ctx.lineTo(cx+40*dir,ay); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx+40*dir,ay); ctx.lineTo(cx+40*dir-10*dir,ay-6); ctx.lineTo(cx+40*dir-10*dir,ay+6); ctx.closePath(); ctx.fill();
+    ctx.font="700 13px Segoe UI, Arial";
+    ctx.fillText("i = "+fmt(Math.abs(i))+" u.a.  ("+(i>=0?"charge":"décharge")+")", cx-70, ay-10);
+    ctx.restore();
+  } else {
+    var theta=OMEGA*t;
+    var cx2=sceneRect.w*0.5, cy2=sceneRect.h*0.5;
+    drawCoil(ctx, cx2, cy2, 70, theta, cssVar("--green"));
+    ctx.save();
+    ctx.strokeStyle=cssVar("--muted"); ctx.lineWidth=1.4;
+    var yy;
+    for(yy=-40; yy<=40; yy+=20){
+      ctx.beginPath(); ctx.moveTo(cx2-170,cy2+yy); ctx.lineTo(cx2-115,cy2+yy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx2+115,cy2+yy); ctx.lineTo(cx2+170,cy2+yy); ctx.stroke();
+    }
+    ctx.restore();
+    var e=model.d(t);
+    ctx.save();
+    ctx.fillStyle=cssVar("--ink"); ctx.font="700 13px Segoe UI, Arial";
+    ctx.fillText("θ = ωt = "+fmt(theta,2)+" rad", cx2-60, cy2+100);
+    ctx.fillText("f.é.m. induite e = "+fmt(e)+" u.a.", cx2-70, cy2+120);
+    ctx.restore();
+  }
+
+  var chartsTop=sceneRect.h+14;
+  var chartH=(h-chartsTop-16)/2-8;
+  var period=model.period;
+  var domG={xmin:0,xmax:period,ymin:rg.g.ymin,ymax:rg.g.ymax};
+  var domD={xmin:0,xmax:period,ymin:rg.d.ymin,ymax:rg.d.ymax};
+  var rG={x:44,y:chartsTop,w:w-64,h:chartH};
+  var rD={x:44,y:chartsTop+chartH+12,w:w-64,h:chartH};
+  var labelG=stateC.sub==="rc"?"q(t)  charge":"Φ(t)  flux";
+  var labelD=stateC.sub==="rc"?"i(t) = q'(t)  courant":"e(t) = -Φ'(t)  f.é.m.";
+
+  drawAxes(ctx,rG,domG,makeView(rG,domG),Math.max(0.5,Math.round(period/6*10)/10),(domG.ymax-domG.ymin)/4||1,"t","");
+  var viewG=makeView(rG,domG);
+  drawCurve(ctx,viewG,domG,model.g,cssVar("--green"),2.6,220);
+  drawVCursor(ctx,rG,viewG,t,cssVar("--red"));
+  drawDot(ctx,viewG,t,model.g(t),cssVar("--green"),5);
+  panelLabel(ctx,rG,labelG);
+
+  drawAxes(ctx,rD,domD,makeView(rD,domD),Math.max(0.5,Math.round(period/6*10)/10),(domD.ymax-domD.ymin)/4||1,"t","");
+  var viewD=makeView(rD,domD);
+  drawCurve(ctx,viewD,domD,model.d,cssVar("--blue"),2.6,220);
+  drawVCursor(ctx,rD,viewD,t,cssVar("--red"));
+  drawDot(ctx,viewD,t,model.d(t),cssVar("--blue"),5);
+  panelLabel(ctx,rD,labelD);
+
+  document.getElementById("lblTC").textContent=fmt(t,2);
+  document.getElementById("rngTC").max=period;
+  if(!draggingTC) document.getElementById("rngTC").value=t;
+  var statsEl=document.getElementById("statsC");
+  if(stateC.sub==="rc"){
+    statsEl.innerHTML="";
+    addStat(statsEl,"q(t) — charge", fmt(model.g(t))+" u.a.");
+    addStat(statsEl,"i(t) = q'(t) — courant", fmt(model.d(t))+" u.a.");
+  } else {
+    statsEl.innerHTML="";
+    addStat(statsEl,"Φ(t) — flux", fmt(model.g(t))+" u.a.");
+    addStat(statsEl,"e(t) = -Φ'(t) — f.é.m.", fmt(model.d(t))+" u.a.");
+  }
+}
+function addStat(container,k,v){
+  var d=document.createElement("div"); d.className="stat";
+  var kk=document.createElement("span"); kk.className="k"; kk.textContent=k;
+  var vv=document.createElement("span"); vv.className="v"; vv.textContent=v;
+  d.appendChild(kk); d.appendChild(vv); container.appendChild(d);
+}
+
+function updateHintC(){
+  var hint=document.getElementById("hintC");
+  var legend=document.getElementById("legendC");
+  document.getElementById("rcModeGrp").style.display = stateC.sub==="rc" ? "" : "none";
+  if(stateC.sub==="rc"){
+    hint.textContent="L'intensité i(t) mesurée dans le circuit est la dérivée par rapport au temps de la charge q(t) stockée dans le condensateur : i(t) = dq/dt.";
+    legend.innerHTML='<span><i style="background:var(--green)"></i>q(t) charge</span><span><i style="background:var(--blue)"></i>i(t) courant</span>';
+  } else {
+    hint.textContent="La f.é.m. induite e(t) dans une bobine tournant dans un champ magnétique est l'opposé de la dérivée du flux : e(t) = −dΦ/dt (loi de Faraday).";
+    legend.innerHTML='<span><i style="background:var(--green)"></i>Φ(t) flux</span><span><i style="background:var(--blue)"></i>e(t) f.é.m.</span>';
+  }
+}
+updateHintC();
+
+Array.prototype.forEach.call(document.querySelectorAll("#subC button"),function(b){
+  b.addEventListener("click",function(){
+    stateC.sub=b.dataset.sub; stateC.t=0; stateC.playing=false;
+    document.getElementById("btnPlayC").textContent="▶ Lecture";
+    Array.prototype.forEach.call(document.querySelectorAll("#subC button"),function(x){x.classList.remove("active");});
+    b.classList.add("active");
+    updateHintC();
+  });
+});
+Array.prototype.forEach.call(document.querySelectorAll("#rcMode button"),function(b){
+  b.addEventListener("click",function(){
+    stateC.rcMode=b.dataset.rc; stateC.t=0; stateC.playing=false;
+    document.getElementById("btnPlayC").textContent="▶ Lecture";
+    Array.prototype.forEach.call(document.querySelectorAll("#rcMode button"),function(x){x.classList.remove("active");});
+    b.classList.add("active");
+  });
+});
+document.getElementById("btnPlayC").addEventListener("click",function(){
+  var model=currentModelC();
+  if(!model.loop && stateC.t>=model.period) stateC.t=0;
+  stateC.playing=!stateC.playing;
+  this.textContent=stateC.playing?"⏸ Pause":"▶ Lecture";
+});
+document.getElementById("btnResetC").addEventListener("click",function(){
+  stateC.t=0; stateC.playing=false;
+  document.getElementById("btnPlayC").textContent="▶ Lecture";
+});
+var draggingTC=false;
+var rngTC=document.getElementById("rngTC");
+rngTC.addEventListener("pointerdown",function(){ draggingTC=true; stateC.playing=false; document.getElementById("btnPlayC").textContent="▶ Lecture"; });
+rngTC.addEventListener("pointerup",function(){ draggingTC=false; });
+rngTC.addEventListener("input",function(e){ stateC.t=parseFloat(e.target.value); });
+
+/* ==================================================================== */
+/* Module switching, theme, fullscreen, reflex bar, main loop           */
+/* ==================================================================== */
+var currentMod="A";
+function switchModule(id){
+  currentMod=id;
+  Array.prototype.forEach.call(document.querySelectorAll("#modTabs button"),function(b){
+    b.classList.toggle("active", b.dataset.mod===id);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll(".module"),function(s){
+    s.classList.toggle("active", s.id==="mod"+id);
+  });
+}
+Array.prototype.forEach.call(document.querySelectorAll("#modTabs button"),function(b){
+  b.addEventListener("click",function(){ switchModule(b.dataset.mod); });
+});
+
+function toggleTheme(){
+  var html=document.documentElement;
+  var next=html.getAttribute("data-theme")==="dark"?"light":"dark";
+  html.setAttribute("data-theme", next);
+  try{ localStorage.setItem("mc_wb_theme", next); }catch(e){}
+}
+(function initTheme(){
+  var saved=null;
+  try{ saved=localStorage.getItem("mc_wb_theme"); }catch(e){}
+  if(saved) document.documentElement.setAttribute("data-theme", saved);
+})();
+document.getElementById("btnTheme").addEventListener("click", toggleTheme);
+
+function toggleFullscreen(){
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(function(){});
+  } else {
+    document.exitFullscreen().catch(function(){});
+  }
+}
+document.getElementById("btnFull").addEventListener("click", toggleFullscreen);
+
+function toggleReflex(){ document.getElementById("reflexBar").classList.toggle("hidden"); }
+document.getElementById("btnHelp").addEventListener("click", toggleReflex);
+
+document.addEventListener("keydown", function(e){
+  var tag=e.target && e.target.tagName;
+  if(tag==="INPUT"||tag==="SELECT"||tag==="TEXTAREA") return;
+  if(e.key===" "){ e.preventDefault();
+    if(currentMod==="B") document.getElementById("btnPlayB").click();
+    else if(currentMod==="C") document.getElementById("btnPlayC").click();
+  } else if(e.key==="f"||e.key==="F"){ toggleFullscreen(); }
+  else if(e.key==="t"||e.key==="T"){ toggleTheme(); }
+  else if(e.key==="h"||e.key==="H"){ toggleReflex(); }
+  else if(e.key==="1"){ switchModule("A"); }
+  else if(e.key==="2"){ switchModule("B"); }
+  else if(e.key==="3"){ switchModule("C"); }
+  else if(e.key==="ArrowRight"){
+    if(currentMod==="A"){ stateA.x0+=0.1; stateA.revealed=false; clampAx0(); document.getElementById("rngX0").value=stateA.x0; }
+    else if(currentMod==="B"){ stateB.t=clamp(stateB.t+0.2,0,presetsB[stateB.presetIdx].period); }
+    else if(currentMod==="C"){ stateC.t=clamp(stateC.t+0.2,0,currentModelC().period); }
+  } else if(e.key==="ArrowLeft"){
+    if(currentMod==="A"){ stateA.x0-=0.1; stateA.revealed=false; clampAx0(); document.getElementById("rngX0").value=stateA.x0; }
+    else if(currentMod==="B"){ stateB.t=clamp(stateB.t-0.2,0,presetsB[stateB.presetIdx].period); }
+    else if(currentMod==="C"){ stateC.t=clamp(stateC.t-0.2,0,currentModelC().period); }
+  }
+});
+
+var lastTs=null;
+function loop(ts){
+  if(lastTs===null) lastTs=ts;
+  var dt=ts-lastTs; lastTs=ts;
+
+  if(stateA.animating){
+    var el=ts-stateA.animStart, T=1700, tt=clamp(el/T,0,1);
+    var h0=Math.max(stateA.h0,0.03), target=0.02;
+    stateA.h=h0*Math.exp(Math.log(target/h0)*tt);
+    if(tt>=1){ stateA.h=target; stateA.animating=false; stateA.revealed=true; document.getElementById("btnAnimH").textContent="▶ Animer h → 0"; }
+    document.getElementById("rngH").value=stateA.h;
+  }
+  if(currentMod==="A") renderA();
+
+  var presetB=presetsB[stateB.presetIdx];
+  if(stateB.playing){
+    stateB.t+=dt/1000*stateB.speed;
+    if(presetB.loop){ stateB.t=stateB.t % presetB.period; }
+    else if(stateB.t>=presetB.period){ stateB.t=presetB.period; stateB.playing=false; document.getElementById("btnPlayB").textContent="▶ Lecture"; }
+  }
+  if(currentMod==="B") renderB();
+
+  var modelC=currentModelC();
+  if(stateC.playing){
+    stateC.t+=dt/1000;
+    if(modelC.loop){ stateC.t=stateC.t % modelC.period; }
+    else if(stateC.t>=modelC.period){ stateC.t=modelC.period; stateC.playing=false; document.getElementById("btnPlayC").textContent="▶ Lecture"; }
+  }
+  if(currentMod==="C") renderC();
+
+  requestAnimationFrame(loop);
+}
+clampAx0();
+document.getElementById("rngX0").value=stateA.x0;
+requestAnimationFrame(loop);
+
+})();
+</script>
+</body>
+</html>
