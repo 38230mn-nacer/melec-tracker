@@ -27,6 +27,7 @@ button{font-family:inherit;cursor:pointer;}
 .modtabs button.active{background:var(--btnActive);color:#fff;}
 .topactions{display:flex;gap:8px;}
 .topactions button{background:var(--btn);color:var(--ink);border:none;border-radius:10px;width:44px;height:44px;font-size:1.15rem;}
+.topactions a{background:var(--btn);color:var(--ink);border-radius:10px;height:44px;padding:0 12px;display:inline-flex;align-items:center;font-size:0.82rem;font-weight:700;text-decoration:none;}
 #stage{position:relative;height:calc(100vh - 60px);}
 .module{position:absolute;inset:0;display:none;}
 .module.active{display:flex;}
@@ -77,6 +78,7 @@ input[type=range]{width:100%;}
     <button data-mod="C" type="button">③ Électrotechnique</button>
   </nav>
   <div class="topactions">
+    <a href="studio/index.html" title="Studio Électrotechnique">🎛 Studio</a>
     <button id="btnHelp" type="button" title="Repère pédagogique (H)">❔</button>
     <button id="btnTheme" type="button" title="Thème clair / sombre (T)">🌓</button>
     <button id="btnFull" type="button" title="Plein écran (F)">⛶</button>
