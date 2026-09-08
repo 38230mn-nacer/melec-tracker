@@ -88,6 +88,16 @@
         ctx.restore();
         if(hl.label) C.label(ctx, rect.x+rect.w-6-ctx.measureText(hl.label).width, view.py(y)-5, hl.label, col);
       });
+      (opts.vlines||[]).forEach(function(vl){
+        var xv = typeof vl.x==="function" ? vl.x() : vl.x;
+        if(!isFinite(xv)) return;
+        var col=C.cssVar(vl.colorVar||"--red");
+        ctx.save();
+        ctx.strokeStyle=col; ctx.lineWidth=1.4; ctx.setLineDash([3,4]);
+        ctx.beginPath(); ctx.moveTo(view.px(xv),rect.y); ctx.lineTo(view.px(xv),rect.y+rect.h); ctx.stroke();
+        ctx.restore();
+        if(vl.label) C.label(ctx, view.px(xv)+4, rect.y+rect.h-6, vl.label, col);
+      });
       var labelX=rect.x+8;
       opts.curves.forEach(function(c){
         if(c.visible && !c.visible()) return;

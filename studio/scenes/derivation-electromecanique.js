@@ -6,58 +6,10 @@
   // Scène : la dérivée vue par l'électromécanique.
   // Grandeur (position x, angle θ) → dérivée (vitesse v, ω/n) → dérivée seconde (accélération a, α) → effort moteur (F, C).
   MC.scenes.derivationElectromecanique = function(container){
-    var U=MC.core.units, M=MC.core.mechanics, L=MC.components.layout;
+    var U=MC.core.units, M=MC.core.mechanics;
     var f=U.fmt;
     var TWO_PI=2*Math.PI;
 
-    container.innerHTML="";
-    var root=document.createElement("div"); root.className="mc-scene";
-    container.appendChild(root);
-
-    var head=L.header(root, "Dérivation en électromécanique : rampes, convoyeur, porte, moteur", "");
-    L.legend(root, [
-      ["--green","grandeur : position x, angle θ"],
-      ["--blue","dérivée : vitesse v = x′, vitesse de rotation n (ω = θ′)"],
-      ["--orange","dérivée seconde : accélération a = v′, α = ω′ → effort F = m·a, couple C = J·α + Cr"],
-      ["--red","curseur temporel, seuil, alerte"]
-    ]);
-    var reflex=document.createElement("div"); reflex.className="mc-reflex";
-    reflex.innerHTML='<span><b>JE VOIS</b> une courbe de position ou de vitesse</span>'+
-      '<span><b>JE PENSE</b> pente de la tangente = dérivée = vitesse ou accélération</span>'+
-      '<span><b>JE FAIS</b> Δy / Δt sur la rampe, puis la formule</span>'+
-      '<span><b>JE VÉRIFIE</b> l\'unité (m/s, m/s², rad/s², N·m) et le signe (freinage = négatif)</span>';
-    root.appendChild(reflex);
-
-    var sitBar=document.createElement("div"); sitBar.className="mc-situations"; sitBar.setAttribute("aria-label","Situation professionnelle");
-    root.appendChild(sitBar);
-
-    var grid=document.createElement("div"); grid.className="mc-scene-grid"; root.appendChild(grid);
-    var colLeft=document.createElement("div"); colLeft.className="mc-scene-col";
-    var colRight=document.createElement("div"); colRight.className="mc-scene-col mc-scene-side";
-    grid.appendChild(colLeft); grid.appendChild(colRight);
-
-    var animBox=L.box("Phénomène physique");
-    var warnEl=document.createElement("div"); warnEl.className="mc-warn"; animBox.el.appendChild(warnEl);
-    var chartBoxes=[L.box(""),L.box(""),L.box("")];
-    var explainBox=L.box("Expliquer pas à pas (touche E : étape suivante)");
-    colLeft.appendChild(animBox.el);
-    chartBoxes.forEach(function(b){ colLeft.appendChild(b.el); });
-    colLeft.appendChild(explainBox.el);
-
-    var paramsBox=L.box("Réglages"), timeBox=L.box("Curseur temporel"), statsBox=L.box("Valeurs instantanées"), formulaBox=L.box("Formules et application numérique");
-    [paramsBox,timeBox,statsBox,formulaBox].forEach(function(b){ colRight.appendChild(b.el); });
-
-    var engine=MC.core.animation.register(new MC.core.animation.TimeEngine({period:5, loop:true, speed:1, timeScale:1}));
-    MC.components.TimeCursor(timeBox.mount, engine, {
-      onTick:renderTime, stepSize:0.1,
-      formatTime:function(t){ return "t = "+f(t,2)+" s"; }
-    });
-    var formulaPanel=MC.components.FormulaPanel(formulaBox.mount);
-    var explain=MC.components.ExplainPanel(explainBox.mount);
-
-    /* ------------------------------------------------------------------ */
-    /* Situations                                                           */
-    /* ------------------------------------------------------------------ */
     var situations=[
       {
         id:"porte", label:"🚪 Porte automatique", anim:"door",
@@ -268,100 +220,19 @@
       }
     ];
 
-    /* ------------------------------------------------------------------ */
-    /* Câblage générique                                                    */
-    /* ------------------------------------------------------------------ */
-    var state={}, sit=null, model=null, charts=[], mech=null, statsPanel=null;
-
-    function selectSituation(i){
-      sit=situations[i];
-      Array.prototype.forEach.call(sitBar.children, function(b,j){
-        b.classList.toggle("active", j===i);
-        b.setAttribute("aria-pressed", j===i ? "true" : "false");
-      });
-      head.hint.textContent=sit.hint;
-      state={};
-      sit.params.forEach(function(p){ state[p.key]=p.value; });
-      paramsBox.mount.innerHTML="";
-      sit.params.forEach(function(p){
-        MC.components.ParameterSlider(paramsBox.mount, {
-          label:p.label, min:p.min, max:p.max, step:p.step, value:p.value, unit:p.unit, decimals:p.decimals,
-          onChange:function(v){ state[p.key]=v; rebuildModel(); }
-        });
-      });
-      animBox.mount.innerHTML="";
-      mech=MC.components.MechanismAnimation(animBox.mount, {kind:sit.anim, ariaLabel:sit.label});
-      charts.forEach(function(ch){ ch.destroy(); });
-      model=sit.build(state);
-      // Les courbes lisent le modèle courant (reconstruit à chaque réglage) sans recréer les graphes.
-      function curveAt(k,ci){ var ch=model.charts[k]; return ch ? ch.curves[ci] : null; }
-      function hlineAt(k,hi){ var ch=model.charts[k]; return ch && ch.hlines ? ch.hlines[hi] : null; }
-      charts=model.charts.map(function(ch,k){
-        chartBoxes[k].title.textContent=ch.title;
-        chartBoxes[k].mount.innerHTML="";
-        return MC.components.SineWave(chartBoxes[k].mount, {
-          period:function(){ return model.T; },
-          className:"mc-canvas-sm", xLabel:"t (s)", includeZero:ch.includeZero,
-          tickFormat:{ x:function(v){ return f(v,1); }, y:function(v){ return f(v, Math.abs(v)>=100 ? 0 : (Math.abs(v)>=10 ? 1 : 2)); } },
-          hlines:(ch.hlines||[]).map(function(h,hi){
-            return { y:function(){ var hl=hlineAt(k,hi); return hl ? hl.y : NaN; }, colorVar:h.colorVar, label:h.label };
-          }),
-          curves:ch.curves.map(function(c,ci){
-            return {
-              fn:function(t){ var cc=curveAt(k,ci); return cc ? cc.fn(t) : NaN; },
-              slope: c.slope ? function(t){ var cc=curveAt(k,ci); return cc && cc.slope ? cc.slope(t) : NaN; } : null,
-              visible: c.visible ? function(){ var cc=curveAt(k,ci); return !!(cc && cc.visible && cc.visible()); } : null,
-              slopeColorVar:c.slopeColorVar, colorVar:c.colorVar, label:c.label, dash:c.dash, width:c.width
-            };
-          })
-        });
-      });
-      statsPanel=L.stats(statsBox.mount, model.statsDef);
-      explain.reset();
-      engine.period=model.T;
-      engine.reset();
-      refreshStatic();
-    }
-
-    function rebuildModel(){
-      model=sit.build(state);
-      charts.forEach(function(ch){ ch.refreshRange(); });
-      engine.period=model.T;
-      if(engine.t>model.T) engine.setT(model.T);
-      refreshStatic();
-    }
-
-    function refreshStatic(){
-      formulaPanel.render(model.formulas);
-      explain.render(model.explain);
-      warnEl.innerHTML="";
-      model.warnings.forEach(function(w){
-        var d=document.createElement("div");
-        if(w.ok) d.className="ok";
-        d.textContent=w.text;
-        warnEl.appendChild(d);
-      });
-      renderTime(engine.t);
-    }
-
-    function renderTime(t){
-      if(!model) return;
-      charts.forEach(function(ch){ ch.render(t); });
-      mech.render(model.anim(t));
-      var vals=model.stats(t);
-      Object.keys(vals).forEach(function(k){ statsPanel.set(k, vals[k]); });
-    }
-
-    situations.forEach(function(s,i){
-      var b=document.createElement("button"); b.type="button"; b.textContent=s.label;
-      b.addEventListener("click", function(){ selectSituation(i); });
-      sitBar.appendChild(b);
+    return MC.components.SituationScene(container, {
+      title:"Dérivation en électromécanique : rampes, convoyeur, porte, moteur",
+      legend:[
+        ["--green","grandeur : position x, angle θ"],
+        ["--blue","dérivée : vitesse v = x′, vitesse de rotation n (ω = θ′)"],
+        ["--orange","dérivée seconde : accélération a = v′, α = ω′ → effort F = m·a, couple C = J·α + Cr"],
+        ["--red","curseur temporel, seuil, alerte"]
+      ],
+      reflexHtml:'<span><b>JE VOIS</b> une courbe de position ou de vitesse</span>'+
+        '<span><b>JE PENSE</b> pente de la tangente = dérivée = vitesse ou accélération</span>'+
+        '<span><b>JE FAIS</b> Δy / Δt sur la rampe, puis la formule</span>'+
+        '<span><b>JE VÉRIFIE</b> l\'unité (m/s, m/s², rad/s², N·m) et le signe (freinage = négatif)</span>',
+      situations:situations
     });
-    selectSituation(0);
-
-    return { destroy:function(){
-      MC.core.animation.unregister(engine);
-      charts.forEach(function(ch){ ch.destroy(); });
-    } };
   };
 })();

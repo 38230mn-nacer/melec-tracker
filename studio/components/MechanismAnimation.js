@@ -162,6 +162,10 @@
           srcTitle.textContent="Variateur";
           srcIcon.setAttribute("points","22,120 40,120 62,90 92,90");
           srcSub.textContent="rampe "+U.fmt(s.tRamp,2)+" s";
+        } else if(s.mode==="sramp"){
+          srcTitle.textContent="Variateur";
+          srcIcon.setAttribute("points","22,120 38,120 46,117 52,110 58,100 64,93 72,90 92,90");
+          srcSub.textContent="rampe en S "+U.fmt(s.tRamp,2)+" s";
         } else {
           srcTitle.textContent="Contacteur";
           srcIcon.setAttribute("points","22,112 44,112 70,92 92,112");
@@ -177,6 +181,85 @@
         tC.textContent="C = "+U.fmt(s.C,1)+" N·m";
         var len=U.clamp(s.n/Math.max(s.nNom,1),0,1)*50;
         replaceArrow(dcx+dr+14, dcy+len, dcx+dr+14, dcy-len, "var(--blue)", 3);
+      };
+    }
+
+    else if(opts.kind==="inductor" || opts.kind==="capacitor"){
+      var isL = opts.kind==="inductor";
+      rect(10,60,96,80,"fill:var(--btn);stroke:var(--axis);stroke-width:2;",{rx:6});
+      text(58,78,isL?"Hacheur":"Alimentation","fill:var(--ink);font-size:11px;",{"text-anchor":"middle"});
+      var sw=S.el("polyline",{points:"22,112 44,112 70,96"});
+      st(sw,"fill:none;stroke:var(--blue);stroke-width:2.5;stroke-linecap:round;"); add(sw);
+      line(70,112,92,112,"stroke:var(--blue);stroke-width:2.5;stroke-linecap:round;");
+      text(58,132,"commande","fill:var(--muted);font-size:10px;font-weight:600;",{"text-anchor":"middle"});
+      var lx1=106, lx2=540, ly1=70, ly2=150;
+      line(lx1,ly1,300,ly1,WIRE+"stroke-width:3;");
+      line(380,ly1,lx2,ly1,WIRE+"stroke-width:3;");
+      line(lx2,ly1,lx2,ly2,WIRE+"stroke-width:3;");
+      line(lx1,ly2,lx2,ly2,WIRE+"stroke-width:3;");
+      line(lx1,ly1,lx1,100,WIRE+"stroke-width:3;");
+      line(lx1,120,lx1,ly2,WIRE+"stroke-width:3;");
+      var fill=null;
+      if(isL){
+        var coil=S.path("M300 70 a10 10 0 0 1 20 0 a10 10 0 0 1 20 0 a10 10 0 0 1 20 0 a10 10 0 0 1 20 0",{});
+        st(coil,"fill:none;stroke:var(--green);stroke-width:3.5;"); add(coil);
+        text(340,50,"L","fill:var(--green);font-size:14px;",{"text-anchor":"middle"});
+      } else {
+        line(300,ly1,332,ly1,WIRE+"stroke-width:3;");
+        line(348,ly1,380,ly1,WIRE+"stroke-width:3;");
+        line(332,50,332,90,"stroke:var(--green);stroke-width:4;");
+        line(348,50,348,90,"stroke:var(--green);stroke-width:4;");
+        fill=S.el("rect",{x:335,y:90,width:10,height:0}); st(fill,"fill:var(--green);opacity:0.7;"); add(fill);
+        text(340,42,"C","fill:var(--green);font-size:14px;",{"text-anchor":"middle"});
+      }
+      var dots=[], di;
+      for(di=0;di<14;di++){ var d=S.circle(0,0,3.2,{}); st(d,"fill:var(--blue);"); add(d); dots.push(d); }
+      var perim=2*(lx2-lx1)+2*(ly2-ly1);
+      function posOnLoop(dist){
+        dist=((dist%perim)+perim)%perim;
+        var a=lx2-lx1, b=ly2-ly1;
+        if(dist<a) return [lx1+dist, ly1];
+        dist-=a; if(dist<b) return [lx2, ly1+dist];
+        dist-=b; if(dist<a) return [lx2-dist, ly2];
+        dist-=a; return [lx1, ly2-dist];
+      }
+      var gx=575, gy=30, gw=30, gh=150;
+      rect(gx,gy,gw,gh,"fill:var(--btn);stroke:var(--axis);stroke-width:2;",{rx:4});
+      var gauge=S.el("rect",{x:gx+3,y:gy+gh-3,width:gw-6,height:0,rx:2}); st(gauge,"fill:var(--blue);"); add(gauge);
+      var limLine=S.line(gx-6,gy,gx+gw+6,gy,{}); st(limLine,"stroke:var(--red);stroke-width:2;stroke-dasharray:4 3;"); add(limLine);
+      text(gx+gw/2,gy-10,isL?"|u_L|":"|i_C|","fill:var(--muted);font-size:10px;font-weight:600;",{"text-anchor":"middle"});
+      var tLim=text(gx+gw/2,gy+gh+18,"","fill:var(--red);font-size:10px;",{"text-anchor":"middle"});
+      var tI=text(120,205,"","fill:"+(isL?"var(--green)":"var(--blue)")+";");
+      var tU=text(300,205,"","fill:"+(isL?"var(--blue)":"var(--green)")+";");
+      var tP=text(450,205,"","fill:var(--orange);");
+      render=function(s){
+        var mag = s.iMax>0 ? U.clamp(Math.abs(s.i)/s.iMax,0,1) : 0;
+        var dir = s.i>=0 ? 1 : -1;
+        dots.forEach(function(d,idx){
+          var pos=posOnLoop(dir*s.flowPx + idx*perim/dots.length);
+          d.setAttribute("cx",pos[0]); d.setAttribute("cy",pos[1]);
+          d.setAttribute("style","fill:var(--blue);opacity:"+(0.1+0.9*mag)+";");
+        });
+        if(fill){
+          var fh = s.uMax>0 ? U.clamp(s.u/s.uMax,0,1)*40 : 0;
+          fill.setAttribute("height",fh); fill.setAttribute("y",90-fh);
+        }
+        var vmag = s.uMax>0 ? U.clamp(s.u/s.uMax,-1,1) : 0;
+        var arrowLen=vmag*60;
+        if(Math.abs(arrowLen)>2) replaceArrow(340+arrowLen/2, 110, 340-arrowLen/2, 110, isL?"var(--blue)":"var(--green)", 3);
+        else replaceArrow(0,0,0,0,"var(--blue)",3);
+        var lim = isL ? s.uLim : s.iLim;
+        var val = isL ? Math.abs(s.u) : Math.abs(s.i);
+        var scale=Math.max(lim*1.3, val, 1e-9);
+        var hgt=U.clamp(val/scale,0,1)*(gh-6);
+        gauge.setAttribute("height",hgt); gauge.setAttribute("y",gy+gh-3-hgt);
+        gauge.setAttribute("style", val>lim ? "fill:var(--red);" : "fill:var(--blue);");
+        var yLim=gy+gh-3-U.clamp(lim/scale,0,1)*(gh-6);
+        limLine.setAttribute("y1",yLim); limLine.setAttribute("y2",yLim);
+        tLim.textContent=(isL?"U max ":"I max ")+U.fmt(lim,0);
+        tI.textContent="i = "+U.fmt(s.i,2)+" A";
+        tU.textContent="u = "+U.fmt(s.u,1)+" V";
+        tP.textContent="p = u·i = "+U.fmt(s.p,1)+" W";
       };
     }
 

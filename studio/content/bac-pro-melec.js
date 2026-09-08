@@ -4,8 +4,12 @@
   MC.content = MC.content || {};
 
   MC.content.bacProMelec = [
+    { id:"derivation-concept", title:"Dérivation : le concept — nombre dérivé, tangente, fonction dérivée, variations", status:"ready", kind:"scene", render:MC.scenes.derivationConcept,
+      desc:"Sécante → tangente quand h → 0, taux de variation, nombre dérivé, courbe de f′, tableau de variations généré. Fonctions du programme : x², polynômes, 1/x, √x." },
     { id:"derivation-electromecanique", title:"Dérivation en électromécanique : rampes, convoyeur, porte, moteur", status:"ready", kind:"scene", render:MC.scenes.derivationElectromecanique,
       desc:"Position → vitesse → accélération → effort moteur. Porte automatique, convoyeur (le colis glisse-t-il ?), rampe de variateur, démarrage direct. Tangentes, formules et explication pas à pas." },
+    { id:"rampes-derivee", title:"Rampes et dérivée : variateur, bobine, condensateur", status:"ready", kind:"scene", render:MC.scenes.rampesDerivee,
+      desc:"Dérivée d'une rampe = coefficient directeur. Rampe linéaire ou en S (à-coup), u = L·di/dt (surtension, diode de roue libre), i = C·du/dt (courant d'appel, précharge)." },
     { id:"derivation-mouvement", title:"Dérivation en mouvement", status:"ready", kind:"external", url:"../whiteboard-derivation.html",
       desc:"Sécante → tangente, position/vitesse/accélération, charge d'un condensateur, induction. Outil transversal maths/sciences." },
     { id:"tension-courant-resistance", title:"Tension, courant et résistance", status:"soon" },

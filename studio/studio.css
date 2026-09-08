@@ -75,6 +75,29 @@ input[type=range]{width:100%;accent-color:var(--blue);}
 .mc-formula-expr{font-size:0.9rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.35;}
 
 .mc-canvas.mc-canvas-sm{height:150px;}
+.mc-canvas.mc-canvas-md{height:200px;}
+.mc-canvas.mc-canvas-lg{height:330px;}
+.mc-choice{display:flex;gap:6px;margin-top:6px;}
+.mc-choice button{flex:1;background:var(--btn);border:2px solid transparent;border-radius:10px;padding:8px 6px;font-size:0.82rem;font-weight:700;color:var(--ink);}
+.mc-choice button.active{background:var(--btnActive);color:#fff;}
+.mc-lvl{display:inline-block;font-size:0.66rem;font-weight:700;padding:2px 6px;border-radius:999px;background:var(--green);color:#06280f;margin-right:4px;vertical-align:middle;}
+.mc-situations button.active .mc-lvl{background:#fff;color:var(--btnActive);}
+.mc-vartable{border-collapse:collapse;width:100%;font-size:0.95rem;font-variant-numeric:tabular-nums;}
+.mc-vartable th,.mc-vartable td{border:1px solid var(--line);padding:8px 6px;text-align:center;}
+.mc-vartable th.mc-vt-head{text-align:left;color:var(--muted);font-size:0.8rem;width:150px;}
+.mc-vartable td.mc-vt-x{font-weight:700;}
+.mc-vartable td.mc-vt-sign{font-weight:800;font-size:1.1rem;}
+.mc-vartable td.mc-vt-sign.pos{color:var(--green);}
+.mc-vartable td.mc-vt-sign.neg{color:var(--red);}
+.mc-vartable td.mc-vt-arrow{font-size:1.6rem;line-height:1;}
+.mc-vartable td.mc-vt-arrow.pos{color:var(--green);}
+.mc-vartable td.mc-vt-arrow.neg{color:var(--red);}
+.mc-vartable td.mc-vt-val{font-weight:700;}
+.mc-vartable td.mc-vt-ext{color:var(--orange);}
+.mc-tauxtable{border-collapse:collapse;width:100%;font-size:0.9rem;font-variant-numeric:tabular-nums;}
+.mc-tauxtable th,.mc-tauxtable td{border:1px solid var(--line);padding:6px 8px;text-align:right;}
+.mc-tauxtable th{color:var(--muted);font-size:0.78rem;font-weight:600;}
+.mc-tauxtable tr.lim td{font-weight:800;color:var(--blue);background:var(--btn);}
 .mc-situations{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
 .mc-situations button{background:var(--btn);color:var(--ink);border:2px solid transparent;border-radius:12px;padding:10px 14px;font-weight:700;font-size:0.88rem;}
 .mc-situations button.active{background:var(--btnActive);color:#fff;}

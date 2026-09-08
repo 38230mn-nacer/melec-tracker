@@ -6,7 +6,11 @@
   MC.content.btsElectrotechnique = [
     { id:"dephasage-puissances", title:"Déphasage tension/courant et puissances P, Q, S", status:"ready", kind:"scene", render:MC.scenes.dephasagePuissances,
       desc:"Animation de référence : sinusoïdes, vecteurs de Fresnel tournants, cos φ, triangle des puissances — tout synchronisé sur un curseur temporel." },
-    { id:"derivation-rampes-couple", title:"Dérivation : rampes de variateur, accélération angulaire et couple", status:"ready", kind:"scene", render:MC.scenes.derivationElectromecanique,
+    { id:"derivation-concept", title:"Dérivation : le concept — nombre dérivé, tangente, fonction dérivée, variations", status:"ready", kind:"scene", render:MC.scenes.derivationConcept,
+      desc:"Sécante → tangente quand h → 0, courbe de f′, tableau de variations généré. Avec sin, exponentielle et x·e^(−x) pour le BTS." },
+    { id:"rampes-derivee", title:"Rampes et dérivée : variateur (linéaire / en S), bobine, condensateur", status:"ready", kind:"scene", render:MC.scenes.rampesDerivee,
+      desc:"Dérivée d'une rampe = coefficient directeur ; cassures = à-coups. u_L = L·di/dt (surtension à la coupure), i_C = C·du/dt (courant d'appel du bus continu)." },
+    { id:"derivation-rampes-couple", title:"Dérivation en électromécanique : accélération angulaire et couple", status:"ready", kind:"scene", render:MC.scenes.derivationElectromecanique,
       desc:"θ → ω → α → C = J·α + Cr. Rampe de variateur contre démarrage direct, convoyeur et porte automatique : la dérivée fixe le couple et le courant." },
     { id:"complexes", title:"Nombres complexes appliqués à l'électrotechnique", status:"soon" },
     { id:"impedances", title:"Impédances", status:"soon" },

@@ -39,7 +39,49 @@
       if(t<t3) return -aD;
       return 0;
     }
-    return { x:x, v:v, a:a, vmax:vmax, aAcc:aA, aDec:aD, t1:t1, t2:t2, t3:t3, xEnd:x3 };
+    function j(t){ return 0; }
+    return { x:x, v:v, a:a, j:j, vmax:vmax, aAcc:aA, aDec:aD, aMax:Math.max(aA,aD), jMax:Infinity,
+      corners:[0,t1,t2,t3], t1:t1, t2:t2, t3:t3, xEnd:x3, kind:"lin" };
+  }
+
+  // Rampe en S (loi en cosinus) : même durée et même distance que la rampe linéaire,
+  // mais l'accélération est continue — l'à-coup (dérivée de l'accélération) reste fini.
+  function sTrapezoid(p){
+    var vmax=p.vmax, tA=p.tAcc, tC=Math.max(0,p.tCruise), tD=p.tDec, x0=p.x0||0, PI=Math.PI;
+    var t1=tA, t2=tA+tC, t3=tA+tC+tD;
+    var x1=x0+vmax*tA/2, x2=x1+vmax*tC, x3=x2+vmax*tD/2;
+    var aMaxA=vmax*PI/(2*tA), aMaxD=vmax*PI/(2*tD);
+    function x(t){
+      if(t<=0) return x0;
+      if(t<t1) return x0+vmax/2*(t-(tA/PI)*Math.sin(PI*t/tA));
+      if(t<t2) return x1+vmax*(t-t1);
+      if(t<t3){ var u=t-t2; return x2+vmax/2*(u+(tD/PI)*Math.sin(PI*u/tD)); }
+      return x3;
+    }
+    function v(t){
+      if(t<=0) return 0;
+      if(t<t1) return vmax*(1-Math.cos(PI*t/tA))/2;
+      if(t<t2) return vmax;
+      if(t<t3) return vmax*(1+Math.cos(PI*(t-t2)/tD))/2;
+      return 0;
+    }
+    function a(t){
+      if(t<0) return 0;
+      if(t<t1) return aMaxA*Math.sin(PI*t/tA);
+      if(t<t2) return 0;
+      if(t<t3) return -aMaxD*Math.sin(PI*(t-t2)/tD);
+      return 0;
+    }
+    function j(t){
+      if(t<0) return 0;
+      if(t<t1) return aMaxA*PI/tA*Math.cos(PI*t/tA);
+      if(t<t2) return 0;
+      if(t<t3) return -aMaxD*PI/tD*Math.cos(PI*(t-t2)/tD);
+      return 0;
+    }
+    var jAcc=aMaxA*PI/tA, jDec=aMaxD*PI/tD;
+    return { x:x, v:v, a:a, j:j, vmax:vmax, aAcc:aMaxA, aDec:aMaxD, aMax:Math.max(aMaxA,aMaxD),
+      jAcc:jAcc, jDec:jDec, jMax:Math.max(jAcc,jDec), corners:[], t1:t1, t2:t2, t3:t3, xEnd:x3, kind:"s" };
   }
 
   // Porte coulissante : course L, vitesse maxi, temps d'accélération (= décélération).
@@ -157,6 +199,6 @@
 
   MC.core.mechanics = {
     G:G, rpmToRad:rpmToRad, radToRpm:radToRpm,
-    trapezoid:trapezoid, door:door, conveyor:conveyor, motorRamp:motorRamp, motorDirect:motorDirect
+    trapezoid:trapezoid, sTrapezoid:sTrapezoid, door:door, conveyor:conveyor, motorRamp:motorRamp, motorDirect:motorDirect
   };
 })();

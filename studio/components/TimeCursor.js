@@ -52,8 +52,9 @@
     slider.addEventListener("input", function(){ engine.setT(parseFloat(slider.value)); });
     btnPlay.addEventListener("click", function(){ engine.toggle(); syncPlayBtn(); });
     btnReset.addEventListener("click", function(){ engine.reset(); syncPlayBtn(); });
-    btnStepBack.addEventListener("click", function(){ engine.step(-1, opts.stepSize); syncPlayBtn(); });
-    btnStepFwd.addEventListener("click", function(){ engine.step(1, opts.stepSize); syncPlayBtn(); });
+    function stepSize(){ return typeof opts.stepSize==="function" ? opts.stepSize() : opts.stepSize; }
+    btnStepBack.addEventListener("click", function(){ engine.step(-1, stepSize()); syncPlayBtn(); });
+    btnStepFwd.addEventListener("click", function(){ engine.step(1, stepSize()); syncPlayBtn(); });
 
     engine.onChange = function(t){
       syncSlider(t);
