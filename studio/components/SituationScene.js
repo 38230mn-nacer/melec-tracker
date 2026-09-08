@@ -132,6 +132,7 @@
       explain.reset();
       engine.period=model.T;
       engine.loop = tc.loop!==false;
+      engine.timeScale = tc.timeScale || 1;
       engine.reset();
       refreshStatic();
     }

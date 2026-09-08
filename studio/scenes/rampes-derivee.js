@@ -13,7 +13,10 @@
       format:function(t){ return "t = "+f(t*1000,2)+" ms"; },
       step:function(model){ return model ? model.T/60 : 0.001; },
       tickX:function(v){ return f(v*1000,0); },
-      xLabel:"t (ms)"
+      xLabel:"t (ms)",
+      // Les phénomènes bobine/condensateur durent quelques dizaines de ms : sans ralenti,
+      // la lecture boucle trop vite pour être visible à l'œil (~0,02 = période étalée sur qqs secondes).
+      timeScale:0.02
     };
 
     var situations=[

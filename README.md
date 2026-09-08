@@ -36,5 +36,6 @@ Deux pages autonomes, hors ligne, sans build — à ouvrir directement dans le n
   - **Déphasage et puissances P‑Q‑S** — sinusoïdes, Fresnel, triangle des puissances.
 
   Architecture : `core/` (calculs, source unique), `components/` (graphes, animations SVG, curseur temporel, explication pas à pas, moteur de scène `SituationScene`), `scenes/`, `content/`.
+  Guide d'animation en classe (déroulé minuté, lexique électrotechnique pour un professeur non spécialiste, FAQ élèves) : `studio/FICHE_SEANCE_PROF.md`.
 
 Raccourcis dans le studio : Espace (lecture/pause), ← → (pas à pas), E (étape suivante de l'explication), F (plein écran), T (thème), Échap (retour).
