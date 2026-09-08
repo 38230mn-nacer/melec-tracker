@@ -208,7 +208,7 @@ function fmt(v,d){
   if(!isFinite(v)) return "—";
   var s=v.toFixed(d);
   if(s==="-0.00"||s==="-0.0"||s==="-0") s=s.slice(1);
-  return s.replace("-","−");
+  return s.replace("-","−").replace(".",",");
 }
 function cssVar(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
 

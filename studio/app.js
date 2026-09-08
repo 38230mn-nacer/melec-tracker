@@ -85,6 +85,14 @@
     } else if(e.key==="f"||e.key==="F"){ toggleFullscreen(); }
     else if(e.key==="t"||e.key==="T"){ toggleTheme(); }
     else if(e.key==="Escape" && !stage.hidden){ renderGrid(); }
+    else if((e.key==="ArrowRight"||e.key==="ArrowLeft") && !stage.hidden){
+      var stepBtn=stage.querySelector(e.key==="ArrowRight" ? ".mc-step-fwd" : ".mc-step-back");
+      if(stepBtn){ e.preventDefault(); stepBtn.click(); }
+    }
+    else if((e.key==="e"||e.key==="E") && !stage.hidden){
+      var nextBtn=stage.querySelector(".mc-explain-next");
+      if(nextBtn){ e.preventDefault(); nextBtn.click(); }
+    }
   });
 
   renderLevelBar();

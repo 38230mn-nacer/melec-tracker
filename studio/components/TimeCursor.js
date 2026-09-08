@@ -12,9 +12,10 @@
       return b;
     }
     var btnReset=btn("⏮","mc-btn","Retour au début");
-    var btnStepBack=btn("⏴ pas","mc-btn","Pas à pas arrière");
+    var btnStepBack=btn("⏴ pas","mc-btn mc-step-back","Pas à pas arrière (←)");
     var btnPlay=btn("▶ Lecture","mc-btn primary","Lecture / pause (Espace)");
-    var btnStepFwd=btn("pas ⏵","mc-btn","Pas à pas avant");
+    var btnStepFwd=btn("pas ⏵","mc-btn mc-step-fwd","Pas à pas avant (→)");
+    var formatTime = opts.formatTime || function(t){ return "t = "+MC.core.units.fmt(t*1000,1)+" ms"; };
     var row1=document.createElement("div"); row1.className="mc-row";
     [btnReset,btnStepBack,btnPlay,btnStepFwd].forEach(function(b){ row1.appendChild(b); });
 
@@ -43,7 +44,7 @@
       slider.max=engine.period;
       slider.step=engine.period/1000;
       if(!dragging) slider.value=t;
-      lbl.textContent = "t = "+MC.core.units.fmt(t*1000,1)+" ms";
+      lbl.textContent = formatTime(t);
     }
 
     slider.addEventListener("pointerdown", function(){ dragging=true; engine.pause(); syncPlayBtn(); });

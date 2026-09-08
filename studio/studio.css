@@ -74,6 +74,30 @@ input[type=range]{width:100%;accent-color:var(--blue);}
 .mc-formula-label{font-size:0.75rem;color:var(--muted);margin-bottom:2px;}
 .mc-formula-expr{font-size:0.9rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.35;}
 
+.mc-canvas.mc-canvas-sm{height:150px;}
+.mc-situations{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.mc-situations button{background:var(--btn);color:var(--ink);border:2px solid transparent;border-radius:12px;padding:10px 14px;font-weight:700;font-size:0.88rem;}
+.mc-situations button.active{background:var(--btnActive);color:#fff;}
+.mc-situations button[aria-pressed="true"]{border-color:var(--green);}
+.mc-svg-mech{max-width:760px;}
+.mc-warn{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
+.mc-warn div{background:rgba(248,113,113,0.14);border-left:4px solid var(--red);border-radius:8px;padding:8px 10px;font-size:0.85rem;font-weight:600;line-height:1.4;}
+.mc-warn div.ok{background:rgba(34,197,94,0.14);border-left-color:var(--green);}
+.mc-reflex{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:0.8rem;color:var(--muted);margin:0 0 14px;}
+.mc-reflex b{color:var(--ink);}
+.mc-explain-bar{display:flex;gap:6px;margin-bottom:10px;align-items:center;flex-wrap:wrap;}
+.mc-explain-bar .mc-btn{flex:0 0 auto;padding:9px 10px;}
+.mc-explain-bar .mc-btn.primary{flex:1 1 auto;}
+.mc-explain-bar .mc-btn:disabled{opacity:0.4;cursor:default;}
+.mc-explain-count{font-size:0.78rem;color:var(--muted);white-space:nowrap;}
+.mc-explain-step{padding:8px 10px;border-left:3px solid var(--line);margin-bottom:6px;opacity:0.62;font-size:0.86rem;line-height:1.45;}
+.mc-explain-step.current{opacity:1;border-left-color:var(--orange);background:var(--btn);border-radius:0 10px 10px 0;}
+.mc-explain-step h4{margin:0 0 3px;font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.03em;}
+.mc-explain-step .num{color:var(--blue);font-weight:700;}
+.mc-explain-step .den{color:var(--orange);font-weight:700;}
+.mc-explain-step .res{color:var(--green);font-weight:700;}
+.mc-explain-step .warn{color:var(--red);font-weight:700;}
+
 @media (max-width:1000px){
   .mc-scene-grid{grid-template-columns:1fr;}
   .mc-scene-lower{grid-template-columns:1fr;}

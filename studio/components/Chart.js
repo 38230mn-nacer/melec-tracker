@@ -88,8 +88,10 @@
       st.w=w; st.h=h;
       if(st.onResize) st.onResize();
     }
-    new ResizeObserver(sync).observe(canvas);
+    var observer=new ResizeObserver(sync);
+    observer.observe(canvas);
     sync();
+    st.destroy=function(){ observer.disconnect(); st.onResize=null; };
     return st;
   }
 

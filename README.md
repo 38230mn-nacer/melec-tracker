@@ -25,3 +25,10 @@ python scripts/safe_push.py
 
 ## Word CFAI
 La chaîne V4.7.8 validée est conservée pour le sujet/corrigé Word avec équations natives.
+
+## Outils de projection (tableau blanc / vidéoprojecteur)
+Deux pages autonomes, hors ligne, sans build — à ouvrir directement dans le navigateur :
+- `whiteboard-derivation.html` : dérivation en mouvement (sécante → tangente, position/vitesse/accélération, charge RC, induction) ;
+- `studio/index.html` : studio pédagogique Maths & Électrotechnique (Bac Pro MELEC / BTS). Scènes disponibles : déphasage et puissances P-Q-S ; dérivation en électromécanique (porte automatique, convoyeur, rampe de variateur, démarrage direct) avec tangentes, formules et explication pas à pas.
+
+Raccourcis dans le studio : Espace (lecture/pause), ← → (pas à pas), E (étape suivante de l'explication), F (plein écran), T (thème), Échap (retour).

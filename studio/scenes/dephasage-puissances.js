@@ -30,12 +30,7 @@
     var colRight=document.createElement("div"); colRight.className="mc-scene-col mc-scene-side";
     grid.appendChild(colLeft); grid.appendChild(colRight);
 
-    function box(title){
-      var b=document.createElement("div"); b.className="mc-box";
-      var h=document.createElement("h3"); h.textContent=title; b.appendChild(h);
-      var mount=document.createElement("div"); b.appendChild(mount);
-      return { el:b, mount:mount };
-    }
+    var box=MC.components.layout.box;
 
     var circuitBox=box("Circuit");
     var waveBox=box("u(t) et i(t) — amplitudes normalisées pour comparer les phases");
@@ -137,6 +132,6 @@
 
     refreshStatic();
 
-    return { destroy:function(){ MC.core.animation.unregister(engine); } };
+    return { destroy:function(){ MC.core.animation.unregister(engine); wave.destroy(); } };
   };
 })();

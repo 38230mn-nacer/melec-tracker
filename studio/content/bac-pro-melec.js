@@ -4,6 +4,8 @@
   MC.content = MC.content || {};
 
   MC.content.bacProMelec = [
+    { id:"derivation-electromecanique", title:"Dérivation en électromécanique : rampes, convoyeur, porte, moteur", status:"ready", kind:"scene", render:MC.scenes.derivationElectromecanique,
+      desc:"Position → vitesse → accélération → effort moteur. Porte automatique, convoyeur (le colis glisse-t-il ?), rampe de variateur, démarrage direct. Tangentes, formules et explication pas à pas." },
     { id:"derivation-mouvement", title:"Dérivation en mouvement", status:"ready", kind:"external", url:"../whiteboard-derivation.html",
       desc:"Sécante → tangente, position/vitesse/accélération, charge d'un condensateur, induction. Outil transversal maths/sciences." },
     { id:"tension-courant-resistance", title:"Tension, courant et résistance", status:"soon" },

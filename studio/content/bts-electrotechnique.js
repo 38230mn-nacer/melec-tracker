@@ -6,6 +6,8 @@
   MC.content.btsElectrotechnique = [
     { id:"dephasage-puissances", title:"Déphasage tension/courant et puissances P, Q, S", status:"ready", kind:"scene", render:MC.scenes.dephasagePuissances,
       desc:"Animation de référence : sinusoïdes, vecteurs de Fresnel tournants, cos φ, triangle des puissances — tout synchronisé sur un curseur temporel." },
+    { id:"derivation-rampes-couple", title:"Dérivation : rampes de variateur, accélération angulaire et couple", status:"ready", kind:"scene", render:MC.scenes.derivationElectromecanique,
+      desc:"θ → ω → α → C = J·α + Cr. Rampe de variateur contre démarrage direct, convoyeur et porte automatique : la dérivée fixe le couple et le courant." },
     { id:"complexes", title:"Nombres complexes appliqués à l'électrotechnique", status:"soon" },
     { id:"impedances", title:"Impédances", status:"soon" },
     { id:"circuits-rlc", title:"Circuits RLC", status:"soon" },

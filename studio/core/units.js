@@ -17,7 +17,8 @@
     if(!isFinite(v)) return "—";
     var s=round(v,d).toFixed(d);
     if(s==="-0.00"||s==="-0.0"||s==="-0"||s==="-0.000") s=s.slice(1);
-    return s.replace("-","−");
+    // notation française : virgule décimale, signe moins typographique
+    return s.replace("-","−").replace(".",",");
   }
 
   MC.core.units = { clamp:clamp, round:round, deg2rad:deg2rad, rad2deg:rad2deg, fmt:fmt };
