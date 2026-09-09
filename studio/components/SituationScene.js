@@ -19,6 +19,41 @@
       var reflex=document.createElement("div"); reflex.className="mc-reflex"; reflex.innerHTML=cfg.reflexHtml;
       root.appendChild(reflex);
     }
+
+    // Barre « mode présentation » : navigation entre situations, interface épurée pour
+    // vidéoprojecteur, affichage/masquage indépendant des formules et des valeurs (utile pour
+    // révéler une formule au bon moment plutôt que de tout montrer d'emblée).
+    var toolbar=document.createElement("div"); toolbar.className="mc-present-bar";
+    function tbtn(txt,title,cls){ var b=document.createElement("button"); b.type="button"; b.className="mc-btn"+(cls?" "+cls:""); b.textContent=txt; if(title) b.title=title; return b; }
+    var btnPrev=tbtn("⏮ Précédent","Situation précédente");
+    var btnPresent=tbtn("🎥 Mode présentation","Interface épurée pour vidéoprojecteur (touche P)","primary mc-present-toggle");
+    var btnNext=tbtn("Suivant ⏭","Situation suivante");
+    var btnFormules=tbtn("👁 Formules","Afficher / masquer les formules","active");
+    var btnResultats=tbtn("👁 Valeurs","Afficher / masquer les valeurs","active");
+    [btnPrev,btnPresent,btnNext,btnFormules,btnResultats].forEach(function(b){ toolbar.appendChild(b); });
+    root.appendChild(toolbar);
+
+    function gotoIndex(i){ selectSituation((i+situations.length)%situations.length); }
+    btnPrev.addEventListener("click", function(){ gotoIndex(currentIdx-1); });
+    btnNext.addEventListener("click", function(){ gotoIndex(currentIdx+1); });
+    function togglePresent(){
+      presentMode=!presentMode;
+      root.classList.toggle("mc-present", presentMode);
+      btnPresent.classList.toggle("active", presentMode);
+      btnPresent.setAttribute("aria-pressed", presentMode ? "true" : "false");
+    }
+    btnPresent.addEventListener("click", togglePresent);
+    btnFormules.addEventListener("click", function(){
+      formulaBox.el.hidden=!formulaBox.el.hidden;
+      btnFormules.classList.toggle("active", !formulaBox.el.hidden);
+      btnFormules.setAttribute("aria-pressed", formulaBox.el.hidden ? "false" : "true");
+    });
+    btnResultats.addEventListener("click", function(){
+      statsBox.el.hidden=!statsBox.el.hidden;
+      btnResultats.classList.toggle("active", !statsBox.el.hidden);
+      btnResultats.setAttribute("aria-pressed", statsBox.el.hidden ? "false" : "true");
+    });
+
     var sitBar=document.createElement("div"); sitBar.className="mc-situations"; sitBar.setAttribute("aria-label","Situation");
     root.appendChild(sitBar);
 
@@ -40,7 +75,7 @@
     [paramsBox,timeBox,statsBox,formulaBox].forEach(function(b){ colRight.appendChild(b.el); });
 
     var situations=cfg.situations;
-    var state={}, sit=null, model=null, charts=[], mech=null, statsPanel=null;
+    var state={}, sit=null, model=null, charts=[], mech=null, statsPanel=null, currentIdx=0, presentMode=false;
 
     function timeCfg(){ return (sit && sit.time) || {}; }
     var engine=MC.core.animation.register(new MC.core.animation.TimeEngine({period:5, loop:true, speed:1, timeScale:1}));
@@ -82,6 +117,7 @@
     }
 
     function selectSituation(i){
+      currentIdx=i;
       sit=situations[i];
       Array.prototype.forEach.call(sitBar.children, function(b,j){
         b.classList.toggle("active", j===i);

@@ -93,6 +93,10 @@
       var nextBtn=stage.querySelector(".mc-explain-next");
       if(nextBtn){ e.preventDefault(); nextBtn.click(); }
     }
+    else if((e.key==="p"||e.key==="P") && !stage.hidden){
+      var presentBtn=stage.querySelector(".mc-present-toggle");
+      if(presentBtn){ e.preventDefault(); presentBtn.click(); }
+    }
   });
 
   renderLevelBar();
