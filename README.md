@@ -38,4 +38,4 @@ Deux pages autonomes, hors ligne, sans build — à ouvrir directement dans le n
   Architecture : `core/` (calculs, source unique), `components/` (graphes, animations SVG, curseur temporel, explication pas à pas, moteur de scène `SituationScene`), `scenes/`, `content/`.
   Guide d'animation en classe (déroulé minuté, lexique électrotechnique pour un professeur non spécialiste, FAQ élèves) : `studio/FICHE_SEANCE_PROF.md`.
 
-Raccourcis dans le studio : Espace (lecture/pause), ← → (pas à pas), E (étape suivante de l'explication), F (plein écran), T (thème), Échap (retour).
+Raccourcis dans le studio : Espace (lecture/pause), ← → (pas à pas), E (étape suivante de l'explication), P (mode présentation, dans les scènes « situations »), A (annoter au stylo libre par-dessus l'écran), F (plein écran), T (thème), Échap (retour, ou fermer l'annotation si active).

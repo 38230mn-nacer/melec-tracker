@@ -118,6 +118,14 @@ input[type=range]{width:100%;accent-color:var(--blue);}
 .mc-scene.mc-present .mc-scene-header h2{font-size:1.7rem;}
 .mc-scene.mc-present .mc-stat{font-size:1.05rem;}
 .mc-scene.mc-present .mc-formula-expr{font-size:1.05rem;}
+
+.mc-annotate-canvas{position:fixed;inset:0;z-index:500;pointer-events:none;touch-action:none;}
+.mc-annotate-canvas.mc-active{pointer-events:auto;cursor:crosshair;}
+.mc-annotate-bar{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:501;display:flex;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px 10px;box-shadow:0 6px 24px rgba(0,0,0,0.35);}
+.mc-annotate-swatch{width:26px;height:26px;border-radius:50%;border:2px solid transparent;padding:0;cursor:pointer;}
+.mc-annotate-swatch.active{border-color:var(--ink);}
+.mc-annotate-bar .mc-btn{flex:0 0 auto;padding:9px 12px;}
+#btnAnnotate.active{background:var(--btnActive);color:#fff;}
 .mc-explain-bar{display:flex;gap:6px;margin-bottom:10px;align-items:center;flex-wrap:wrap;}
 .mc-explain-bar .mc-btn{flex:0 0 auto;padding:9px 10px;}
 .mc-explain-bar .mc-btn.primary{flex:1 1 auto;}

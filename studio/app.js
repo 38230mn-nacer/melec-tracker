@@ -20,6 +20,8 @@
   }
   document.getElementById("btnFull").addEventListener("click", toggleFullscreen);
 
+  var annotate=MC.components.Annotate(document.getElementById("btnAnnotate"));
+
   var levels={
     melec:{ label:"Bac Pro MELEC", items:MC.content.bacProMelec },
     bts:{ label:"BTS Électrotechnique", items:MC.content.btsElectrotechnique }
@@ -79,11 +81,13 @@
   document.addEventListener("keydown", function(e){
     var tag=e.target && e.target.tagName;
     if(tag==="INPUT"||tag==="SELECT"||tag==="TEXTAREA") return;
+    if(e.key==="Escape" && annotate.isActive()){ annotate.close(); return; }
     if(e.key===" " && !stage.hidden){
       var play=stage.querySelector(".mc-timecursor .primary");
       if(play){ e.preventDefault(); play.click(); }
     } else if(e.key==="f"||e.key==="F"){ toggleFullscreen(); }
     else if(e.key==="t"||e.key==="T"){ toggleTheme(); }
+    else if(e.key==="a"||e.key==="A"){ annotate.toggle(); }
     else if(e.key==="Escape" && !stage.hidden){ renderGrid(); }
     else if((e.key==="ArrowRight"||e.key==="ArrowLeft") && !stage.hidden){
       var stepBtn=stage.querySelector(e.key==="ArrowRight" ? ".mc-step-fwd" : ".mc-step-back");
