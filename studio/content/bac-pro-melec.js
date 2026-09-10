@@ -4,6 +4,8 @@
   MC.content = MC.content || {};
 
   MC.content.bacProMelec = [
+    { id:"pente-ordonnee", title:"Pente et ordonnée à l'origine — équations de droites", status:"ready", kind:"scene", render:MC.scenes.penteOrdonnee,
+      desc:"Fonction affine y = m·x + b : réglage direct de la pente et de l'ordonnée à l'origine, ou mode Défi pour retrouver une droite donnée." },
     { id:"derivation-concept", title:"Dérivation : le concept — nombre dérivé, tangente, fonction dérivée, variations", status:"ready", kind:"scene", render:MC.scenes.derivationConcept,
       desc:"Sécante → tangente quand h → 0, taux de variation, nombre dérivé, courbe de f′, tableau de variations généré. Fonctions du programme : x², polynômes, 1/x, √x." },
     { id:"derivation-electromecanique", title:"Dérivation en électromécanique : rampes, convoyeur, porte, moteur", status:"ready", kind:"scene", render:MC.scenes.derivationElectromecanique,
