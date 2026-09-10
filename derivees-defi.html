@@ -5,8 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Défi Dérivées</title>
 <meta name="description" content="Jeu interactif pour associer une fonction à sa dérivée, avec un mode d'exploration animée et contrôlable.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
+<meta name="theme-color" content="#14231F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Défi Dérivées">
+<!-- PWA : ignoré si le fichier est ouvert seul (file://), actif si servi en https -->
+<link rel="manifest" href="./derivees-defi.webmanifest">
+<link rel="icon" href="./derivees-defi-icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="./derivees-defi-apple-touch-icon.png">
 <style>
   :root{
     --bg:#F5F8F5;
@@ -92,14 +98,14 @@
     margin:0;
     background:var(--bg);
     color:var(--ink);
-    font-family:'Manrope', system-ui, -apple-system, sans-serif;
+    font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
     font-size:16px;
     line-height:1.45;
     padding-inline:16px;
     padding-block: 28px 48px;
   }
-  h1,h2,h3{ font-family:'Fraunces', Georgia, serif; text-wrap:balance; margin:0; }
-  .mono{ font-family:'JetBrains Mono','SFMono-Regular', Menlo, monospace; font-variant-numeric: tabular-nums; }
+  h1,h2,h3{ font-family:Georgia, 'Iowan Old Style', 'Palatino Linotype', serif; text-wrap:balance; margin:0; }
+  .mono{ font-family:ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
   button, select, input{ font-family:inherit; color:inherit; }
   button{ cursor:pointer; }
   :focus-visible{ outline:2.5px solid var(--blue); outline-offset:2px; }
@@ -150,7 +156,7 @@
   .plot-bg{ fill:var(--bg-panel); }
   .grid{ stroke:var(--border); stroke-width:1; }
   .axis{ stroke:var(--ink-mute); stroke-width:1.3; }
-  .tick-label{ fill:var(--ink-mute); font-size:9.5px; font-family:'JetBrains Mono',monospace; }
+  .tick-label{ fill:var(--ink-mute); font-size:9.5px; font-family:ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; }
   .curve-f{ stroke:var(--blue); stroke-width:3; fill:none; stroke-linecap:round; stroke-linejoin:round; }
   .curve-d{ stroke:var(--orange); stroke-width:3; fill:none; stroke-linecap:round; stroke-linejoin:round; }
   .curve-faint{ opacity:.25; }
@@ -161,7 +167,7 @@
   .option-card:disabled{ cursor:default; }
   .option-card.is-correct{ border-color:var(--green); background:var(--green-soft); }
   .option-card.is-wrong{ border-color:var(--red); background:var(--red-soft); }
-  .option-formula{ font-family:'JetBrains Mono',monospace; font-size:.82rem; font-weight:600; color:var(--ink-soft); }
+  .option-formula{ font-family:ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-size:.82rem; font-weight:600; color:var(--ink-soft); }
 
   .feedback{ margin-top:14px; border-radius:var(--radius-md); padding:14px 16px; border:1.5px solid; }
   .feedback.is-correct{ background:var(--green-soft); border-color:var(--green); }
@@ -169,7 +175,7 @@
   .feedback-head{ font-weight:800; font-size:1rem; margin-bottom:4px; }
   .feedback.is-correct .feedback-head{ color:var(--green-ink); }
   .feedback.is-wrong .feedback-head{ color:var(--red-ink); }
-  .feedback-formula{ font-family:'JetBrains Mono',monospace; font-size:.9rem; margin-bottom:6px; }
+  .feedback-formula{ font-family:ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-size:.9rem; margin-bottom:6px; }
   .feedback-tip{ font-size:.86rem; color:var(--ink-soft); }
 
   .btn{ border:none; border-radius:11px; padding:10px 18px; font-weight:700; font-size:.9rem; }
@@ -189,7 +195,7 @@
   .explorer-panels{ border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden; }
   .explorer-panel{ background:var(--bg-panel); padding:10px 10px 4px; }
   .explorer-panel + .explorer-panel{ border-top:1px dashed var(--border); }
-  .explorer-panel-label{ font-family:'JetBrains Mono',monospace; font-size:.78rem; font-weight:600; padding:0 4px 4px; }
+  .explorer-panel-label{ font-family:ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-size:.78rem; font-weight:600; padding:0 4px 4px; }
   .explorer-panel-label.for-f{ color:var(--blue-ink); }
   .explorer-panel-label.for-d{ color:var(--orange-ink); }
   .guide-line{ stroke:var(--ink-mute); stroke-width:1; stroke-dasharray:3 3; }
@@ -812,6 +818,17 @@
   else init();
 
 })();
+
+/* Mise en cache hors connexion (installation sur l'écran d'accueil / le bureau).
+   Uniquement en https ou sur localhost : en ouverture directe du fichier
+   (file://), les service workers sont interdits et l'app fonctionne déjà
+   sans réseau puisque tout est dans cette page. */
+if ('serviceWorker' in navigator &&
+    (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./derivees-defi-sw.js').catch(function (e) { console.warn('SW non enregistré', e); });
+    });
+}
 </script>
 </body>
 </html>
