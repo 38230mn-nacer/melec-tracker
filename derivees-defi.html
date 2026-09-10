@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Défi Dérivées</title>
+<meta name="description" content="Jeu interactif pour associer une fonction à sa dérivée, avec un mode d'exploration animée et contrôlable.">
+<meta name="theme-color" content="#14231F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Défi Dérivées">
+<!-- PWA : ignoré si le fichier est ouvert seul (file://), actif si servi en https -->
+<link rel="manifest" href="./derivees-defi.webmanifest">
+<link rel="icon" href="./derivees-defi-icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="./derivees-defi-apple-touch-icon.png">
+<style>
+  :root{
+    --bg:#F5F8F5;
+    --bg-panel:#FFFFFF;
+    --bg-raised:#FFFFFF;
+    --bg-sunken:#EEF3EF;
+    --border:#D8E3DC;
+    --border-strong:#C2D2C8;
+    --ink:#14231F;
+    --ink-soft:#4E6059;
+    --ink-mute:#7D948C;
+    --blue:#1D63C9;
+    --blue-ink:#154C9E;
+    --blue-soft:#E3EDFB;
+    --orange:#CC6A12;
+    --orange-ink:#9C5310;
+    --orange-soft:#F8E9D9;
+    --green:#1E8E5A;
+    --green-ink:#146845;
+    --green-soft:#DEF3E8;
+    --red:#C4432E;
+    --red-ink:#9C3423;
+    --red-soft:#FBE3DE;
+    --shadow: 0 1px 2px rgba(20,35,31,.06), 0 8px 24px -12px rgba(20,35,31,.18);
+    --radius-lg:20px;
+    --radius-md:14px;
+    --radius-sm:9px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0F1713;
+      --bg-panel:#17211C;
+      --bg-raised:#1D2820;
+      --bg-sunken:#131C17;
+      --border:#2B3A32;
+      --border-strong:#3A4C42;
+      --ink:#EAF2EC;
+      --ink-soft:#AFC2B8;
+      --ink-mute:#7E9088;
+      --blue:#6FA8F5;
+      --blue-ink:#8FBBF7;
+      --blue-soft:#1C2C40;
+      --orange:#F0994A;
+      --orange-ink:#F5AC69;
+      --orange-soft:#3A2A17;
+      --green:#4CBE86;
+      --green-ink:#6ED0A0;
+      --green-soft:#173327;
+      --red:#E2685A;
+      --red-ink:#EF8A7E;
+      --red-soft:#3A1E1B;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 28px -12px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0F1713;
+    --bg-panel:#17211C;
+    --bg-raised:#1D2820;
+    --bg-sunken:#131C17;
+    --border:#2B3A32;
+    --border-strong:#3A4C42;
+    --ink:#EAF2EC;
+    --ink-soft:#AFC2B8;
+    --ink-mute:#7E9088;
+    --blue:#6FA8F5;
+    --blue-ink:#8FBBF7;
+    --blue-soft:#1C2C40;
+    --orange:#F0994A;
+    --orange-ink:#F5AC69;
+    --orange-soft:#3A2A17;
+    --green:#4CBE86;
+    --green-ink:#6ED0A0;
+    --green-soft:#173327;
+    --red:#E2685A;
+    --red-ink:#EF8A7E;
+    --red-soft:#3A1E1B;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 28px -12px rgba(0,0,0,.5);
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{ color-scheme: light dark; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size:16px;
+    line-height:1.45;
+    padding-inline:16px;
+    padding-block: 28px 48px;
+  }
+  h1,h2,h3{ font-family:Georgia, 'Iowan Old Style', 'Palatino Linotype', serif; text-wrap:balance; margin:0; }
+  .mono{ font-family:ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+  button, select, input{ font-family:inherit; color:inherit; }
+  button{ cursor:pointer; }
+  :focus-visible{ outline:2.5px solid var(--blue); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce){
+    *{ transition-duration:.01ms !important; animation-duration:.01ms !important; }
+  }
+
+  .shell{ max-width:980px; margin:0 auto; display:flex; flex-direction:column; gap:22px; }
+
+  /* Header */
+  .app-header{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .brand{ display:flex; align-items:center; gap:12px; flex:1 1 auto; min-width:0; }
+  .brand svg{ flex:none; width:38px; height:38px; }
+  .brand-text h1{ font-size:1.55rem; font-weight:700; }
+  .brand-text p{ margin:2px 0 0; font-size:.82rem; color:var(--ink-mute); font-weight:600; letter-spacing:.03em; text-transform:uppercase; }
+
+  .tabs{ display:flex; gap:6px; background:var(--bg-sunken); border:1px solid var(--border); border-radius:999px; padding:4px; flex:none; }
+  .tab-btn{ border:none; background:transparent; color:var(--ink-soft); font-weight:700; font-size:.88rem; padding:9px 16px; border-radius:999px; transition:background .15s,color .15s; white-space:nowrap; }
+  .tab-btn.is-active{ background:var(--bg-panel); color:var(--ink); box-shadow:var(--shadow); }
+
+  .tab-panel[hidden]{ display:none; }
+
+  /* Card base */
+  .card{ background:var(--bg-panel); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow); padding:20px; }
+
+  /* Défi controls */
+  .controls-row{ display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; }
+  .segmented{ display:flex; background:var(--bg-sunken); border:1px solid var(--border); border-radius:11px; padding:3px; gap:3px; }
+  .segmented button{ border:none; background:transparent; color:var(--ink-soft); font-weight:700; font-size:.84rem; padding:7px 13px; border-radius:8px; }
+  .segmented button.is-active{ background:var(--bg-panel); color:var(--blue-ink); box-shadow:0 1px 2px rgba(20,35,31,.12); }
+  .field-select{ border:1px solid var(--border-strong); background:var(--bg-panel); color:var(--ink); border-radius:10px; padding:8px 12px; font-weight:700; font-size:.84rem; }
+  .check-field{ display:flex; align-items:center; gap:6px; font-size:.84rem; font-weight:600; color:var(--ink-soft); }
+  .check-field input{ width:16px; height:16px; accent-color:var(--green); }
+  .spacer{ flex:1 1 auto; }
+  .chips{ display:flex; gap:8px; }
+  .chip{ display:flex; flex-direction:column; align-items:center; background:var(--bg-sunken); border:1px solid var(--border); border-radius:10px; padding:5px 12px; min-width:58px; }
+  .chip b{ font-size:1.05rem; line-height:1.1; }
+  .chip span{ font-size:.65rem; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-mute); font-weight:700; }
+
+  /* Défi layout */
+  .defi-grid{ display:grid; grid-template-columns: 1.25fr 1fr; gap:18px; align-items:start; }
+  @media (max-width:760px){ .defi-grid{ grid-template-columns:1fr; } }
+
+  .target-question{ font-size:1.02rem; font-weight:700; margin-bottom:12px; }
+  .target-question .mono{ color:var(--blue-ink); font-weight:600; }
+
+  .plot-svg{ width:100%; height:auto; display:block; border-radius:var(--radius-sm); }
+  .plot-bg{ fill:var(--bg-panel); }
+  .grid{ stroke:var(--border); stroke-width:1; }
+  .axis{ stroke:var(--ink-mute); stroke-width:1.3; }
+  .tick-label{ fill:var(--ink-mute); font-size:9.5px; font-family:ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; }
+  .curve-f{ stroke:var(--blue); stroke-width:3; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .curve-d{ stroke:var(--orange); stroke-width:3; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .curve-faint{ opacity:.25; }
+
+  .options-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .option-card{ background:var(--bg-sunken); border:1.5px solid var(--border); border-radius:var(--radius-md); padding:10px; display:flex; flex-direction:column; align-items:center; gap:6px; transition:border-color .15s, transform .1s, box-shadow .15s; }
+  .option-card:hover:not(:disabled){ border-color:var(--border-strong); transform:translateY(-2px); box-shadow:var(--shadow); }
+  .option-card:disabled{ cursor:default; }
+  .option-card.is-correct{ border-color:var(--green); background:var(--green-soft); }
+  .option-card.is-wrong{ border-color:var(--red); background:var(--red-soft); }
+  .option-formula{ font-family:ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-size:.82rem; font-weight:600; color:var(--ink-soft); }
+
+  .feedback{ margin-top:14px; border-radius:var(--radius-md); padding:14px 16px; border:1.5px solid; }
+  .feedback.is-correct{ background:var(--green-soft); border-color:var(--green); }
+  .feedback.is-wrong{ background:var(--red-soft); border-color:var(--red); }
+  .feedback-head{ font-weight:800; font-size:1rem; margin-bottom:4px; }
+  .feedback.is-correct .feedback-head{ color:var(--green-ink); }
+  .feedback.is-wrong .feedback-head{ color:var(--red-ink); }
+  .feedback-formula{ font-family:ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-size:.9rem; margin-bottom:6px; }
+  .feedback-tip{ font-size:.86rem; color:var(--ink-soft); }
+
+  .btn{ border:none; border-radius:11px; padding:10px 18px; font-weight:700; font-size:.9rem; }
+  .btn-primary{ background:var(--green); color:#fff; }
+  .btn-primary:hover{ background:var(--green-ink); }
+  .next-row{ margin-top:14px; display:flex; justify-content:flex-end; }
+
+  /* Explorer */
+  .explorer-intro{ font-size:.88rem; color:var(--ink-soft); margin:8px 0 16px; }
+  .explorer-controls{ display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; margin-bottom:16px; }
+  .icon-btn{ display:flex; align-items:center; gap:6px; background:var(--blue-soft); color:var(--blue-ink); border:1px solid transparent; border-radius:10px; padding:9px 16px; font-weight:700; font-size:.86rem; }
+  .icon-btn:hover{ border-color:var(--blue); }
+  .ghost-btn{ background:var(--bg-sunken); color:var(--ink-soft); border:1px solid var(--border); border-radius:10px; padding:9px 14px; font-weight:700; font-size:.86rem; }
+  .ghost-btn:hover{ color:var(--ink); border-color:var(--border-strong); }
+  .scrub-row{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .scrub-row input[type=range]{ flex:1 1 auto; accent-color:var(--green); }
+  .explorer-panels{ border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden; }
+  .explorer-panel{ background:var(--bg-panel); padding:10px 10px 4px; }
+  .explorer-panel + .explorer-panel{ border-top:1px dashed var(--border); }
+  .explorer-panel-label{ font-family:ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-size:.78rem; font-weight:600; padding:0 4px 4px; }
+  .explorer-panel-label.for-f{ color:var(--blue-ink); }
+  .explorer-panel-label.for-d{ color:var(--orange-ink); }
+  .guide-line{ stroke:var(--ink-mute); stroke-width:1; stroke-dasharray:3 3; }
+  .tangent-line{ stroke:var(--green); stroke-width:2.5; }
+  .point-f{ fill:var(--blue); stroke:var(--bg-panel); stroke-width:2; }
+  .point-d{ fill:var(--orange); stroke:var(--bg-panel); stroke-width:2; }
+  .readout{ margin-top:12px; display:flex; flex-wrap:wrap; gap:16px; font-size:.86rem; font-weight:600; }
+  .readout .ro-f{ color:var(--blue-ink); }
+  .readout .ro-d{ color:var(--orange-ink); }
+
+  .footer-note{ text-align:center; font-size:.76rem; color:var(--ink-mute); margin-top:4px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header class="app-header">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <polygon points="20,2 36,11 20,20 4,11" fill="#1E8E5A"/>
+        <polygon points="4,11 20,20 20,38 4,29" fill="#1D63C9"/>
+        <polygon points="36,11 20,20 20,38 36,29" fill="#CC6A12"/>
+      </svg>
+      <div class="brand-text">
+        <h1>Défi Dérivées</h1>
+        <p>Maths au Cube · outil interactif</p>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab-btn is-active" type="button" data-tab="defi" role="tab" aria-selected="true">🎯 Défi</button>
+      <button class="tab-btn" type="button" data-tab="explorer" role="tab" aria-selected="false">🎬 Explorateur</button>
+    </nav>
+  </header>
+
+  <!-- DÉFI -->
+  <section class="tab-panel" data-tab-panel="defi">
+    <div class="card">
+      <div class="controls-row">
+        <div class="segmented" role="group" aria-label="Sens du défi">
+          <button type="button" class="mode-btn is-active" data-mode="f2d">f → f'</button>
+          <button type="button" class="mode-btn" data-mode="d2f">f' → f</button>
+        </div>
+        <select id="difficultySelect" class="field-select" aria-label="Difficulté">
+          <option value="facile">Facile · droites &amp; paraboles</option>
+          <option value="inter" selected>Intermédiaire · + cubiques</option>
+          <option value="avance">Avancé · toutes les fonctions</option>
+        </select>
+        <label class="check-field"><input type="checkbox" id="formulasCheckbox"> Afficher les formules (aide)</label>
+        <div class="spacer"></div>
+        <div class="chips">
+          <div class="chip"><b id="scoreEl">0</b><span>Score</span></div>
+          <div class="chip"><b id="streakEl">0</b><span>Série</span></div>
+          <div class="chip"><b id="bestEl">0</b><span>Record</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="defi-grid">
+      <div class="card">
+        <p class="target-question mono" id="targetQuestion"></p>
+        <div id="targetSvg"></div>
+        <div class="feedback" id="feedback" hidden></div>
+        <div class="next-row"><button class="btn btn-primary" id="nextBtn" hidden type="button">Suivant →</button></div>
+      </div>
+      <div class="card">
+        <div class="options-grid" id="optionsGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPLORATEUR -->
+  <section class="tab-panel" data-tab-panel="explorer" hidden>
+    <div class="card">
+      <h2 style="font-size:1.1rem;">Balaie la courbe et regarde sa dérivée se tracer</h2>
+      <p class="explorer-intro">💡 En électrotechnique : si f(t) est une position, f'(t) est une vitesse ; si f(t) est une charge q(t), f'(t) est le courant i(t) = dq/dt.</p>
+
+      <div class="explorer-controls">
+        <select id="explorerSelect" class="field-select" aria-label="Choisir une fonction"></select>
+        <button class="icon-btn" id="playPauseBtn" type="button" aria-pressed="false">▶ Lecture</button>
+        <div class="segmented" role="group" aria-label="Vitesse">
+          <button type="button" class="speed-btn" data-speed="0.5">0,5×</button>
+          <button type="button" class="speed-btn is-active" data-speed="1">1×</button>
+          <button type="button" class="speed-btn" data-speed="2">2×</button>
+        </div>
+        <button class="ghost-btn" id="resetExplorerBtn" type="button">↺ Réinitialiser</button>
+      </div>
+
+      <div class="scrub-row">
+        <span class="mono" style="font-size:.78rem; color:var(--ink-mute);">x</span>
+        <input type="range" id="scrubInput" min="-3" max="3" step="0.01" value="-3">
+      </div>
+
+      <div class="explorer-panels">
+        <div class="explorer-panel">
+          <div class="explorer-panel-label for-f" id="fLabel">f(x) = </div>
+          <div id="panelF"></div>
+        </div>
+        <div class="explorer-panel">
+          <div class="explorer-panel-label for-d" id="dLabel">f'(x) = </div>
+          <div id="panelD"></div>
+        </div>
+      </div>
+
+      <div class="readout mono" id="readout"></div>
+    </div>
+  </section>
+
+  <p class="footer-note">Défi Dérivées — Maths au Cube · fonctions affines, polynomiales, 1/x, √x, sin, cos, exp</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- banque de fonctions ---------- */
+  var bank = [
+    { id:'aff1', cat:'affine', label:'Droite croissante', fExpr:'2x + 1', dfExpr:'2',
+      f:function(x){return 2*x+1;}, df:function(x){return 2;}, domain:[[-3,3]], shapeKeyF:'lin+', shapeKeyDf:'const+' },
+    { id:'aff2', cat:'affine', label:'Droite décroissante', fExpr:'-x + 2', dfExpr:'-1',
+      f:function(x){return -x+2;}, df:function(x){return -1;}, domain:[[-3,3]], shapeKeyF:'lin-', shapeKeyDf:'const-' },
+    { id:'p2a', cat:'poly2', label:'Parabole vers le haut', fExpr:'x²', dfExpr:'2x',
+      f:function(x){return x*x;}, df:function(x){return 2*x;}, domain:[[-3,3]], shapeKeyF:'para+', shapeKeyDf:'lin+' },
+    { id:'p2b', cat:'poly2', label:'Parabole vers le bas', fExpr:'-x² + 4', dfExpr:'-2x',
+      f:function(x){return -x*x+4;}, df:function(x){return -2*x;}, domain:[[-3,3]], shapeKeyF:'para-', shapeKeyDf:'lin-' },
+    { id:'p2c', cat:'poly2', label:'Parabole décalée', fExpr:'0,5x² - 2x', dfExpr:'x - 2',
+      f:function(x){return 0.5*x*x-2*x;}, df:function(x){return x-2;}, domain:[[-1,5]], shapeKeyF:'para+off', shapeKeyDf:'lin+off' },
+    { id:'p3a', cat:'poly3', label:'Cubique simple', fExpr:'x³', dfExpr:'3x²',
+      f:function(x){return x*x*x;}, df:function(x){return 3*x*x;}, domain:[[-2,2]], shapeKeyF:'cubic+', shapeKeyDf:'para+' },
+    { id:'p3b', cat:'poly3', label:'Cubique à deux bosses', fExpr:'x³ - 3x', dfExpr:'3x² - 3',
+      f:function(x){return x*x*x-3*x;}, df:function(x){return 3*x*x-3;}, domain:[[-2.2,2.2]], shapeKeyF:'cubic+wave', shapeKeyDf:'para+off' },
+    { id:'p3c', cat:'poly3', label:'Cubique inversée', fExpr:'-0,4x³ + 2x', dfExpr:'-1,2x² + 2',
+      f:function(x){return -0.4*x*x*x+2*x;}, df:function(x){return -1.2*x*x+2;}, domain:[[-2.5,2.5]], shapeKeyF:'cubic-wave', shapeKeyDf:'para-off' },
+    { id:'inv1', cat:'inv', label:'Hyperbole 1/x', fExpr:'1/x', dfExpr:'-1/x²',
+      f:function(x){return 1/x;}, df:function(x){return -1/(x*x);}, domain:[[-3,-0.3],[0.3,3]], shapeKeyF:'recip', shapeKeyDf:'recip-' },
+    { id:'sqrt1', cat:'sqrt', label:'Racine carrée', fExpr:'√x', dfExpr:'1/(2√x)',
+      f:function(x){return Math.sqrt(x);}, df:function(x){return 1/(2*Math.sqrt(x));}, domain:[[0.05,4]], shapeKeyF:'sqrt', shapeKeyDf:'recip+' },
+    { id:'sin1', cat:'trig', label:'Sinus', fExpr:'sin(x)', dfExpr:'cos(x)',
+      f:function(x){return Math.sin(x);}, df:function(x){return Math.cos(x);}, domain:[[-6.283,6.283]], shapeKeyF:'sin', shapeKeyDf:'cos' },
+    { id:'cos1', cat:'trig', label:'Cosinus', fExpr:'cos(x)', dfExpr:'-sin(x)',
+      f:function(x){return Math.cos(x);}, df:function(x){return -Math.sin(x);}, domain:[[-6.283,6.283]], shapeKeyF:'cos', shapeKeyDf:'sin-' },
+    { id:'exp1', cat:'exp', label:'Exponentielle', fExpr:'eˣ', dfExpr:'eˣ',
+      f:function(x){return Math.exp(x);}, df:function(x){return Math.exp(x);}, domain:[[-2,2]], shapeKeyF:'exp+', shapeKeyDf:'exp+' },
+    { id:'exp2', cat:'exp', label:'Exponentielle décroissante', fExpr:'e⁻ˣ', dfExpr:'-e⁻ˣ',
+      f:function(x){return Math.exp(-x);}, df:function(x){return -Math.exp(-x);}, domain:[[-2,2]], shapeKeyF:'exp-', shapeKeyDf:'exp-' }
+  ];
+
+  var tipByCat = {
+    affine: "Une fonction affine a une dérivée constante : sa pente ne change jamais.",
+    poly2: "La dérivée d'un polynôme de degré 2 est une droite (degré 1).",
+    poly3: "La dérivée d'un polynôme de degré 3 est une parabole (degré 2).",
+    inv: "1/x a une asymptote en 0 ; sa dérivée aussi — et elle reste toujours négative.",
+    sqrt: "√x n'existe que pour x ≥ 0 ; sa dérivée explose près de 0.",
+    trig: "sin et cos se dérivent l'un dans l'autre, avec un signe à surveiller.",
+    exp: "L'exponentielle est la seule fonction (à un signe près) égale à sa propre dérivée."
+  };
+  var universalTip = "Repère : là où f est croissante, f' est positive. Là où f a un maximum ou un minimum, f' vaut 0.";
+
+  var diffMap = {
+    facile:['affine','poly2'],
+    inter:['affine','poly2','poly3'],
+    avance:['affine','poly2','poly3','inv','sqrt','trig','exp']
+  };
+
+  /* ---------- utilitaires géométrie / rendu ---------- */
+  function sampleSegments(fn, domain, perSeg){
+    perSeg = perSeg || 120;
+    var out = [];
+    for(var s=0; s<domain.length; s++){
+      var a = domain[s][0], b = domain[s][1];
+      var pts = [];
+      for(var i=0;i<=perSeg;i++){
+        var x = a + (b-a)*i/perSeg;
+        var y = fn(x);
+        if(Number.isFinite(y)) pts.push([x,y]);
+      }
+      if(pts.length>1) out.push(pts);
+    }
+    return out;
+  }
+
+  function getYRange(segs){
+    var lo = Infinity, hi = -Infinity;
+    for(var s=0;s<segs.length;s++){
+      for(var i=0;i<segs[s].length;i++){
+        var y = segs[s][i][1];
+        if(y<lo) lo=y;
+        if(y>hi) hi=y;
+      }
+    }
+    if(!Number.isFinite(lo)){ lo=-1; hi=1; }
+    if(hi-lo < 1e-6){ lo-=1; hi+=1; }
+    var pad = (hi-lo)*0.12;
+    return [lo-pad, hi+pad];
+  }
+
+  function makeScales(domain, yr, w, h, pad){
+    var xMin = domain[0][0], xMax = domain[domain.length-1][1];
+    return {
+      xMin:xMin, xMax:xMax, yMin:yr[0], yMax:yr[1],
+      x:function(v){ return pad + (v-xMin)/(xMax-xMin)*(w-2*pad); },
+      y:function(v){ return h-pad - (v-yr[0])/(yr[1]-yr[0])*(h-2*pad); }
+    };
+  }
+
+  function pathFromSegs(segs, sc){
+    var parts = [];
+    for(var s=0;s<segs.length;s++){
+      var seg = segs[s];
+      var d = '';
+      for(var i=0;i<seg.length;i++){
+        d += (i===0?'M':'L') + sc.x(seg[i][0]).toFixed(2) + ',' + sc.y(seg[i][1]).toFixed(2) + ' ';
+      }
+      parts.push(d);
+    }
+    return parts.join('');
+  }
+
+  function niceNum(range, round){
+    if(range<=0) return 1;
+    var exp = Math.floor(Math.log10(range));
+    var f = range / Math.pow(10, exp);
+    var nf;
+    if(round){
+      if(f<1.5) nf=1; else if(f<3) nf=2; else if(f<7) nf=5; else nf=10;
+    } else {
+      if(f<=1) nf=1; else if(f<=2) nf=2; else if(f<=5) nf=5; else nf=10;
+    }
+    return nf * Math.pow(10, exp);
+  }
+
+  function niceTicks(min, max, count){
+    count = count || 5;
+    if(min===max){ min-=1; max+=1; }
+    var range = niceNum(max-min, false);
+    var step = niceNum(range/(count-1), true);
+    var niceMin = Math.floor(min/step)*step;
+    var niceMax = Math.ceil(max/step)*step;
+    var ticks = [];
+    for(var v=niceMin; v<=niceMax+1e-9; v+=step) ticks.push(parseFloat(v.toFixed(6)));
+    return ticks;
+  }
+
+  function fmtNum(v){
+    if(Math.abs(v - Math.round(v)) < 1e-6) return String(Math.round(v));
+    return v.toFixed(1).replace('.', ',');
+  }
+  function fmt2(v){
+    if(!Number.isFinite(v)) return '—';
+    return v.toFixed(2).replace('.', ',');
+  }
+
+  function axesSVG(sc, w, h, pad, showLabels){
+    var s = '';
+    var xTicks = niceTicks(sc.xMin, sc.xMax, 6).filter(function(t){ return t>=sc.xMin-1e-6 && t<=sc.xMax+1e-6; });
+    var yTicks = niceTicks(sc.yMin, sc.yMax, 5).filter(function(t){ return t>=sc.yMin-1e-6 && t<=sc.yMax+1e-6; });
+    xTicks.forEach(function(t){ var px=sc.x(t); s += '<line x1="'+px+'" y1="'+pad+'" x2="'+px+'" y2="'+(h-pad)+'" class="grid"/>'; });
+    yTicks.forEach(function(t){ var py=sc.y(t); s += '<line x1="'+pad+'" y1="'+py+'" x2="'+(w-pad)+'" y2="'+py+'" class="grid"/>'; });
+    var zeroX = (0>=sc.xMin && 0<=sc.xMax) ? sc.x(0) : null;
+    var zeroY = (0>=sc.yMin && 0<=sc.yMax) ? sc.y(0) : null;
+    if(zeroY!==null) s += '<line x1="'+pad+'" y1="'+zeroY+'" x2="'+(w-pad)+'" y2="'+zeroY+'" class="axis"/>';
+    if(zeroX!==null) s += '<line x1="'+zeroX+'" y1="'+pad+'" x2="'+zeroX+'" y2="'+(h-pad)+'" class="axis"/>';
+    if(showLabels){
+      xTicks.forEach(function(t){
+        if(Math.abs(t)<1e-9) return;
+        var px=sc.x(t);
+        s += '<text x="'+px+'" y="'+(h-pad+14)+'" class="tick-label" text-anchor="middle">'+fmtNum(t)+'</text>';
+      });
+      yTicks.forEach(function(t){
+        if(Math.abs(t)<1e-9) return;
+        var py=sc.y(t);
+        s += '<text x="'+(pad-6)+'" y="'+(py+3)+'" class="tick-label" text-anchor="end">'+fmtNum(t)+'</text>';
+      });
+      var oy = (zeroY!==null ? zeroY : h-pad);
+      s += '<text x="'+(pad-6)+'" y="'+(oy+12)+'" class="tick-label" text-anchor="end">0</text>';
+    }
+    return s;
+  }
+
+  function plotSVGMarkup(domain, fn, opts){
+    var w=opts.w, h=opts.h, pad=opts.pad;
+    var segs = sampleSegments(fn, domain);
+    var yr = getYRange(segs);
+    var sc = makeScales(domain, yr, w, h, pad);
+    var d = pathFromSegs(segs, sc);
+    var axes = axesSVG(sc, w, h, pad, opts.showLabels);
+    return '<svg viewBox="0 0 '+w+' '+h+'" class="plot-svg" preserveAspectRatio="xMidYMid meet" role="img" aria-label="graphe">' +
+      '<rect x="0.5" y="0.5" width="'+(w-1)+'" height="'+(h-1)+'" class="plot-bg"/>' +
+      axes +
+      '<path d="'+d+'" class="'+opts.color+'"/>' +
+      '</svg>';
+  }
+
+  function segmentContaining(x, domain){
+    for(var i=0;i<domain.length;i++){
+      if(x>=domain[i][0]-1e-9 && x<=domain[i][1]+1e-9) return domain[i];
+    }
+    return domain[0];
+  }
+
+  function clampToDomain(x, domain){
+    var best=null, bestDist=Infinity;
+    for(var i=0;i<domain.length;i++){
+      var a=domain[i][0], b=domain[i][1];
+      if(x>=a && x<=b) return x;
+      var d = x<a ? a-x : x-b;
+      if(d<bestDist){ bestDist=d; best = x<a ? a : b; }
+    }
+    return best;
+  }
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var t=a[i]; a[i]=a[j]; a[j]=t;
+    }
+    return a;
+  }
+
+  /* ---------- DOM refs ---------- */
+  var tabBtns = document.querySelectorAll('.tab-btn');
+  var tabPanels = document.querySelectorAll('.tab-panel');
+  var modeBtns = document.querySelectorAll('.mode-btn');
+  var difficultySelect = document.getElementById('difficultySelect');
+  var formulasCheckbox = document.getElementById('formulasCheckbox');
+  var scoreEl = document.getElementById('scoreEl');
+  var streakEl = document.getElementById('streakEl');
+  var bestEl = document.getElementById('bestEl');
+  var targetQuestion = document.getElementById('targetQuestion');
+  var targetSvg = document.getElementById('targetSvg');
+  var optionsGrid = document.getElementById('optionsGrid');
+  var feedbackEl = document.getElementById('feedback');
+  var nextBtn = document.getElementById('nextBtn');
+
+  var explorerSelect = document.getElementById('explorerSelect');
+  var playPauseBtn = document.getElementById('playPauseBtn');
+  var speedBtns = document.querySelectorAll('.speed-btn');
+  var resetExplorerBtn = document.getElementById('resetExplorerBtn');
+  var scrubInput = document.getElementById('scrubInput');
+  var panelF = document.getElementById('panelF');
+  var panelD = document.getElementById('panelD');
+  var fLabel = document.getElementById('fLabel');
+  var dLabel = document.getElementById('dLabel');
+  var readout = document.getElementById('readout');
+
+  /* ---------- état du jeu ---------- */
+  function loadBest(){ try{ return Number(localStorage.getItem('dd_best')||0); }catch(e){ return 0; } }
+  function saveBest(v){ try{ localStorage.setItem('dd_best', String(v)); }catch(e){} }
+
+  var state = { mode:'f2d', showFormulas:false, score:0, streak:0, best:loadBest(), answered:false, round:null };
+
+  function allowedCats(){ return diffMap[difficultySelect.value] || diffMap.inter; }
+
+  function pickDistractors(target, keyName, n){
+    var pool = bank.filter(function(e){ return e.id!==target.id; });
+    pool = shuffle(pool);
+    pool.sort(function(a,b){
+      var ak = a[keyName]===target[keyName] ? 1 : 0;
+      var bk = b[keyName]===target[keyName] ? 1 : 0;
+      return ak-bk;
+    });
+    return pool.slice(0, n);
+  }
+
+  function updateScoreUI(){
+    scoreEl.textContent = state.score;
+    streakEl.textContent = state.streak;
+    bestEl.textContent = state.best;
+  }
+
+  function renderRound(){
+    state.answered = false;
+    feedbackEl.hidden = true;
+    nextBtn.hidden = true;
+
+    var cats = allowedCats();
+    var pool = bank.filter(function(e){ return cats.indexOf(e.cat)!==-1; });
+    if(pool.length < 4) pool = bank;
+    var target = pool[Math.floor(Math.random()*pool.length)];
+    var keyName = state.mode==='f2d' ? 'shapeKeyDf' : 'shapeKeyF';
+    var distractors = pickDistractors(target, keyName, 3);
+    var options = shuffle([target].concat(distractors));
+    state.round = { target: target, options: options };
+
+    var targetFn = state.mode==='f2d' ? target.f : target.df;
+    var targetColor = state.mode==='f2d' ? 'curve-f' : 'curve-d';
+    targetSvg.innerHTML = plotSVGMarkup(target.domain, targetFn, {w:440,h:320,pad:34,color:targetColor,showLabels:true});
+    targetQuestion.textContent = state.mode==='f2d'
+      ? "Voici le graphique de f. Quelle est sa dérivée f' ?"
+      : "Voici le graphique de f'. Quelle fonction f a cette dérivée ?";
+
+    optionsGrid.innerHTML = '';
+    options.forEach(function(e){
+      var fn = state.mode==='f2d' ? e.df : e.f;
+      var color = state.mode==='f2d' ? 'curve-d' : 'curve-f';
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'option-card';
+      btn.dataset.id = e.id;
+      var svgMarkup = plotSVGMarkup(e.domain, fn, {w:200,h:140,pad:20,color:color,showLabels:false});
+      var formulaMarkup = state.showFormulas ? '<span class="option-formula">'+(state.mode==='f2d'?e.dfExpr:e.fExpr)+'</span>' : '';
+      btn.innerHTML = svgMarkup + formulaMarkup;
+      btn.addEventListener('click', function(){ handleAnswer(e.id); });
+      optionsGrid.appendChild(btn);
+    });
+  }
+
+  function handleAnswer(entryId){
+    if(state.answered) return;
+    state.answered = true;
+    var correct = entryId === state.round.target.id;
+
+    var cards = optionsGrid.querySelectorAll('.option-card');
+    cards.forEach(function(b){
+      b.disabled = true;
+      if(b.dataset.id === state.round.target.id) b.classList.add('is-correct');
+      else if(b.dataset.id === entryId) b.classList.add('is-wrong');
+    });
+
+    if(correct){
+      state.score++;
+      state.streak++;
+      if(state.streak > state.best){ state.best = state.streak; saveBest(state.best); }
+    } else {
+      state.streak = 0;
+    }
+    updateScoreUI();
+
+    var target = state.round.target;
+    feedbackEl.hidden = false;
+    feedbackEl.className = 'feedback ' + (correct ? 'is-correct' : 'is-wrong');
+    feedbackEl.innerHTML =
+      '<div class="feedback-head">' + (correct ? '✅ Exact !' : '❌ Pas cette fois.') + '</div>' +
+      '<div class="feedback-formula mono">f(x) = ' + target.fExpr + '&nbsp;&nbsp;→&nbsp;&nbsp;f\'(x) = ' + target.dfExpr + '</div>' +
+      '<div class="feedback-tip">' + tipByCat[target.cat] + ' ' + universalTip + '</div>';
+
+    nextBtn.hidden = false;
+  }
+
+  /* ---------- Explorateur ---------- */
+  var explorer = { entryId:'p3b', x:-2.2, dir:1, playing:false, speed:1 };
+
+  function currentEntry(){
+    for(var i=0;i<bank.length;i++) if(bank[i].id===explorer.entryId) return bank[i];
+    return bank[0];
+  }
+
+  function tangentLineScreen(Ppx, dirPx, halfLen){
+    var len = Math.hypot(dirPx[0], dirPx[1]) || 1;
+    var ux = dirPx[0]/len, uy = dirPx[1]/len;
+    return [Ppx[0]-ux*halfLen, Ppx[1]-uy*halfLen, Ppx[0]+ux*halfLen, Ppx[1]+uy*halfLen];
+  }
+
+  function renderExplorerFrame(){
+    var entry = currentEntry();
+    var domain = entry.domain;
+    var w=720, h=230, pad=36;
+
+    var segsF = sampleSegments(entry.f, domain);
+    var segsD = sampleSegments(entry.df, domain);
+    var yrF = getYRange(segsF);
+    var yrD = getYRange(segsD);
+    var scF = makeScales(domain, yrF, w, h, pad);
+    var scD = makeScales(domain, yrD, w, h, pad);
+
+    var x = explorer.x;
+    var revealF = segsF.map(function(seg){ return seg.filter(function(p){ return p[0] <= x+1e-9; }); });
+    var revealD = segsD.map(function(seg){ return seg.filter(function(p){ return p[0] <= x+1e-9; }); });
+
+    var seg = segmentContaining(x, domain);
+    var dspan = (seg[1]-seg[0])*0.06 || 0.05;
+    var x1 = Math.max(seg[0], x-dspan), x2 = Math.min(seg[1], x+dspan);
+    var y1 = entry.f(x1), y2 = entry.f(x2);
+    var Ppx = [scF.x(x), scF.y(entry.f(x))];
+    var dirPx = [scF.x(x2)-scF.x(x1), scF.y(y2)-scF.y(y1)];
+    var halfLen = (w-2*pad)*0.15;
+    var tan = tangentLineScreen(Ppx, dirPx, halfLen);
+
+    var Qpx = [scD.x(x), scD.y(entry.df(x))];
+
+    panelF.innerHTML =
+      '<svg viewBox="0 0 '+w+' '+h+'" class="plot-svg explorer-svg">' +
+      '<rect x="0.5" y="0.5" width="'+(w-1)+'" height="'+(h-1)+'" class="plot-bg"/>' +
+      axesSVG(scF,w,h,pad,true) +
+      '<path d="'+pathFromSegs(segsF, scF)+'" class="curve-f curve-faint"/>' +
+      '<path d="'+pathFromSegs(revealF, scF)+'" class="curve-f"/>' +
+      '<line x1="'+scF.x(x)+'" y1="'+pad+'" x2="'+scF.x(x)+'" y2="'+(h-pad)+'" class="guide-line"/>' +
+      '<line x1="'+tan[0].toFixed(2)+'" y1="'+tan[1].toFixed(2)+'" x2="'+tan[2].toFixed(2)+'" y2="'+tan[3].toFixed(2)+'" class="tangent-line"/>' +
+      '<circle cx="'+Ppx[0].toFixed(2)+'" cy="'+Ppx[1].toFixed(2)+'" r="6" class="point-f"/>' +
+      '</svg>';
+
+    panelD.innerHTML =
+      '<svg viewBox="0 0 '+w+' '+h+'" class="plot-svg explorer-svg">' +
+      '<rect x="0.5" y="0.5" width="'+(w-1)+'" height="'+(h-1)+'" class="plot-bg"/>' +
+      axesSVG(scD,w,h,pad,true) +
+      '<path d="'+pathFromSegs(segsD, scD)+'" class="curve-d curve-faint"/>' +
+      '<path d="'+pathFromSegs(revealD, scD)+'" class="curve-d"/>' +
+      '<line x1="'+scD.x(x)+'" y1="'+pad+'" x2="'+scD.x(x)+'" y2="'+(h-pad)+'" class="guide-line"/>' +
+      '<circle cx="'+Qpx[0].toFixed(2)+'" cy="'+Qpx[1].toFixed(2)+'" r="6" class="point-d"/>' +
+      '</svg>';
+
+    readout.innerHTML =
+      '<span>x = '+fmt2(x)+'</span>' +
+      '<span class="ro-f">f(x) = '+fmt2(entry.f(x))+'</span>' +
+      '<span class="ro-d">f\'(x) = '+fmt2(entry.df(x))+'</span>';
+  }
+
+  function setupExplorerEntry(){
+    var entry = currentEntry();
+    var dmin = entry.domain[0][0], dmax = entry.domain[entry.domain.length-1][1];
+    explorer.x = dmin;
+    explorer.dir = 1;
+    explorer.playing = false;
+    playPauseBtn.textContent = '▶ Lecture';
+    playPauseBtn.setAttribute('aria-pressed','false');
+    scrubInput.min = dmin;
+    scrubInput.max = dmax;
+    scrubInput.step = (dmax-dmin)/500;
+    scrubInput.value = dmin;
+    fLabel.textContent = 'f(x) = ' + entry.fExpr;
+    dLabel.textContent = "f'(x) = " + entry.dfExpr;
+    renderExplorerFrame();
+  }
+
+  var lastT = null;
+  function loop(t){
+    if(lastT===null) lastT = t;
+    var dt = Math.min((t-lastT)/1000, 0.05);
+    lastT = t;
+    if(explorer.playing){
+      var entry = currentEntry();
+      var dmin = entry.domain[0][0], dmax = entry.domain[entry.domain.length-1][1];
+      var span = dmax - dmin;
+      var rate = span/6.5;
+      var nx = explorer.x + explorer.dir*rate*explorer.speed*dt;
+      if(nx>=dmax){ nx=dmax; explorer.dir=-1; }
+      if(nx<=dmin){ nx=dmin; explorer.dir=1; }
+      explorer.x = clampToDomain(nx, entry.domain);
+      scrubInput.value = explorer.x;
+      renderExplorerFrame();
+    }
+    requestAnimationFrame(loop);
+  }
+
+  /* ---------- init ---------- */
+  function switchTab(name){
+    tabBtns.forEach(function(b){
+      var active = b.dataset.tab===name;
+      b.classList.toggle('is-active', active);
+      b.setAttribute('aria-selected', active ? 'true':'false');
+    });
+    tabPanels.forEach(function(p){ p.hidden = p.dataset.tabPanel !== name; });
+  }
+
+  function init(){
+    tabBtns.forEach(function(b){ b.addEventListener('click', function(){ switchTab(b.dataset.tab); }); });
+
+    modeBtns.forEach(function(b){
+      b.addEventListener('click', function(){
+        state.mode = b.dataset.mode;
+        modeBtns.forEach(function(x){ x.classList.toggle('is-active', x===b); });
+        renderRound();
+      });
+    });
+    difficultySelect.addEventListener('change', renderRound);
+    formulasCheckbox.addEventListener('change', function(){
+      state.showFormulas = formulasCheckbox.checked;
+      renderRound();
+    });
+    nextBtn.addEventListener('click', renderRound);
+
+    bank.forEach(function(e){
+      var opt = document.createElement('option');
+      opt.value = e.id;
+      opt.textContent = e.label + '  —  f(x) = ' + e.fExpr;
+      explorerSelect.appendChild(opt);
+    });
+    explorerSelect.value = explorer.entryId;
+    explorerSelect.addEventListener('change', function(){
+      explorer.entryId = explorerSelect.value;
+      setupExplorerEntry();
+    });
+
+    playPauseBtn.addEventListener('click', function(){
+      explorer.playing = !explorer.playing;
+      playPauseBtn.textContent = explorer.playing ? '⏸ Pause' : '▶ Lecture';
+      playPauseBtn.setAttribute('aria-pressed', explorer.playing);
+    });
+    speedBtns.forEach(function(b){
+      b.addEventListener('click', function(){
+        explorer.speed = parseFloat(b.dataset.speed);
+        speedBtns.forEach(function(x){ x.classList.toggle('is-active', x===b); });
+      });
+    });
+    scrubInput.addEventListener('input', function(){
+      explorer.playing = false;
+      playPauseBtn.textContent = '▶ Lecture';
+      playPauseBtn.setAttribute('aria-pressed','false');
+      explorer.x = clampToDomain(parseFloat(scrubInput.value), currentEntry().domain);
+      renderExplorerFrame();
+    });
+    resetExplorerBtn.addEventListener('click', function(){
+      explorer.playing = false;
+      explorer.dir = 1;
+      var entry = currentEntry();
+      explorer.x = entry.domain[0][0];
+      playPauseBtn.textContent = '▶ Lecture';
+      playPauseBtn.setAttribute('aria-pressed','false');
+      scrubInput.value = explorer.x;
+      renderExplorerFrame();
+    });
+
+    updateScoreUI();
+    renderRound();
+    setupExplorerEntry();
+    requestAnimationFrame(loop);
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+
+})();
+
+/* Mise en cache hors connexion (installation sur l'écran d'accueil / le bureau).
+   Uniquement en https ou sur localhost : en ouverture directe du fichier
+   (file://), les service workers sont interdits et l'app fonctionne déjà
+   sans réseau puisque tout est dans cette page. */
+if ('serviceWorker' in navigator &&
+    (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./derivees-defi-sw.js').catch(function (e) { console.warn('SW non enregistré', e); });
+    });
+}
+</script>
+</body>
+</html>
