@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maths au Cube — Studio Électrotechnique</title>
+<link rel="stylesheet" href="studio.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">🟢🔵🟠 <span>Studio pédagogique — Maths &amp; Électrotechnique</span></div>
+  <nav class="levelbar" id="levelBar" aria-label="Niveau"></nav>
+  <div class="topactions">
+    <a class="mc-link" href="../whiteboard-derivation.html">↩ Dérivation</a>
+    <button id="btnAnnotate" type="button" title="Annoter au stylo libre (A)" aria-label="Annoter" aria-pressed="false">✏️</button>
+    <button id="btnTheme" type="button" title="Thème clair / sombre (T)" aria-label="Changer de thème">🌓</button>
+    <button id="btnFull" type="button" title="Plein écran (F)" aria-label="Plein écran">⛶</button>
+  </div>
+</header>
+<main id="stage">
+  <button id="btnBack" type="button" class="mc-back" hidden>← Retour aux concepts (Échap)</button>
+  <div id="conceptGrid" class="mc-grid"></div>
+  <div id="sceneStage" class="mc-stage" hidden></div>
+</main>
+
+<script src="core/units.js"></script>
+<script src="core/math.js"></script>
+<script src="core/electrical.js"></script>
+<script src="core/mechanics.js"></script>
+<script src="core/calculus.js"></script>
+<script src="core/animation.js"></script>
+<script src="components/svg.js"></script>
+<script src="components/Chart.js"></script>
+<script src="components/SceneLayout.js"></script>
+<script src="components/FunctionGraph.js"></script>
+<script src="components/VariationTable.js"></script>
+<script src="components/ParameterSlider.js"></script>
+<script src="components/TimeCursor.js"></script>
+<script src="components/SineWave.js"></script>
+<script src="components/PhasorDiagram.js"></script>
+<script src="components/PowerTriangle.js"></script>
+<script src="components/FormulaPanel.js"></script>
+<script src="components/ExplainPanel.js"></script>
+<script src="components/CircuitDiagram.js"></script>
+<script src="components/MechanismAnimation.js"></script>
+<script src="components/SituationScene.js"></script>
+<script src="components/Annotate.js"></script>
+<script src="scenes/dephasage-puissances.js"></script>
+<script src="scenes/derivation-concept.js"></script>
+<script src="scenes/pente-ordonnee.js"></script>
+<script src="scenes/derivation-electromecanique.js"></script>
+<script src="scenes/rampes-derivee.js"></script>
+<script src="content/bac-pro-melec.js"></script>
+<script src="content/bts-electrotechnique.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
