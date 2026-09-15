@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maths au Cube — ressource</title>
+<meta name="robots" content="noindex">
+<style>
+  :root{
+    --vert:#16a34a; --bleu:#2563eb; --orange:#ea580c;
+    --encre:#15233b; --gris:#5b6b85; --fond:#f6f8fb; --carte:#fff; --bord:#e2e8f2;
+    --accent:var(--bleu);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fond);color:var(--encre);
+       font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+       padding:max(16px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+  main{max-width:560px;margin:0 auto}
+  .badge{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:13px;
+         letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--accent);
+         padding:7px 14px;border-radius:999px}
+  h1{font-size:23px;line-height:1.3;margin:16px 0 8px}
+  .meta{color:var(--gris);font-size:15px;margin:0 0 20px}
+  .carte{background:var(--carte);border:1px solid var(--bord);border-radius:14px;padding:18px;margin-bottom:14px}
+  a.btn,button.btn{display:block;width:100%;border:0;border-radius:12px;padding:16px;
+        font:inherit;font-weight:700;color:#fff;background:var(--accent);
+        text-align:center;text-decoration:none;cursor:pointer;margin-top:10px}
+  button.btn.suivant{background:var(--carte);color:var(--accent);border:2px dashed var(--accent)}
+  .palier{border-left:4px solid var(--bord);padding-left:14px;margin:16px 0}
+  .palier.actif{border-color:var(--accent)}
+  .palier h2{font-size:16px;margin:0 0 2px}
+  .palier .d{color:var(--gris);font-size:14px;margin:0}
+  .apres{background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:14px;margin-top:18px}
+  .apres strong{color:var(--orange)}
+  footer{color:var(--gris);font-size:13px;text-align:center;margin-top:26px;line-height:1.5}
+  code{background:#eef2f8;padding:2px 6px;border-radius:5px;font-size:13px}
+</style>
+</head>
+<body>
+<main id="app"><p class="meta">Chargement…</p></main>
+
+<script>
+(function(){
+  "use strict";
+  var FAMILLES = {
+    "comprendre": {label:"▶ Je comprends",   couleur:"var(--bleu)"},
+    "voir-faire": {label:"✎ Je regarde faire",couleur:"var(--vert)"},
+    "debloquer":  {label:"SOS Je suis bloqué",couleur:"var(--orange)"},
+    "se-tester":  {label:"✔ Je me teste",     couleur:"var(--vert)"}
+  };
+  var app = document.getElementById("app");
+
+  function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+
+  function slugDemande(){
+    var p = new URLSearchParams(location.search).get("r");
+    if (!p && location.hash) p = decodeURIComponent(location.hash.slice(1));
+    return (p || "").trim().toLowerCase();
+  }
+
+  // Une cible n'est acceptée que si c'est une URL http(s) absolue : pas de javascript:, pas de data:.
+  function cibleSure(url){
+    try { var u = new URL(url, location.href);
+          return (u.protocol === "https:" || u.protocol === "http:") ? u.href : ""; }
+    catch(e){ return ""; }
+  }
+
+  function entete(res){
+    var f = FAMILLES[res.famille] || {label:"Ressource", couleur:"var(--bleu)"};
+    document.documentElement.style.setProperty("--accent", f.couleur);
+    return '<span class="badge">' + esc(f.label) + '</span>' +
+           '<h1>' + esc(res.titre) + '</h1>';
+  }
+
+  function blocPapier(res){
+    if (!res.papier) return "";
+    return '<div class="apres"><strong>Sur ta feuille :</strong> ' + esc(res.papier) + '</div>';
+  }
+
+  function rendreDirect(res){
+    var url = cibleSure(res.url);
+    app.innerHTML = entete(res) +
+      '<p class="meta">⏱ ' + esc(res.duree || "") + '</p>' +
+      '<div class="carte">' +
+        '<a class="btn" href="' + esc(url) + '" rel="noopener">Ouvrir la vidéo</a>' +
+      '</div>' + blocPapier(res) + pied();
+  }
+
+  function rendreGradue(res){
+    var paliers = (res.paliers || []).filter(function(p){ return cibleSure(p.url); });
+    var ouverts = 1;
+    function peindre(){
+      var h = entete(res) +
+        '<p class="meta">Prends l\'aide la plus petite d\'abord. Redescends sur ta feuille dès que tu peux repartir.</p>' +
+        '<div class="carte">';
+      paliers.forEach(function(p, i){
+        if (i >= ouverts) return;
+        h += '<div class="palier actif">' +
+               '<h2>' + (i+1) + '. ' + esc(p.titre) + '</h2>' +
+               '<p class="d">⏱ ' + esc(p.duree || "") + '</p>' +
+               '<a class="btn" href="' + esc(cibleSure(p.url)) + '" rel="noopener">Ouvrir</a>' +
+             '</div>';
+      });
+      if (ouverts < paliers.length) {
+        h += '<button class="btn suivant" id="plus">Toujours bloqué → ' +
+             esc(paliers[ouverts].titre) + '</button>';
+      }
+      h += '</div>' + blocPapier(res) + pied();
+      app.innerHTML = h;
+      var b = document.getElementById("plus");
+      if (b) b.addEventListener("click", function(){ ouverts++; peindre(); window.scrollTo(0, document.body.scrollHeight); });
+    }
+    peindre();
+  }
+
+  function rendreAProduire(res){
+    app.innerHTML = entete(res) +
+      '<div class="carte">' +
+        '<p><strong>Cette vidéo est en préparation.</strong></p>' +
+        '<p class="meta" style="margin:0">Elle arrivera à cette même adresse : le QR de ta feuille restera valable.</p>' +
+      '</div>' + (blocPapier(res) ||
+      '<div class="apres"><strong>Sur ta feuille :</strong> continue l\'exercice, le cours fonctionne sans la vidéo.</div>') + pied();
+  }
+
+  function rendreInconnu(slug){
+    app.innerHTML = '<h1>Ressource introuvable</h1>' +
+      '<p class="meta">Le code <code>' + esc(slug || "(vide)") + '</code> n\'existe pas dans la bibliothèque.</p>' +
+      '<div class="apres"><strong>Sur ta feuille :</strong> le cours reste entièrement utilisable sans scanner. ' +
+      'Signale ce code à ton professeur.</div>' + pied();
+  }
+
+  function pied(){
+    return '<footer>Maths au Cube — bibliothèque pédagogique<br>' +
+           'Aucune donnée n\'est collectée sur cette page.</footer>';
+  }
+
+  var slug = slugDemande();
+  if (!slug) { rendreInconnu(""); return; }
+
+  fetch("../qr-registry.json", {cache:"no-cache"})
+    .then(function(r){ if(!r.ok) throw new Error("registre indisponible"); return r.json(); })
+    .then(function(reg){
+      var res = (reg.ressources || []).find(function(x){ return x.slug === slug; });
+      if (!res) return rendreInconnu(slug);
+      if (res.statut !== "publie") return rendreAProduire(res);
+      if (res.type === "gradue") {
+        var ok = (res.paliers || []).some(function(p){ return cibleSure(p.url); });
+        return ok ? rendreGradue(res) : rendreAProduire(res);
+      }
+      return cibleSure(res.url) ? rendreDirect(res) : rendreAProduire(res);
+    })
+    .catch(function(){
+      app.innerHTML = '<h1>Connexion indisponible</h1>' +
+        '<p class="meta">Impossible de charger la bibliothèque pour le moment.</p>' +
+        '<div class="apres"><strong>Sur ta feuille :</strong> continue le travail, ' +
+        'le document fonctionne entièrement sans la vidéo. Tu pourras scanner plus tard.</div>' + pied();
+    });
+})();
+</script>
+</body>
+</html>

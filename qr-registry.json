@@ -1,0 +1,61 @@
+{
+  "version": "2026-09-15",
+  "doc": "Registre des adresses permanentes Maths au Cube. Source de vérité des QR imprimés. Voir docs/STANDARD-DOCUMENT-AUGMENTE.md. Un slug imprimé n'est JAMAIS supprimé ni réattribué : on change uniquement sa cible.",
+  "schema": {
+    "slug": "identifiant permanent, minuscules sans accent : <notion>-<numero>[-<palier>]",
+    "famille": "comprendre | voir-faire | debloquer | se-tester",
+    "titre": "question ou promesse affichée sous le QR sur le papier",
+    "duree": "durée réelle de la ressource, format m:ss, à ±15 s de la durée imprimée",
+    "statut": "publie | a_produire",
+    "type": "direct (une seule ressource) | gradue (aide en 3 paliers)",
+    "url": "cible actuelle, pour type=direct",
+    "paliers": "pour type=gradue : liste ordonnée { titre, duree, url }",
+    "papier": "consigne de repli affichée si la ressource n'est pas encore produite"
+  },
+  "ressources": [
+    {
+      "slug": "derivee-01",
+      "famille": "comprendre",
+      "titre": "Pourquoi la pente représente-t-elle l'accélération ?",
+      "duree": "3:10",
+      "statut": "a_produire",
+      "type": "direct",
+      "url": "",
+      "papier": "Reprends le graphe de la fiche : calcule Δv puis Δt, et réponds à la question 1."
+    },
+    {
+      "slug": "derivee-01-sos",
+      "famille": "debloquer",
+      "titre": "Je ne comprends pas le symbole Δ",
+      "duree": "1:15",
+      "statut": "a_produire",
+      "type": "direct",
+      "url": "",
+      "papier": "Δ signifie « variation » : Δv = valeur d'arrivée − valeur de départ. Reprends le calcul de a."
+    },
+    {
+      "slug": "derivee-02",
+      "famille": "voir-faire",
+      "titre": "Regarde-moi résoudre un exemple similaire",
+      "duree": "4:00",
+      "statut": "a_produire",
+      "type": "gradue",
+      "paliers": [
+        { "titre": "Indice", "duree": "0:40", "url": "" },
+        { "titre": "Méthode", "duree": "1:30", "url": "" },
+        { "titre": "Correction détaillée", "duree": "4:00", "url": "" }
+      ],
+      "papier": "Relis l'exemple résolu de la fiche, puis fais la question 2 seul."
+    },
+    {
+      "slug": "derivee-03",
+      "famille": "se-tester",
+      "titre": "Vérifie ta compréhension — correction du ticket de sortie",
+      "duree": "1:30",
+      "statut": "a_produire",
+      "type": "direct",
+      "url": "",
+      "papier": "Compare tes 4 réponses avec ton voisin, puis avec la correction en fin de séance."
+    }
+  ]
+}
