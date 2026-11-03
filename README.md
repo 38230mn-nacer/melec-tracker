@@ -30,3 +30,6 @@ La chaîne V4.7.8 validée est conservée pour le sujet/corrigé Word avec équa
 - `docs/STANDARD-DOCUMENT-AUGMENTE.md` : standard de conception papier + QR (familles, quotas, règle de parité papier, specs d'impression) ;
 - `qr-registry.json` : registre des adresses permanentes — un slug imprimé n'est jamais supprimé ni réattribué ;
 - `v/index.html` : résolveur `/v/?r=<slug>` (redirection, aide graduée en 3 paliers, page « en préparation »), sans aucune collecte de données.
+
+## Radar Faux Favori
+- `faux-favori/index.html` : outil autonome (hors MELEC) pour démasquer un faux favori hippique — profils mémoire / circonstances / réputation, import de musique, barème heuristique documenté dans la page.
