@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Radar Faux Favori</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Démasquer un faux favori : cheval à mémoire, cheval à circonstances, cheval de réputation, à partir des faits de la course.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout : formulaire de saisie à gauche (le dossier du cheval), radar de verdict collant à droite ; une colonne sur téléphone. */
+:root{
+  --bg:#F1F4F1; --panel:#FFFFFF; --sunken:#E7ECE8; --line:#D2DAD4; --line-strong:#B9C4BD;
+  --ink:#17201B; --soft:#4C5951; --mute:#788680;
+  --accent:#C4531A; --accent-soft:#F6E2D4; --blue:#1F4FA8; --blue-soft:#E1E8F6;
+  --ok:#1C7C4C; --ok-soft:#DCEFE3; --warn:#A86E12; --warn-soft:#F5E9CF; --bad:#B4382A; --bad-soft:#F6DCD7;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111613; --panel:#19201C; --sunken:#212A25; --line:#2F3A34; --line-strong:#43514A;
+  --ink:#E5ECE7; --soft:#A8B5AD; --mute:#7D8A83;
+  --accent:#EB8045; --accent-soft:#3B2417; --blue:#86A8EC; --blue-soft:#1A2540;
+  --ok:#55C28D; --ok-soft:#14301F; --warn:#E3AE52; --warn-soft:#33280F; --bad:#EF7C6A; --bad-soft:#3B1C17;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111613; --panel:#19201C; --sunken:#212A25; --line:#2F3A34; --line-strong:#43514A;
+  --ink:#E5ECE7; --soft:#A8B5AD; --mute:#7D8A83;
+  --accent:#EB8045; --accent-soft:#3B2417; --blue:#86A8EC; --blue-soft:#1A2540;
+  --ok:#55C28D; --ok-soft:#14301F; --warn:#E3AE52; --warn-soft:#33280F; --bad:#EF7C6A; --bad-soft:#3B1C17;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 40px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+header{display:flex;flex-direction:column;gap:6px}
+.eyebrow{font:600 13px/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 clamp(36px,6vw,56px)/1 var(--f-display);margin:0;letter-spacing:.01em;text-wrap:balance}
+.lede{margin:0;color:var(--soft);max-width:68ch}
+h2{font:600 22px/1.1 var(--f-display);margin:0;letter-spacing:.02em;text-transform:uppercase}
+h3{font:600 20px/1.1 var(--f-display);margin:0;letter-spacing:.01em}
+.grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.results{position:sticky;top:max(16px,env(safe-area-inset-top,0px))}
+@media (max-width:900px){.results{position:static}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.hint{font-size:14px;color:var(--mute);margin:0}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--soft);min-width:0}
+input,select,button{font:inherit;color:inherit}
+input[type=text],input[type=number],select{width:100%;background:var(--bg);border:1px solid var(--line-strong);border-radius:8px;padding:8px 10px;font-size:15px;font-weight:400;color:var(--ink);min-width:0}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.checks{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border:1px solid var(--line-strong);border-radius:999px;font-size:14px;cursor:pointer;background:var(--bg);user-select:none}
+.chip:has(input:checked){background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+.chip input{accent-color:var(--accent);margin:0}
+.btn{border:1px solid var(--line-strong);background:var(--panel);border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.small{padding:5px 10px;font-size:13px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:end}
+.row .grow{flex:1 1 220px}
+.musique{font:500 15px/1.3 var(--f-mono);letter-spacing:.04em;color:var(--soft);overflow-wrap:anywhere}
+.musique b{color:var(--ink);font-weight:500}
+.musique .ref{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:600px;font-size:14px}
+th{font:600 12px/1.2 var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--mute);text-align:left;padding:8px 6px;background:var(--sunken);white-space:nowrap}
+td{padding:5px 4px;border-top:1px solid var(--line);vertical-align:middle}
+td.n{font:500 13px var(--f-mono);color:var(--mute);text-align:center;width:28px}
+td input,td select{padding:6px 8px;font-size:14px}
+td.c{text-align:center}
+td input[type=radio]{accent-color:var(--accent);width:18px;height:18px}
+tr.is-ref td{background:var(--accent-soft)}
+.del{border:0;background:none;color:var(--mute);font-size:20px;line-height:1;cursor:pointer;padding:4px 8px;border-radius:6px}
+.del:hover{color:var(--bad);background:var(--bad-soft)}
+.w-place{width:96px}.w-dist{width:82px}.w-terr{width:112px}.w-j{width:66px}
+.tabnum{font-variant-numeric:tabular-nums}
+
+/* Verdict */
+.verdict{border-width:2px}
+.verdict[data-v="ok"]{border-color:var(--ok)}
+.verdict[data-v="warn"]{border-color:var(--warn)}
+.verdict[data-v="bad"]{border-color:var(--bad)}
+.v-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.v-label{font:700 30px/1 var(--f-display);text-transform:uppercase;letter-spacing:.02em;text-wrap:balance}
+.verdict[data-v="ok"] .v-label{color:var(--ok)}
+.verdict[data-v="warn"] .v-label{color:var(--warn)}
+.verdict[data-v="bad"] .v-label{color:var(--bad)}
+.v-score{font:700 52px/0.9 var(--f-display);font-variant-numeric:tabular-nums;text-align:right}
+.v-score small{display:block;font:600 12px/1.2 var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin-top:4px}
+.v-text{margin:0;color:var(--soft)}
+.gauge{position:relative;height:10px;border-radius:999px;background:linear-gradient(90deg,var(--ok) 0 35%,var(--warn) 35% 60%,var(--bad) 60% 100%);opacity:.9}
+.gauge i{position:absolute;top:-5px;width:4px;height:20px;border-radius:2px;background:var(--ink);transform:translateX(-50%);transition:left .3s ease}
+.gauge-scale{display:flex;justify-content:space-between;font:500 11px var(--f-mono);color:var(--mute)}
+.profiles{display:flex;flex-direction:column;gap:12px}
+.prof{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.prof-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.prof-sub{font-size:13px;color:var(--mute);margin:2px 0 0}
+.pill{font:600 12px/1 var(--f-body);letter-spacing:.05em;text-transform:uppercase;padding:6px 10px;border-radius:999px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pill[data-v="ok"]{background:var(--ok-soft);color:var(--ok)}
+.pill[data-v="warn"]{background:var(--warn-soft);color:var(--warn)}
+.pill[data-v="bad"]{background:var(--bad-soft);color:var(--bad)}
+.pill[data-v="na"]{background:var(--sunken);color:var(--mute)}
+.bar{height:6px;border-radius:999px;background:var(--sunken);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:999px;transition:width .3s ease}
+.facts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.facts li{display:grid;grid-template-columns:14px minmax(0,1fr);gap:8px;align-items:baseline}
+.facts li::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--mute);transform:translateY(1px)}
+.facts li[data-k="ok"]::before{background:var(--ok)}
+.facts li[data-k="warn"]::before{background:var(--warn)}
+.facts li[data-k="bad"]::before{background:var(--bad)}
+.facts li[data-k="info"]::before{background:var(--blue);border-radius:2px}
+.facts li[data-k="rule"]{color:var(--soft);font-style:italic}
+.facts li[data-k="rule"]::before{background:none;border:1.5px solid var(--blue);border-radius:2px}
+.synth ol{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.synth li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start;font-size:15px}
+.synth .mk{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:700 15px var(--f-body)}
+.synth .mk[data-v="ok"]{background:var(--ok-soft);color:var(--ok)}
+.synth .mk[data-v="warn"]{background:var(--warn-soft);color:var(--warn)}
+.synth .mk[data-v="bad"]{background:var(--bad-soft);color:var(--bad)}
+.synth .mk[data-v="na"]{background:var(--sunken);color:var(--mute)}
+.synth .ans{display:block;font-size:13px;color:var(--mute)}
+details.method{font-size:14px;color:var(--soft)}
+details.method summary{cursor:pointer;font-weight:600;color:var(--ink)}
+details.method p{margin:8px 0 0;max-width:70ch}
+footer{font-size:13px;color:var(--mute);border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:4px}
+footer a{color:var(--blue)}
+.badge-ex{font:600 11px/1 var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--blue);background:var(--blue-soft);padding:5px 8px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Analyse avant course</span>
+    <h1>Radar Faux Favori</h1>
+    <p class="lede">La cote est une opinion collective. Le radar confronte le favori aux faits de la course du jour et dit quel récit porte son prix : la <strong>mémoire</strong>, l'<strong>excuse</strong> ou la <strong>réputation</strong>.</p>
+  </header>
+
+  <div class="grid">
+    <!-- SAISIE -->
+    <div class="col">
+      <section class="panel" aria-labelledby="h-course">
+        <div class="panel-head"><h2 id="h-course">Course du jour</h2><span id="exTag" class="badge-ex" hidden>Exemple fictif</span></div>
+        <div class="fields">
+          <label class="f" for="t-dist">Distance (m)<input id="t-dist" type="number" min="800" max="7500" step="50" inputmode="numeric"></label>
+          <label class="f" for="t-terrain">Terrain<select id="t-terrain"></select></label>
+          <label class="f" for="t-profil">Profil de course pour lui<select id="t-profil">
+            <option value="inconnu">Inconnu</option>
+            <option value="favorable">Favorable (corde, rythme)</option>
+            <option value="neutre">Neutre</option>
+            <option value="defavorable">Défavorable (corde, rythme)</option>
+          </select></label>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="h-marche">
+        <h2 id="h-marche">Le favori et son marché</h2>
+        <div class="fields">
+          <label class="f" for="m-nom">Cheval<input id="m-nom" type="text" autocomplete="off"></label>
+          <label class="f" for="m-cote">Cote (rapport pour 1 €)<input id="m-cote" type="number" min="1.01" step="0.1" inputmode="decimal"></label>
+        </div>
+        <p class="hint">Cote au format « 5/2 » : ajoutez 1 → 3,5.</p>
+        <div class="checks" role="group" aria-label="Facteurs de réputation">
+          <label class="chip" for="m-ecurie"><input id="m-ecurie" type="checkbox">Écurie en vue</label>
+          <label class="chip" for="m-jockey"><input id="m-jockey" type="checkbox">Jockey / driver star</label>
+          <label class="chip" for="m-pronos"><input id="m-pronos" type="checkbox">Star des pronostics, médiatisé</label>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="h-hist">
+        <div class="panel-head"><h2 id="h-hist">Historique</h2><span class="hint">Course la plus récente en n° 1</span></div>
+        <div class="row">
+          <label class="f grow" for="musique-in">Coller une musique<input id="musique-in" type="text" placeholder="ex. 6p 5p 7p (25) 1p 8p" autocomplete="off" spellcheck="false"></label>
+          <button class="btn" id="btn-import" type="button">Importer les places</button>
+        </div>
+        <div class="musique" id="musique-out" aria-live="polite"></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Place</th><th>Distance</th><th>Terrain</th><th>Il y a (j)</th><th>Excuse avancée</th><th title="Performance de référence">Réf.</th><th><span class="sr" hidden>Supprimer</span></th>
+            </tr></thead>
+            <tbody id="races"></tbody>
+          </table>
+        </div>
+        <div class="row">
+          <button class="btn small" id="btn-add" type="button">+ Ajouter une course</button>
+          <button class="btn small" id="btn-refauto" type="button">Référence auto (meilleure place)</button>
+        </div>
+        <p class="hint">Excuse avancée : mauvais départ, gêné, terrain… Laissez vide pour une course « propre ». Champs vides = information non prise en compte.</p>
+      </section>
+
+      <div class="row">
+        <button class="btn" id="btn-example" type="button">Charger l'exemple</button>
+        <button class="btn" id="btn-reset" type="button">Nouveau cheval</button>
+      </div>
+    </div>
+
+    <!-- RÉSULTATS -->
+    <div class="col results" aria-live="polite">
+      <section class="panel verdict" id="verdict" data-v="ok">
+        <div class="v-top">
+          <div style="min-width:0">
+            <div class="eyebrow" id="v-nom">Favori</div>
+            <div class="v-label" id="v-label">—</div>
+          </div>
+          <div class="v-score"><span id="v-score">0</span><small>Indice /100</small></div>
+        </div>
+        <div class="gauge" aria-hidden="true"><i id="v-mark" style="left:0%"></i></div>
+        <div class="gauge-scale" aria-hidden="true"><span>0</span><span>35</span><span>60</span><span>100</span></div>
+        <p class="v-text" id="v-text"></p>
+      </section>
+
+      <div class="profiles" id="profiles"></div>
+
+      <section class="panel synth" aria-labelledby="h-synth">
+        <h2 id="h-synth">Le favori doit prouver</h2>
+        <ol id="synth"></ol>
+      </section>
+
+      <details class="method">
+        <summary>Comment le radar calcule</summary>
+        <p><strong>Mémoire</strong> : fraîcheur de la référence (jours), répétition du niveau (autres courses ≤ 3e), test avant / après (moyenne des places depuis), conditions de la référence (distance ±10 %, terrain).</p>
+        <p><strong>Circonstances</strong> : l'excuse est neutralisée. Le radar compare la forme « racontée » (courses excusées retirées) à la forme réelle (tout compté). L'écart mesure ce que la cote doit au récit.</p>
+        <p><strong>Réputation</strong> : facteurs de halo cochés × faiblesse du profil intrinsèque (forme des 3 dernières, résultat à la distance du jour, profil de course), pondérés par le niveau de la cote.</p>
+        <p><strong>Indice global</strong> = 0,7 × profil le plus élevé + 0,3 × moyenne des trois. Seuils : &lt; 35 crédible, 35–59 à surveiller, ≥ 60 faux favori probable. Barème heuristique, à calibrer sur vos propres résultats.</p>
+      </details>
+    </div>
+  </div>
+
+  <footer>
+    <span>Outil d'aide à l'analyse : un indice élevé signale un récit fragile, pas une défaite certaine. Aucun pronostic garanti.</span>
+    <span>Jeu responsable : <a href="https://www.joueurs-info-service.fr" target="_blank" rel="noopener">joueurs-info-service.fr</a>. Données enregistrées uniquement dans ce navigateur.</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const KEY = "faux-favori-v1";
+const TERR = {"":"—", bon:"Bon / sec", souple:"Souple", lourd:"Lourd / collant", psf:"PSF (fibré)"};
+const PLACES = [["1","1er"],["2","2e"],["3","3e"],["4","4e"],["5","5e"],["6","6e"],["7","7e"],["8","8e"],["9","9e"],["0","10e et + (0)"],["D","Disqualifié (D)"],["A","Arrêté (A)"],["T","Tombé (T)"]];
+const MAX_RACES = 10;
+
+const EXAMPLE = {
+  example: true,
+  today: {dist: 2400, terrain: "souple", profil: "defavorable"},
+  market: {nom: "Cheval exemple", cote: 2.4, ecurie: true, jockey: true, pronos: true},
+  refIdx: -1,
+  races: [
+    {place:"6", dist:2400, terrain:"souple", jours:21,  excuse:"Gêné dans la ligne droite"},
+    {place:"5", dist:2200, terrain:"bon",    jours:45,  excuse:"Mauvais départ"},
+    {place:"7", dist:2400, terrain:"souple", jours:80,  excuse:""},
+    {place:"1", dist:2100, terrain:"bon",    jours:160, excuse:""},
+    {place:"8", dist:2000, terrain:"bon",    jours:200, excuse:""},
+    {place:"9", dist:2400, terrain:"lourd",  jours:240, excuse:"Terrain trop lourd"}
+  ]
+};
+const BLANK = {example:false, today:{dist:"", terrain:"", profil:"inconnu"}, market:{nom:"", cote:"", ecurie:false, jockey:false, pronos:false}, refIdx:-1, races:[blankRace()]};
+function blankRace(){ return {place:"1", dist:"", terrain:"", jours:"", excuse:""}; }
+const clone = o => JSON.parse(JSON.stringify(o));
+
+let S;
+try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e) { S = null; }
+if (!S || !Array.isArray(S.races)) S = clone(EXAMPLE);
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
+
+/* ---------- utilitaires ---------- */
+const $ = id => document.getElementById(id);
+const num = v => { const n = parseFloat(String(v).replace(",", ".")); return isFinite(n) ? n : 0; };
+const pv = p => /^[1-9]$/.test(p) ? +p : p === "0" ? 10 : 12;   // valeur numérique d'une place
+const good = r => pv(r.place) <= 3;
+const avg = a => a.reduce((s,x)=>s+x,0) / a.length;
+const fr = (n,d=1) => n.toLocaleString("fr-FR",{minimumFractionDigits:d, maximumFractionDigits:d});
+const clamp = (x,a,b) => Math.max(a, Math.min(b, x));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const placeTxt = p => /^[1-9]$/.test(p) ? (p === "1" ? "1er" : p + "e") : ({"0":"non placé (10e et +)", D:"disqualifié", A:"arrêté", T:"tombé"}[p] || p);
+const shortP = p => /^[1-9]$/.test(p) ? (p === "1" ? "1er" : p + "e") : ({"0":"0", D:"D", A:"A", T:"T"}[p] || p);
+const level = s => s == null ? "na" : s >= 60 ? "bad" : s >= 35 ? "warn" : "ok";
+const distClose = (a,b) => a > 0 && b > 0 && Math.abs(a-b)/b <= 0.10;
+
+function refIndex(){
+  const R = S.races;
+  if (!R.length) return -1;
+  if (S.refIdx >= 0 && S.refIdx < R.length) return S.refIdx;
+  let best = 0;
+  R.forEach((r,i) => { if (pv(r.place) < pv(R[best].place)) best = i; });
+  return best;
+}
+
+/* ---------- profil 1 : cheval à mémoire ---------- */
+function memoire(){
+  const R = S.races, T = S.today; if (!R.length) return null;
+  const i = refIndex(), ref = R[i], F = []; let s = 0;
+  F.push({k:"info", t:`Référence : ${placeTxt(ref.place)}${num(ref.jours)?` il y a ${num(ref.jours)} j`:""}${num(ref.dist)?` sur ${num(ref.dist)} m`:""}${ref.terrain?`, terrain ${TERR[ref.terrain].toLowerCase()}`:""}${S.refIdx<0?" (choisie automatiquement)":""}.`});
+
+  let p;
+  const j = num(ref.jours);
+  if (j > 0) {
+    p = j <= 60 ? 0 : j <= 120 ? 10 : j <= 180 ? 20 : 30;
+    F.push({k: p>=20?"bad":p?"warn":"ok", t:`Fraîcheur : ${j} jours. ${p>=20?"Référence ancienne.":p?"Référence qui commence à dater.":"Référence récente."}`});
+  } else {
+    p = i <= 1 ? 0 : i <= 3 ? 12 : 25;
+    F.push({k: p>=20?"bad":p?"warn":"ok", t:`Fraîcheur : ${i===0?"c'est sa dernière course":`${i+1}e course en arrière`} (date non saisie).`});
+  }
+  s += p;
+
+  const lvl = Math.max(3, pv(ref.place));
+  const rep = R.filter((r,k) => k !== i && pv(r.place) <= lvl).length;
+  s += rep === 0 ? 30 : rep === 1 ? 10 : 0;
+  F.push({k: rep===0?"bad":rep===1?"warn":"ok", t: rep===0 ? `Répétition : aucune autre course à ce niveau (≤ ${lvl}e). Performance jamais répétée.` : `Répétition : niveau ≤ ${lvl}e retrouvé ${rep} fois ailleurs.`});
+
+  const after = R.slice(0, i), before = R.slice(i + 1);
+  if (after.length) {
+    const a = avg(after.map(r => pv(r.place)));
+    const b = before.length ? avg(before.map(r => pv(r.place))) : null;
+    let ap = a >= 6 ? 25 : a >= 4 ? 12 : 0;
+    const isolated = ap && b !== null && b >= 6;
+    if (isolated) ap += 5;
+    s += ap;
+    F.push({k: ap>=25?"bad":ap?"warn":"ok", t:`Après la référence : ${after.slice().reverse().map(r=>shortP(r.place)).join(" → ")} (moy. ${fr(a)}).${b!==null?` Avant : moy. ${fr(b)}.`:""}${isolated?" Grande course isolée entre deux séries de contre-performances.":""}`});
+  } else {
+    F.push({k:"ok", t:"Test avant / après : la référence est sa dernière course."});
+  }
+
+  let cond = false;
+  if (num(ref.dist) && num(T.dist)) {
+    cond = true;
+    const d = (num(ref.dist) - num(T.dist)) / num(T.dist);
+    const off = Math.abs(d) > 0.10; if (off) s += 10;
+    F.push({k: off?"warn":"ok", t:`Distance : ${num(ref.dist)} m à la référence, ${num(T.dist)} m aujourd'hui (${d>=0?"+":"−"}${Math.round(Math.abs(d)*100)} %).`});
+  }
+  if (ref.terrain && T.terrain) {
+    cond = true;
+    const off = ref.terrain !== T.terrain; if (off) s += 10;
+    F.push({k: off?"warn":"ok", t:`Terrain : ${TERR[ref.terrain].toLowerCase()} à la référence, ${TERR[T.terrain].toLowerCase()} aujourd'hui.`});
+  }
+  if (!cond) F.push({k:"info", t:"Conditions de la référence ou du jour non saisies : comparaison impossible."});
+  return {score: Math.min(100, s), facts: F};
+}
+
+/* ---------- profil 2 : cheval à circonstances ---------- */
+function circonstances(){
+  const R5 = S.races.slice(0, 5); if (!R5.length) return null;
+  const F = []; let s = 0;
+  const hasEx = r => String(r.excuse || "").trim() !== "";
+  const last = R5[0];
+  if (pv(last.place) > 3 && hasEx(last)) {
+    s += 35;
+    F.push({k:"bad", t:`Dernière course : ${placeTxt(last.place)}, excuse « ${esc(last.excuse.trim())} ». La cote parie sur un retour de la « vraie » valeur.`});
+  } else if (pv(last.place) > 3) {
+    F.push({k:"warn", t:`Dernière course : ${placeTxt(last.place)} sans excuse avancée. Contre-performance à prendre telle quelle.`});
+  } else {
+    F.push({k:"ok", t:`Dernière course : ${placeTxt(last.place)}.`});
+  }
+  const bad = R5.filter(r => pv(r.place) > 3), ex = bad.filter(hasEx);
+  s += Math.min(36, ex.length * 12);
+  F.push({k: ex.length>=2?"bad":ex.length?"warn":"ok", t:`Excuses : ${ex.length} sur ${bad.length} contre-performance${bad.length>1?"s":""} des ${R5.length} dernières courses.${ex.length>=2?" L'accumulation ne rend pas le cheval plus fiable.":""}`});
+
+  if (ex.length) {
+    const real = avg(R5.map(r => pv(r.place)));
+    const clean = R5.filter(r => !hasEx(r));
+    if (clean.length) {
+      const told = avg(clean.map(r => pv(r.place)));
+      const gap = real - told;
+      s += gap >= 2 ? 20 : gap >= 1 ? 10 : 0;
+      F.push({k: gap>=2?"bad":gap>=1?"warn":"ok", t:`Forme réelle (tout compté) : moy. ${fr(real)}. Forme racontée (sans les courses excusées) : moy. ${fr(told)}. Écart dû au récit : ${fr(Math.max(0,gap))} place${gap>=2?"s":""}.`});
+    } else {
+      s += 20;
+      F.push({k:"bad", t:`Toutes les courses récentes sont excusées : aucune course « propre » ne soutient la cote (forme réelle moy. ${fr(real)}).`});
+    }
+  }
+  F.push({k:"rule", t:"Règle : une course avec incident se lit comme une course propre au même résultat. On la compte."});
+  return {score: Math.min(100, s), facts: F};
+}
+
+/* ---------- profil 3 : cheval de réputation ---------- */
+function reputation(){
+  const R = S.races, T = S.today, M = S.market; if (!R.length) return null;
+  const F = [];
+  const c = num(M.cote);
+  if (c > 1) F.push({k:"info", t:`Cote ${fr(c)} → probabilité implicite ≈ ${Math.round(100/c)} % (1 ÷ cote, marge du marché incluse).`});
+  else F.push({k:"info", t:"Cote non saisie : le niveau d'attente du marché est estimé moyen."});
+
+  const halo = [[M.ecurie,"écurie en vue"],[M.jockey,"jockey / driver star"],[M.pronos,"star des pronostics"]].filter(x => x[0]).map(x => x[1]);
+  F.push(halo.length ? {k: halo.length>=2?"bad":"warn", t:`Effet de halo : ${halo.join(", ")}.`} : {k:"ok", t:"Aucun facteur de réputation coché."});
+
+  const f = avg(R.slice(0,3).map(r => pv(r.place)));
+  let W = f <= 2.5 ? 0 : f <= 4 ? 0.35 : f <= 6 ? 0.65 : 1;
+  F.push({k: W>=0.65?"bad":W?"warn":"ok", t:`Forme récente (${Math.min(3,R.length)} dernière${R.length>1?"s":""}, tout compté) : moy. ${fr(f)}.`});
+
+  if (num(T.dist)) {
+    const fit = R.some(r => good(r) && distClose(num(r.dist), num(T.dist)));
+    if (!fit) W += 0.25;
+    F.push({k: fit?"ok":"warn", t:`Déjà dans les 3 premiers à ${num(T.dist)} m (±10 %) : ${fit?"oui":"non"}.`});
+  }
+  const pf = {favorable:-0.2, neutre:0, defavorable:0.3, inconnu:0}[T.profil] || 0;
+  W += pf;
+  F.push({k: pf>0?"bad":pf<0?"ok":"info", t:`Profil de la course (corde, rythme) : ${({favorable:"favorable",neutre:"neutre",defavorable:"défavorable",inconnu:"non évalué"})[T.profil]||"non évalué"}.`});
+  W = clamp(W, 0, 1);
+
+  const mf = !(c > 1) ? 0.7 : c <= 3 ? 1 : c <= 5 ? 0.7 : 0.4;
+  const s = Math.round(W * (40 + 20 * halo.length) * mf);
+  if (halo.length && W >= 0.5) F.push({k:"rule", t:"Question à poser : est-il le meilleur cheval dans ces conditions précises, ou seulement le plus connu ?"});
+  return {score: clamp(s,0,100), facts: F};
+}
+
+/* ---------- rendu ---------- */
+const PROFILES = [
+  {id:"mem", name:"Cheval à mémoire", sub:"La gloire passée", fn:memoire,
+   q:"Sa performance de référence est-elle récente, répétée et dans les conditions du jour ?",
+   a:{ok:"Oui : la référence tient.", warn:"En partie : la référence s'use.", bad:"Non : le marché se souvient d'une course dépassée."}},
+  {id:"cir", name:"Cheval à circonstances", sub:"L'excuse permanente", fn:circonstances,
+   q:"Sa dernière course ratée est-elle une simple excuse ou une vraie baisse de forme ?",
+   a:{ok:"Pas de récit d'excuse à corriger.", warn:"L'excuse enjolive la forme.", bad:"La forme réelle est moins bonne que le récit."}},
+  {id:"rep", name:"Cheval de réputation", sub:"L'effet de halo", fn:reputation,
+   q:"Sa cote est-elle portée par son entourage plutôt que par sa condition actuelle ?",
+   a:{ok:"Non : la cote suit la condition.", warn:"En partie : le nom pèse dans la cote.", bad:"Oui : le nom porte la cote, pas la forme."}}
+];
+const COLORS = {ok:"var(--ok)", warn:"var(--warn)", bad:"var(--bad)", na:"var(--mute)"};
+
+function compute(){
+  const res = PROFILES.map(p => ({p, r: p.fn()}));
+  const scores = res.filter(x => x.r).map(x => x.r.score);
+
+  $("profiles").innerHTML = res.map(({p, r}) => {
+    const v = r ? level(r.score) : "na";
+    return `<article class="prof" aria-label="${p.name}">
+      <div class="prof-head"><div><h3>${p.name}</h3><p class="prof-sub">${p.sub}</p></div>
+      <span class="pill tabnum" data-v="${v}">${r ? r.score + " / 100" : "à saisir"}</span></div>
+      <div class="bar"><i style="width:${r ? r.score : 0}%;background:${COLORS[v]}"></i></div>
+      <ul class="facts">${r ? r.facts.map(f => `<li data-k="${f.k}">${f.t}</li>`).join("") : '<li data-k="info">Saisissez au moins une course.</li>'}</ul>
+    </article>`;
+  }).join("");
+
+  $("synth").innerHTML = res.map(({p, r}, n) => {
+    const v = r ? level(r.score) : "na";
+    const mk = {ok:"✓", warn:"!", bad:"✗", na:"?"}[v];
+    return `<li><span class="mk" data-v="${v}" aria-hidden="true">${mk}</span><span>${p.q}<span class="ans">${r ? p.a[v] : "Données manquantes."}</span></span></li>`;
+  }).join("");
+
+  let idx = 0, v = "ok", label = "—", text = "Saisissez l'historique du favori.";
+  if (scores.length) {
+    const mx = Math.max(...scores);
+    idx = Math.round(0.7 * mx + 0.3 * avg(scores));
+    const top = res.filter(x => x.r).sort((a,b) => b.r.score - a.r.score)[0].p.name.toLowerCase();
+    if (idx >= 60) { v = "bad"; label = "Faux favori probable"; text = `Sa cote repose sur un récit qui ne résiste pas aux faits. Profil dominant : ${top}.`; }
+    else if (idx >= 35) { v = "warn"; label = "Favori à surveiller"; text = `Une partie de sa cote vient d'un récit. Point faible : ${top}. Exigez une preuve supplémentaire.`; }
+    else { v = "ok"; label = "Favori crédible"; text = "Les faits de la course soutiennent la cote. Le favori a prouvé sa valeur."; }
+  }
+  $("verdict").dataset.v = v;
+  $("v-label").textContent = label;
+  $("v-score").textContent = idx;
+  $("v-mark").style.left = idx + "%";
+  $("v-text").textContent = text;
+  $("v-nom").textContent = (S.market.nom || "Favori") + (num(S.market.cote) > 1 ? " · cote " + fr(num(S.market.cote)) : "");
+  $("exTag").hidden = !S.example;
+
+  const ri = refIndex();
+  $("musique-out").innerHTML = S.races.length ? "Musique : " + S.races.map((r,i) => `<b class="${i===ri?"ref":""}">${r.place}</b>`).join(" ") + (ri>=0 ? ` <span style="font-family:var(--f-body);font-size:13px">· soulignée = référence</span>` : "") : "";
+  document.querySelectorAll("#races tr").forEach((tr,i) => tr.classList.toggle("is-ref", i === ri));
+  document.querySelectorAll('#races input[type=radio]').forEach((el,i) => { el.checked = i === ri; });
+  save();
+}
+
+function renderRaces(){
+  const terrOpts = v => Object.entries(TERR).map(([k,l]) => `<option value="${k}"${k===v?" selected":""}>${l}</option>`).join("");
+  const placeOpts = v => PLACES.map(([k,l]) => `<option value="${k}"${k===v?" selected":""}>${l}</option>`).join("");
+  $("races").innerHTML = S.races.map((r,i) => `<tr data-i="${i}">
+    <td class="n">${i+1}</td>
+    <td class="w-place"><select id="r${i}-place" data-f="place" aria-label="Place, course ${i+1}">${placeOpts(r.place)}</select></td>
+    <td class="w-dist"><input id="r${i}-dist" data-f="dist" type="number" min="800" max="7500" step="50" placeholder="m" value="${esc(r.dist)}" aria-label="Distance, course ${i+1}"></td>
+    <td class="w-terr"><select id="r${i}-terrain" data-f="terrain" aria-label="Terrain, course ${i+1}">${terrOpts(r.terrain)}</select></td>
+    <td class="w-j"><input id="r${i}-jours" data-f="jours" type="number" min="0" step="1" placeholder="j" value="${esc(r.jours)}" aria-label="Jours écoulés, course ${i+1}"></td>
+    <td><input id="r${i}-excuse" data-f="excuse" type="text" placeholder="aucune" value="${esc(r.excuse)}" aria-label="Excuse avancée, course ${i+1}"></td>
+    <td class="c"><input id="r${i}-ref" data-f="ref" type="radio" name="ref" aria-label="Course ${i+1} comme référence"></td>
+    <td class="c"><button class="del" type="button" data-del="${i}" aria-label="Supprimer la course ${i+1}">×</button></td>
+  </tr>`).join("");
+  $("btn-add").disabled = S.races.length >= MAX_RACES;
+}
+
+function fillTop(){
+  $("t-terrain").innerHTML = Object.entries(TERR).map(([k,l]) => `<option value="${k}">${l}</option>`).join("");
+  $("t-dist").value = S.today.dist; $("t-terrain").value = S.today.terrain; $("t-profil").value = S.today.profil;
+  $("m-nom").value = S.market.nom; $("m-cote").value = S.market.cote;
+  $("m-ecurie").checked = !!S.market.ecurie; $("m-jockey").checked = !!S.market.jockey; $("m-pronos").checked = !!S.market.pronos;
+}
+function full(){ fillTop(); renderRaces(); compute(); }
+const touched = () => { S.example = false; };
+
+/* ---------- événements ---------- */
+[["t-dist","today","dist"],["t-terrain","today","terrain"],["t-profil","today","profil"],["m-nom","market","nom"],["m-cote","market","cote"]]
+  .forEach(([id,g,k]) => $(id).addEventListener("input", e => { S[g][k] = e.target.value; touched(); compute(); }));
+["ecurie","jockey","pronos"].forEach(k => $("m-"+k).addEventListener("change", e => { S.market[k] = e.target.checked; touched(); compute(); }));
+
+const tb = $("races");
+function onRow(e){
+  const el = e.target, tr = el.closest("tr"); if (!tr || !el.dataset.f) return;
+  const i = +tr.dataset.i, f = el.dataset.f;
+  if (f === "ref") S.refIdx = i; else S.races[i][f] = el.value;
+  touched(); compute();
+}
+tb.addEventListener("input", onRow);
+tb.addEventListener("change", onRow);
+tb.addEventListener("click", e => {
+  const b = e.target.closest("[data-del]"); if (!b) return;
+  const i = +b.dataset.del;
+  S.races.splice(i, 1);
+  if (S.refIdx === i) S.refIdx = -1; else if (S.refIdx > i) S.refIdx--;
+  touched(); renderRaces(); compute();
+});
+$("btn-add").addEventListener("click", () => { if (S.races.length < MAX_RACES) { S.races.push(blankRace()); touched(); renderRaces(); compute(); } });
+$("btn-refauto").addEventListener("click", () => { S.refIdx = -1; compute(); });
+$("btn-example").addEventListener("click", () => { S = clone(EXAMPLE); full(); });
+$("btn-reset").addEventListener("click", () => { S = clone(BLANK); full(); $("m-nom").focus(); });
+
+/* Musique PMU : place + discipline (p plat, a attelé, m monté, h haies, s steeple, c cross), plus récente à gauche, (25) = changement d'année */
+function parseMusique(str){
+  const s = String(str).replace(/\(\s*\d{2,4}\s*\)/g, " ").toUpperCase();
+  let t = s.match(/[0-9DATR](?=[PAMHSC])/g);
+  if (!t) t = s.match(/[0-9DATR]/g);
+  return (t || []).map(x => x === "R" ? "D" : x).slice(0, MAX_RACES);
+}
+$("btn-import").addEventListener("click", () => {
+  const places = parseMusique($("musique-in").value);
+  if (!places.length) { $("musique-out").textContent = "Aucune place reconnue. Format attendu : 6p 5p (25) 1p…"; return; }
+  S.races = places.map((p,i) => Object.assign(blankRace(), S.races[i] || {}, {place: p}));
+  S.refIdx = -1; touched(); renderRaces(); compute();
+});
+$("musique-in").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); $("btn-import").click(); } });
+
+full();
+})();
+</script>
+</body>
+</html>
