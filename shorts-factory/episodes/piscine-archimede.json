@@ -1,0 +1,219 @@
+{
+  "id": "piscine-archimede",
+  "title": "Et si tu vidais ta piscine… au mauvais moment ?",
+  "voice": "fr-FR-HenriNeural",
+  "rate": "+10%",
+  "brand": "Maths au Cube",
+  "notion": "Poussée d'Archimède — pression hydrostatique (Sciences physiques)",
+  "sources": "Valve hydrostatique (hydrostatic relief valve) : équipement standard des piscines enterrées en zone de nappe haute.",
+  "highlight": [
+    "archimède",
+    "poussée",
+    "nappe",
+    "valve",
+    "hydrostatique",
+    "tonnes",
+    "quarante-huit",
+    "trente-trois",
+    "jamais",
+    "sortait",
+    "casse"
+  ],
+  "beats": [
+    {
+      "say": "Et si tu vidais ta piscine… et qu'elle sortait du sol ?",
+      "state": {
+        "dig": 1,
+        "shell": 1,
+        "water": 1,
+        "table": 0.15
+      },
+      "cam": {
+        "zoom": 1.15,
+        "cx": 540,
+        "cy": 1050
+      }
+    },
+    {
+      "say": "Une piscine, au départ, c'est juste un grand trou.",
+      "state": {
+        "dig": 1,
+        "shell": 0,
+        "water": 0,
+        "table": 0.15
+      },
+      "cam": {
+        "zoom": 1.0,
+        "cx": 540,
+        "cy": 1000
+      }
+    },
+    {
+      "say": "On y coule une coque en béton armé.",
+      "state": {
+        "shell": 1
+      }
+    },
+    {
+      "say": "Pleine, elle contient des dizaines de tonnes d'eau.",
+      "state": {
+        "water": 1,
+        "down": 1
+      }
+    },
+    {
+      "say": "Mais sous ton jardin, il y a de l'eau : la nappe phréatique.",
+      "state": {
+        "table": 0.15,
+        "down": 0
+      },
+      "cam": {
+        "zoom": 1.0,
+        "cx": 540,
+        "cy": 1250
+      }
+    },
+    {
+      "say": "Après de grosses pluies, elle monte.",
+      "state": {
+        "table": 0.85
+      }
+    },
+    {
+      "say": "Et cette eau pousse la piscine vers le haut. C'est la poussée d'Archimède.",
+      "state": {
+        "up": 1
+      },
+      "cam": {
+        "zoom": 1.2,
+        "cx": 540,
+        "cy": 1250
+      }
+    },
+    {
+      "say": "Tant que la piscine est pleine, son poids gagne.",
+      "state": {
+        "down": 1,
+        "up": 0.6,
+        "card": "plein"
+      },
+      "cam": {
+        "zoom": 1.0,
+        "cx": 540,
+        "cy": 1100
+      }
+    },
+    {
+      "say": "Mais si tu la vides maintenant…",
+      "state": {
+        "water": 0,
+        "down": 0,
+        "up": 1,
+        "card": ""
+      }
+    },
+    {
+      "say": "Fond de huit mètres sur quatre, un mètre cinquante dans la nappe : quarante-huit tonnes de poussée. La coque n'en pèse que trente-trois.",
+      "state": {
+        "card": "calcul"
+      },
+      "cam": {
+        "zoom": 1.0,
+        "cx": 540,
+        "cy": 1000
+      }
+    },
+    {
+      "say": "Résultat : la piscine se soulève et casse tout.",
+      "state": {
+        "lift": 1,
+        "card": ""
+      },
+      "cam": {
+        "zoom": 1.1,
+        "cx": 540,
+        "cy": 1050
+      }
+    },
+    {
+      "say": "La parade ? Une petite valve au fond : la valve hydrostatique.",
+      "state": {
+        "lift": 0,
+        "up": 0,
+        "valve": 1
+      },
+      "cam": {
+        "zoom": 1.9,
+        "cx": 800,
+        "cy": 1300
+      }
+    },
+    {
+      "say": "Si la nappe pousse trop fort, elle s'ouvre et laisse entrer l'eau.",
+      "state": {
+        "up": 1,
+        "flow": 1
+      }
+    },
+    {
+      "say": "La piscine se remplit… et reste en place.",
+      "state": {
+        "water": 0.7,
+        "up": 0.5
+      },
+      "cam": {
+        "zoom": 1.0,
+        "cx": 540,
+        "cy": 1100
+      }
+    },
+    {
+      "say": "Règle d'or : on ne vide jamais une piscine quand la nappe est haute.",
+      "state": {
+        "flow": 0,
+        "up": 0,
+        "card": "regle"
+      }
+    }
+  ],
+  "cards": {
+    "plein": [
+      [
+        "POIDS (eau + béton)",
+        "down"
+      ],
+      [
+        ">",
+        "txt"
+      ],
+      [
+        "POUSSÉE",
+        "up"
+      ]
+    ],
+    "calcul": [
+      [
+        "8 × 4 × 1,5 = 48 m³",
+        "txt"
+      ],
+      [
+        "POUSSÉE ≈ 48 t",
+        "up"
+      ],
+      [
+        "POIDS COQUE ≈ 33 t",
+        "down"
+      ]
+    ],
+    "regle": [
+      [
+        "NAPPE HAUTE",
+        "up"
+      ],
+      [
+        "= PISCINE PLEINE",
+        "txt"
+      ]
+    ]
+  }
+}
