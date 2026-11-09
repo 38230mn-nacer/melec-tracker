@@ -1,0 +1,23 @@
+{
+  "id": "mon-episode",
+  "title": "Et si… ?",
+  "voice": "fr-FR-HenriNeural",
+  "rate": "+10%",
+  "brand": "Maths au Cube",
+  "notion": "Notion du programme visée",
+  "sources": "Source vérifiable du fait central",
+  "highlight": ["mot-clé1", "mot-clé2"],
+  "beats": [
+    {"say": "HOOK : question ou conséquence choquante (≤ 3 s).", "state": {"dig": 1, "shell": 1, "water": 1}, "cam": {"zoom": 1.15, "cx": 540, "cy": 1050}},
+    {"say": "Contexte en une phrase.", "state": {}},
+    {"say": "Le phénomène caché.", "state": {"table": 0.8, "up": 1}},
+    {"say": "Le chiffre qui frappe.", "state": {"card": "calcul"}},
+    {"say": "La conséquence spectaculaire.", "state": {"lift": 1, "card": ""}},
+    {"say": "La solution des pros.", "state": {"lift": 0, "valve": 1}},
+    {"say": "Règle à retenir.", "state": {"card": "regle"}}
+  ],
+  "cards": {
+    "calcul": [["a × b = c", "txt"], ["RÉSULTAT", "up"]],
+    "regle": [["RÈGLE D'OR", "down"]]
+  }
+}

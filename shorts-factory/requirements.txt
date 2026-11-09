@@ -1,0 +1,4 @@
+numpy>=1.26
+Pillow>=10
+edge-tts>=7
+# + ffmpeg/ffprobe dans le PATH (https://ffmpeg.org) — Windows : winget install Gyan.FFmpeg
