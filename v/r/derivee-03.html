@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Correction du ticket de sortie — la dérivée</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="mac.css">
+</head>
+<body data-f="se-tester">
+
+<div class="bandeau"><div class="in">
+  <span class="famille">✔ Je me teste</span>
+  <h1>Correction du ticket de sortie</h1>
+  <p>Réponds d'abord sur ta feuille. Ouvre ensuite une réponse à la fois.</p>
+  <span class="chrono">⏱ environ 2 min</span>
+</div></div>
+
+<main>
+
+  <div class="cle">
+    <p style="margin:0"><strong>Règle du jeu :</strong> tes quatre réponses doivent être écrites <strong>avant</strong> d'ouvrir quoi que ce soit. Sinon tu ne testes rien, tu lis.</p>
+  </div>
+
+  <p class="etape">Rappel du graphe</p>
+  <div class="graphe">
+    <svg viewBox="0 0 520 250" role="img" aria-label="Deux droites A et B de pentes différentes">
+      <g class="grille">
+        <line x1="52" y1="200" x2="490" y2="200"/><line x1="52" y1="150" x2="490" y2="150"/>
+        <line x1="52" y1="100" x2="490" y2="100"/><line x1="52" y1="50" x2="490" y2="50"/>
+      </g>
+      <line class="axe" x1="52" y1="20" x2="52" y2="200"/>
+      <line class="axe" x1="52" y1="200" x2="495" y2="200"/>
+      <text class="labf" x="52" y="14">v (tr/min)</text>
+      <text class="labf" x="490" y="226" text-anchor="end">t (s)</text>
+      <text class="lab" x="46" y="204" text-anchor="end">0</text>
+      <text class="lab" x="46" y="54" text-anchor="end">1500</text>
+      <text class="lab" x="52" y="220" text-anchor="middle">0</text>
+      <text class="lab" x="271" y="220" text-anchor="middle">5</text>
+      <text class="lab" x="490" y="220" text-anchor="middle">10</text>
+      <line x1="52" y1="200" x2="271" y2="50" stroke="#16a34a" stroke-width="4"/>
+      <text class="labf" x="278" y="48" fill="#15803d">A</text>
+      <line x1="52" y1="200" x2="490" y2="50" stroke="#2563eb" stroke-width="4"/>
+      <text class="labf" x="470" y="42" fill="#1d4ed8">B</text>
+      <text class="lab" x="160" y="118" fill="#15803d">0 → 1500 en 5 s</text>
+      <text class="lab" x="300" y="150" fill="#1d4ed8">0 → 1500 en 10 s</text>
+    </svg>
+  </div>
+
+  <p class="etape">Les réponses</p>
+
+  <div class="carte" data-etape>
+    <h2>1. Qu'est‑ce qu'une pente ?</h2>
+    <button class="btn creux" type="button">Voir la réponse attendue</button>
+    <div class="reponse" hidden>
+      <p style="margin:0">Ce que l'on gagne verticalement <strong>quand on avance de 1 horizontalement</strong>.</p>
+      <p style="margin:8px 0 0;color:var(--gris);font-size:15px">✔ Accepté aussi : « Δv divisé par Δt », « la raideur de la droite ».<br>
+      ✘ Refusé : « c'est la droite », « c'est la vitesse ».</p>
+    </div>
+  </div>
+
+  <div class="carte" data-etape>
+    <h2>2. Que représente‑t‑elle ici ?</h2>
+    <button class="btn creux" type="button">Voir la réponse attendue</button>
+    <div class="reponse" hidden>
+      <p style="margin:0">L'<strong>accélération</strong> du moteur : le nombre de tr/min gagnés chaque seconde.</p>
+      <p style="margin:8px 0 0;color:var(--gris);font-size:15px">L'unité fait partie de la réponse. « L'accélération » seul, sans l'unité, vaut la moitié des points.</p>
+    </div>
+  </div>
+
+  <div class="carte" data-etape>
+    <h2>3. Que signifie une pente plus grande ?</h2>
+    <button class="btn creux" type="button">Voir la réponse attendue</button>
+    <div class="reponse" hidden>
+      <p style="margin:0">Le moteur <strong>monte en vitesse plus vite</strong> : il accélère plus fort.</p>
+      <p style="margin:8px 0 0;color:var(--gris);font-size:15px">✘ Piège classique : « il va plus vite ». Non — les deux moteurs atteignent la même vitesse finale. L'un y arrive simplement plus tôt.</p>
+    </div>
+  </div>
+
+  <div class="carte" data-etape>
+    <h2>4. Calculer la pente de la courbe B</h2>
+    <button class="btn creux" type="button">Voir la réponse attendue</button>
+    <div class="reponse" hidden>
+      <p style="margin:0">Δv = 1500 − 0 = 1500 tr/min &nbsp;·&nbsp; Δt = 10 − 0 = 10 s</p>
+      <div class="formule" style="margin:12px 0 0">a = 1500 ÷ 10 = 150<small>tr/min par seconde</small></div>
+      <p style="margin:12px 0 0">Soit <strong>deux fois moins que la courbe A</strong> (300 tr/min par seconde) : A met deux fois moins de temps pour la même montée.</p>
+    </div>
+  </div>
+
+  <p class="etape">Où en es‑tu ?</p>
+  <div class="carte">
+    <p style="margin:0"><strong>4 réponses justes</strong> → tu as compris la notion. Passe à l'exercice de transfert de la fiche.</p>
+    <p style="margin:10px 0 0"><strong>3 justes</strong> → relis la réponse manquée, puis refais la question 4 sans aide.</p>
+    <p style="margin:10px 0 0"><strong>2 ou moins</strong> → ce n'est pas grave, mais ne passe pas à la suite : rescanne le QR <strong>▶ Je comprends</strong> et refais ce ticket demain.</p>
+  </div>
+
+  <div class="retour">
+    <div class="t">✍ Sur ta feuille</div>
+    <p style="margin:0">Note en une phrase ce que tu as compris aujourd'hui. C'est cette phrase, pas la vidéo, qui restera la semaine prochaine.</p>
+  </div>
+
+  <footer><b>Maths au Cube</b> — ressource <code>derivee-03</code><br>Aucune donnée n'est collectée sur cette page.</footer>
+</main>
+
+<script>
+(function(){
+  "use strict";
+  Array.prototype.forEach.call(document.querySelectorAll("[data-etape]"), function(c){
+    var b=c.querySelector("button"), r=c.querySelector(".reponse");
+    b.addEventListener("click", function(){ r.hidden=false; b.hidden=true; });
+  });
+})();
+</script>
+</body>
+</html>

@@ -73,6 +73,12 @@
            '<h1>' + esc(res.titre) + '</h1>';
   }
 
+  // Le libellé du bouton suit le format réel de la cible : ne jamais annoncer
+  // une vidéo quand la ressource est une fiche interactive.
+  function libelle(res){
+    return res.format === "video" ? "Ouvrir la vidéo" : "Ouvrir la ressource";
+  }
+
   function blocPapier(res){
     if (!res.papier) return "";
     return '<div class="apres"><strong>Sur ta feuille :</strong> ' + esc(res.papier) + '</div>';
@@ -83,7 +89,7 @@
     app.innerHTML = entete(res) +
       '<p class="meta">⏱ ' + esc(res.duree || "") + '</p>' +
       '<div class="carte">' +
-        '<a class="btn" href="' + esc(url) + '" rel="noopener">Ouvrir la vidéo</a>' +
+        '<a class="btn" href="' + esc(url) + '" rel="noopener">' + esc(libelle(res)) + '</a>' +
       '</div>' + blocPapier(res) + pied();
   }
 
@@ -117,10 +123,10 @@
   function rendreAProduire(res){
     app.innerHTML = entete(res) +
       '<div class="carte">' +
-        '<p><strong>Cette vidéo est en préparation.</strong></p>' +
+        '<p><strong>Cette ressource est en préparation.</strong></p>' +
         '<p class="meta" style="margin:0">Elle arrivera à cette même adresse : le QR de ta feuille restera valable.</p>' +
       '</div>' + (blocPapier(res) ||
-      '<div class="apres"><strong>Sur ta feuille :</strong> continue l\'exercice, le cours fonctionne sans la vidéo.</div>') + pied();
+      '<div class="apres"><strong>Sur ta feuille :</strong> continue l\'exercice, le cours fonctionne sans la ressource.</div>') + pied();
   }
 
   function rendreInconnu(slug){
@@ -154,7 +160,7 @@
       app.innerHTML = '<h1>Connexion indisponible</h1>' +
         '<p class="meta">Impossible de charger la bibliothèque pour le moment.</p>' +
         '<div class="apres"><strong>Sur ta feuille :</strong> continue le travail, ' +
-        'le document fonctionne entièrement sans la vidéo. Tu pourras scanner plus tard.</div>' + pied();
+        'le document fonctionne entièrement sans la ressource. Tu pourras scanner plus tard.</div>' + pied();
     });
 })();
 </script>

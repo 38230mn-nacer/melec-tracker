@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Le symbole Δ — Maths au Cube</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="mac.css">
+</head>
+<body data-f="debloquer">
+
+<div class="bandeau"><div class="in">
+  <span class="famille">SOS Je suis bloqué</span>
+  <h1>Je ne comprends pas le symbole Δ</h1>
+  <p>Une seule idée à retenir. Rien d'autre.</p>
+  <span class="chrono">⏱ environ 1 min 30</span>
+</div></div>
+
+<main>
+
+  <div class="cle">
+    <p style="margin:0;font-size:19px"><strong>Δ se lit « variation de ».</strong></p>
+    <p style="margin:10px 0 0">Et une variation se calcule <strong>toujours</strong> de la même façon :</p>
+  </div>
+
+  <div class="formule">
+    Δ = arrivée − départ
+    <small>on arrive, puis on enlève le départ. Jamais l'inverse.</small>
+  </div>
+
+  <p class="etape">Sur le moteur de la fiche</p>
+  <div class="graphe">
+    <svg viewBox="0 0 520 170" role="img" aria-label="Variation de la vitesse de 0 à 1500 tours par minute">
+      <line class="axe" x1="40" y1="60" x2="480" y2="60"/>
+      <circle cx="40" cy="60" r="7" fill="#ea580c"/><circle cx="480" cy="60" r="7" fill="#ea580c"/>
+      <text class="labf" x="40" y="42" text-anchor="middle">départ</text>
+      <text class="labf" x="480" y="42" text-anchor="middle">arrivée</text>
+      <text class="lab" x="40" y="84" text-anchor="middle">0 tr/min</text>
+      <text class="lab" x="480" y="84" text-anchor="middle">1500 tr/min</text>
+      <path d="M40 112 L480 112" stroke="#ea580c" stroke-width="2.5"/>
+      <path d="M470 106 L480 112 L470 118" fill="none" stroke="#ea580c" stroke-width="2.5"/>
+      <text class="labf" x="260" y="140" text-anchor="middle" fill="#c2410c">Δv = 1500 − 0 = 1500 tr/min</text>
+      <text class="lab" x="260" y="162" text-anchor="middle">Δt = 5 − 0 = 5 s</text>
+    </svg>
+  </div>
+
+  <p class="etape">Attention au sens</p>
+  <div class="duo">
+    <div class="ok"><div class="t">✔ Correct</div>Δv = 1500 − 0 = <strong>1500</strong><br><span style="color:var(--gris);font-size:14px">la vitesse a bien augmenté</span></div>
+    <div class="ko"><div class="t">✘ Erreur fréquente</div>Δv = 0 − 1500 = <strong>−1500</strong><br><span style="color:var(--gris);font-size:14px">cela voudrait dire que le moteur ralentit</span></div>
+  </div>
+
+  <p class="etape">Vérifie en 30 secondes</p>
+
+  <div class="test" data-bon="1200">
+    <p class="q">1. La vitesse passe de <strong>200 tr/min</strong> à <strong>1400 tr/min</strong>. Combien vaut Δv ?</p>
+    <div class="choix">
+      <button type="button" data-v="1600">1600</button>
+      <button type="button" data-v="1200">1200</button>
+      <button type="button" data-v="-1200">−1200</button>
+    </div>
+    <p class="verdict" aria-live="polite"></p>
+  </div>
+
+  <div class="test" data-bon="5">
+    <p class="q">2. Cette montée a lieu entre <strong>t = 2 s</strong> et <strong>t = 7 s</strong>. Combien vaut Δt ?</p>
+    <div class="choix">
+      <button type="button" data-v="9">9 s</button>
+      <button type="button" data-v="7">7 s</button>
+      <button type="button" data-v="5">5 s</button>
+    </div>
+    <p class="verdict" aria-live="polite"></p>
+  </div>
+
+  <div class="retour">
+    <div class="t">✍ Sur ta feuille</div>
+    <p style="margin:0">Tu as ce qu'il faut. <strong>Reprends le calcul de a = Δv ÷ Δt</strong> et range ton téléphone.</p>
+  </div>
+
+  <footer><b>Maths au Cube</b> — ressource <code>derivee-01-sos</code><br>Aucune donnée n'est collectée sur cette page.</footer>
+</main>
+
+<script>
+(function(){
+  "use strict";
+  var MSG={
+    "1600":"1600, c'est une addition. Δ est une soustraction : arrivée − départ.",
+    "-1200":"Le signe est inversé : on enlève le départ à l'arrivée, pas le contraire.",
+    "9":"9, c'est 2 + 7. Δt se soustrait : 7 − 2.",
+    "7":"7 s, c'est l'instant d'arrivée, pas la durée. Il faut enlever le départ."
+  };
+  Array.prototype.forEach.call(document.querySelectorAll(".test"), function(t){
+    var bon=t.getAttribute("data-bon"), v=t.querySelector(".verdict");
+    Array.prototype.forEach.call(t.querySelectorAll(".choix button"), function(b){
+      b.addEventListener("click", function(){
+        var juste = b.getAttribute("data-v")===bon;
+        b.setAttribute("data-etat", juste?"bon":"mauvais");
+        v.setAttribute("data-etat", juste?"bon":"mauvais");
+        v.textContent = juste ? "✔ Exact. Arrivée − départ, à chaque fois."
+                              : "✘ " + (MSG[b.getAttribute("data-v")] || "Recommence : arrivée − départ.");
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

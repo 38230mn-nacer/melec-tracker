@@ -196,6 +196,23 @@ Configuration : caméra du téléphone pour l'introduction (visage, 10–15 s), 
 
 ---
 
+## 10 bis. État de la bibliothèque : deux formats, une seule adresse
+
+Une adresse permanente peut servir deux formats, et le registre le déclare dans `format` :
+
+| `format` | Ce que c'est | Quand |
+|---|---|---|
+| `interactif` | Fiche web Maths au Cube : graphe manipulable, révélation progressive, mini-tests | Immédiatement — permet de tester le dispositif en classe avant d'avoir tourné |
+| `video` | La microvidéo, ta voix et tes méthodes | Dès qu'elle est tournée |
+
+Le passage de l'un à l'autre se fait en changeant `url` et `format` dans `qr-registry.json`. **Les documents déjà imprimés restent valables** : c'est précisément ce pour quoi l'adresse permanente existe.
+
+Une fiche interactive n'est pas un substitut durable : elle ne porte ni ta voix ni ton raisonnement, donc pas le levier du §11. Elle sert à valider le dispositif et à ne jamais imprimer un QR mort.
+
+Les scripts des quatre premières microvidéos sont dans `docs/SCRIPTS-MICROVIDEOS-DERIVEE.md`.
+
+---
+
 ## 11. Ce que protège réellement le dispositif
 
 Une protection anticopie de PDF est fragile et sera contournée. Le levier réel est différent : **rendre le document beaucoup moins intéressant hors de l'écosystème Maths au Cube**.

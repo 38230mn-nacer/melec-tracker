@@ -1,0 +1,130 @@
+/* Maths au Cube — feuille de style des ressources QR (fiches interactives) */
+:root{
+  --vert:#16a34a; --vert-d:#15803d; --bleu:#2563eb; --bleu-d:#1d4ed8;
+  --orange:#ea580c; --orange-d:#c2410c;
+  --encre:#13203a; --gris:#5a6a84; --gris-c:#8b99ae;
+  --fond:#f5f7fb; --carte:#fff; --bord:#e3e9f3; --bord-f:#cfd9e8;
+  --accent:var(--bleu); --accent-d:var(--bleu-d); --accent-l:#eff4ff;
+  --r:14px; --ombre:0 1px 2px rgba(19,32,58,.05), 0 8px 24px -12px rgba(19,32,58,.18);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--fond);color:var(--encre);
+  font:17px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  padding:0 0 max(40px,env(safe-area-inset-bottom));
+}
+main{max-width:640px;margin:0 auto;padding:0 18px}
+
+/* ---------- en-tête ---------- */
+.bandeau{
+  background:var(--accent);color:#fff;
+  padding:max(22px,env(safe-area-inset-top)) 18px 22px;margin-bottom:22px;
+}
+.bandeau .in{max-width:640px;margin:0 auto}
+.famille{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  background:rgba(255,255,255,.18);padding:6px 12px;border-radius:999px;
+}
+h1{font-size:25px;line-height:1.25;margin:14px 0 6px;letter-spacing:-.01em}
+.bandeau p{margin:0;font-size:15px;color:rgba(255,255,255,.88)}
+.chrono{
+  display:inline-block;margin-top:12px;font-size:13.5px;font-weight:600;
+  color:rgba(255,255,255,.95);border:1px solid rgba(255,255,255,.35);
+  padding:4px 11px;border-radius:999px;
+}
+
+/* ---------- blocs ---------- */
+section{margin:0 0 20px}
+.etape{
+  display:flex;align-items:center;gap:10px;
+  font-size:12.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--accent-d);margin:28px 0 10px;
+}
+.etape::after{content:"";flex:1;height:1px;background:var(--bord-f)}
+.carte{background:var(--carte);border:1px solid var(--bord);border-radius:var(--r);padding:20px;box-shadow:var(--ombre)}
+.carte+.carte{margin-top:12px}
+.carte h2{font-size:19px;margin:0 0 8px;line-height:1.3}
+.carte p:last-child{margin-bottom:0}
+.carte p:first-of-type{margin-top:0}
+
+.cle{background:var(--accent-l);border:1px solid var(--bord-f);border-left:4px solid var(--accent);border-radius:var(--r);padding:18px 20px}
+.cle strong{color:var(--accent-d)}
+.formule{
+  text-align:center;font-size:24px;font-weight:700;letter-spacing:.01em;
+  background:var(--carte);border:2px solid var(--accent);border-radius:var(--r);
+  padding:18px;margin:14px 0;
+}
+.formule small{display:block;font-size:13.5px;font-weight:500;color:var(--gris);margin-top:8px;letter-spacing:0}
+
+.piege{background:#fff7ed;border:1px solid #fed7aa;border-left:4px solid var(--orange);border-radius:var(--r);padding:18px 20px}
+.piege .t{font-weight:800;color:var(--orange-d);font-size:14px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.atoi{background:#ecfdf5;border:1px solid #a7f3d0;border-left:4px solid var(--vert);border-radius:var(--r);padding:18px 20px}
+.atoi .t{font-weight:800;color:var(--vert-d);font-size:14px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+
+/* comparaison juste / faux */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:460px){.duo{grid-template-columns:1fr}}
+.duo>div{border-radius:var(--r);padding:15px 16px;font-size:16px}
+.ok{background:#ecfdf5;border:1px solid #a7f3d0}
+.ko{background:#fef2f2;border:1px solid #fecaca}
+.duo .t{font-weight:800;font-size:13px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px}
+.ok .t{color:var(--vert-d)} .ko .t{color:#b91c1c}
+
+/* ---------- graphe ---------- */
+.graphe{background:var(--carte);border:1px solid var(--bord);border-radius:var(--r);padding:16px 14px 10px;box-shadow:var(--ombre)}
+.graphe svg{display:block;width:100%;height:auto}
+.axe{stroke:var(--gris-c);stroke-width:1.6}
+.grille{stroke:#eef2f8;stroke-width:1}
+.lab{fill:var(--gris);font-size:12px;font-family:inherit}
+.labf{fill:var(--encre);font-size:13px;font-weight:700;font-family:inherit}
+
+.reglage{margin-top:14px}
+.reglage label{display:block;font-size:14px;font-weight:600;color:var(--gris);margin-bottom:8px}
+input[type=range]{width:100%;accent-color:var(--accent);height:30px}
+.lecture{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.tuile{flex:1 1 140px;background:var(--accent-l);border:1px solid var(--bord-f);border-radius:11px;padding:11px 14px}
+/* pas de text-transform ici : Δv et ΔV ne désignent pas la même grandeur */
+.tuile .k{font-size:12.5px;font-weight:700;letter-spacing:.04em;color:var(--gris)}
+.tuile .v{font-size:21px;font-weight:800;color:var(--accent-d);font-variant-numeric:tabular-nums}
+
+/* ---------- boutons / révélation ---------- */
+button{font:inherit}
+.btn{
+  display:block;width:100%;border:0;border-radius:12px;padding:15px 18px;
+  background:var(--accent);color:#fff;font-weight:700;cursor:pointer;
+  text-align:center;text-decoration:none;
+}
+.btn:active{transform:translateY(1px)}
+.btn.creux{background:var(--carte);color:var(--accent-d);border:2px dashed var(--accent)}
+.btn+.btn{margin-top:10px}
+.reponse{margin-top:12px}
+
+/* mini-tests */
+.test{background:var(--carte);border:1px solid var(--bord);border-radius:var(--r);padding:18px 20px;box-shadow:var(--ombre)}
+.test+.test{margin-top:12px}
+.test .q{font-weight:700;margin:0 0 12px}
+.choix{display:flex;flex-wrap:wrap;gap:9px}
+.choix button{
+  border:2px solid var(--bord-f);background:var(--carte);color:var(--encre);
+  border-radius:10px;padding:11px 16px;font-weight:700;cursor:pointer;
+  font-variant-numeric:tabular-nums;
+}
+.choix button[data-etat=bon]{border-color:var(--vert);background:#ecfdf5;color:var(--vert-d)}
+.choix button[data-etat=mauvais]{border-color:#fca5a5;background:#fef2f2;color:#b91c1c}
+.verdict{margin:12px 0 0;font-size:15px;font-weight:600;min-height:1.6em}
+.verdict[data-etat=bon]{color:var(--vert-d)} .verdict[data-etat=mauvais]{color:var(--orange-d)}
+
+/* ---------- pied ---------- */
+.retour{background:#fff7ed;border:1px solid #fed7aa;border-radius:var(--r);padding:18px 20px;margin-top:26px}
+.retour .t{font-weight:800;color:var(--orange-d);font-size:14px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+footer{text-align:center;color:var(--gris-c);font-size:13px;line-height:1.6;margin:30px 0 0}
+footer b{color:var(--gris)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* thèmes par famille */
+body[data-f=comprendre]{--accent:var(--bleu);--accent-d:var(--bleu-d);--accent-l:#eff4ff}
+body[data-f=voir-faire]{--accent:var(--vert);--accent-d:var(--vert-d);--accent-l:#ecfdf5}
+body[data-f=debloquer]{--accent:var(--orange);--accent-d:var(--orange-d);--accent-l:#fff7ed}
+body[data-f=se-tester]{--accent:var(--vert);--accent-d:var(--vert-d);--accent-l:#ecfdf5}

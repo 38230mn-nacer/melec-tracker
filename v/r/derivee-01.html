@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pourquoi la pente représente l'accélération — Maths au Cube</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="mac.css">
+</head>
+<body data-f="comprendre">
+
+<div class="bandeau"><div class="in">
+  <span class="famille">▶ Je comprends</span>
+  <h1>Pourquoi la pente représente‑t‑elle l'accélération ?</h1>
+  <p>Montée en vitesse d'un moteur de convoyeur.</p>
+  <span class="chrono">⏱ environ 3 min</span>
+</div></div>
+
+<main>
+
+  <p class="etape">Le problème</p>
+  <div class="carte">
+    <p>Deux moteurs de convoyeur atteignent tous les deux <strong>1500 tr/min</strong>.</p>
+    <p>Le premier y arrive en <strong>5 secondes</strong>, le second en <strong>20 secondes</strong>.</p>
+    <p>Même vitesse finale. Pourtant, sur le terrain, ce ne sont pas du tout les mêmes contraintes : courant d'appel, à‑coup sur la courroie, usure du réducteur.</p>
+    <p><strong>Ce qui les distingue n'est pas la vitesse. C'est la rapidité avec laquelle la vitesse change.</strong></p>
+  </div>
+
+  <p class="etape">Observe</p>
+  <div class="graphe">
+    <svg viewBox="0 0 520 300" role="img" aria-label="Courbe de la vitesse du moteur en fonction du temps">
+      <g class="grille">
+        <line x1="52" y1="250" x2="500" y2="250"/><line x1="52" y1="194" x2="500" y2="194"/>
+        <line x1="52" y1="137" x2="500" y2="137"/><line x1="52" y1="80" x2="500" y2="80"/>
+      </g>
+      <line class="axe" x1="52" y1="20" x2="52" y2="250"/>
+      <line class="axe" x1="52" y1="250" x2="505" y2="250"/>
+      <text class="lab" x="46" y="254" text-anchor="end">0</text>
+      <text class="lab" x="46" y="198" text-anchor="end">400</text>
+      <text class="lab" x="46" y="141" text-anchor="end">800</text>
+      <text class="lab" x="46" y="84" text-anchor="end">1200</text>
+      <text class="labf" x="52" y="14" text-anchor="start">v (tr/min)</text>
+      <text class="lab" x="52" y="268" text-anchor="middle">0</text>
+      <text class="lab" x="276" y="268" text-anchor="middle">10</text>
+      <text class="lab" x="500" y="268" text-anchor="middle">20</text>
+      <text class="labf" x="276" y="292" text-anchor="middle">t (s)</text>
+
+      <!-- triangle Δ -->
+      <polygon id="tri" points="52,250 164,250 164,34" fill="#eff4ff" stroke="#bfdbfe" stroke-width="1.5"/>
+      <line id="dt" x1="52" y1="250" x2="164" y2="250" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="5 4"/>
+      <line id="dv" x1="164" y1="250" x2="164" y2="34" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="5 4"/>
+      <text id="ldt" class="labf" x="108" y="243" text-anchor="middle" fill="#1d4ed8">Δt</text>
+      <text id="ldv" class="labf" x="172" y="146" text-anchor="start" fill="#1d4ed8">Δv</text>
+
+      <!-- courbe -->
+      <polyline id="courbe" fill="none" stroke="#2563eb" stroke-width="4" stroke-linejoin="round"
+                points="52,250 164,34 500,34"/>
+      <circle id="pt" cx="164" cy="34" r="6" fill="#2563eb" stroke="#fff" stroke-width="2.5"/>
+      <line class="grille" id="plateau" x1="52" y1="34" x2="500" y2="34" stroke-dasharray="4 4"/>
+      <text class="lab" x="498" y="28" text-anchor="end">1500 tr/min</text>
+    </svg>
+
+    <div class="reglage">
+      <label for="tm">Temps de montée : <strong><span id="vtm">5</span> s</strong></label>
+      <input type="range" id="tm" min="2" max="20" step="1" value="5">
+    </div>
+
+    <div class="lecture">
+      <div class="tuile"><div class="k">Δv</div><div class="v" id="ovv">1500 tr/min</div></div>
+      <div class="tuile"><div class="k">Δt</div><div class="v" id="ovt">5 s</div></div>
+      <div class="tuile"><div class="k">Pente</div><div class="v" id="ovp">300</div></div>
+    </div>
+    <p style="margin:12px 0 6px;font-size:15px;color:var(--gris)" id="phrase">
+      Le moteur gagne <strong>300 tr/min chaque seconde</strong>.
+    </p>
+  </div>
+
+  <p class="etape">Ce qu'il faut retenir</p>
+  <div class="cle">
+    <p><strong>La pente répond toujours à une seule question :</strong> quand j'avance de 1 seconde, combien je gagne en vitesse ?</p>
+    <p style="margin-bottom:0">Cette quantité porte un nom : c'est l'<strong>accélération</strong>.</p>
+  </div>
+
+  <div class="formule">
+    a = Δv ÷ Δt
+    <small>a en tr/min par seconde · Δv en tr/min · Δt en secondes</small>
+  </div>
+
+  <div class="carte">
+    <p style="margin:0"><strong>Sur le moteur rapide :</strong> a = 1500 ÷ 5 = <strong>300 tr/min par seconde</strong>.<br>
+    <strong>Sur le moteur lent :</strong> a = 1500 ÷ 20 = <strong>75 tr/min par seconde</strong>.</p>
+  </div>
+
+  <p class="etape">Le piège</p>
+  <div class="piege">
+    <div class="t">⚠ Ne confonds pas vitesse et accélération</div>
+    <p style="margin:0">Pousse le curseur à fond, puis regarde la <strong>partie plate</strong> de la courbe : le moteur y tourne à 1500 tr/min, sa vitesse est maximale… et pourtant la pente y est <strong>nulle</strong>.</p>
+    <p style="margin:8px 0 0">Vitesse élevée ne veut pas dire accélération élevée. Une vitesse constante, même très grande, c'est une accélération <strong>égale à zéro</strong>.</p>
+  </div>
+
+  <p class="etape">Le réflexe</p>
+  <div class="carte">
+    <p style="margin:0"><strong>JE VOIS</strong> une droite montante sur un graphe vitesse‑temps.<br>
+    <strong>JE PENSE</strong> « sa pente, c'est l'accélération ».<br>
+    <strong>JE FAIS</strong> Δv ÷ Δt avec deux points lus sur la droite.<br>
+    <strong>JE VÉRIFIE</strong> que l'unité tombe juste : des tr/min <em>par seconde</em>.</p>
+  </div>
+
+  <div class="atoi">
+    <div class="t">✍ À toi, sur ta feuille</div>
+    <p style="margin:0">Réponds à la <strong>question 1</strong> sans revenir sur cette page. Si tu bloques sur le symbole Δ, scanne le QR 🆘 de la marge.</p>
+  </div>
+
+  <footer><b>Maths au Cube</b> — ressource <code>derivee-01</code><br>Aucune donnée n'est collectée sur cette page.</footer>
+</main>
+
+<script>
+(function(){
+  "use strict";
+  var X0=52, X1=500, Y0=250, YT=1600, TT=20;
+  var x=function(t){ return X0 + t/TT*(X1-X0); };
+  var y=function(v){ return Y0 - v/YT*(Y0-20); };
+  var V=1500;
+  var el=function(i){ return document.getElementById(i); };
+  var tm=el("tm");
+
+  function peindre(){
+    var t=+tm.value, px=x(t), py=y(V);
+    el("courbe").setAttribute("points", X0+","+Y0+" "+px+","+py+" "+X1+","+py);
+    el("pt").setAttribute("cx",px); el("pt").setAttribute("cy",py);
+    el("tri").setAttribute("points", X0+","+Y0+" "+px+","+Y0+" "+px+","+py);
+    el("dt").setAttribute("x2",px);
+    el("dv").setAttribute("x1",px); el("dv").setAttribute("x2",px); el("dv").setAttribute("y1",Y0); el("dv").setAttribute("y2",py);
+    el("ldt").setAttribute("x",(X0+px)/2);
+    el("ldv").setAttribute("x",px+8); el("ldv").setAttribute("y",(Y0+py)/2);
+
+    var p=Math.round(V/t*10)/10;
+    el("vtm").textContent=t;
+    el("ovt").textContent=t+" s";
+    el("ovp").textContent=p;
+    el("phrase").innerHTML="Le moteur gagne <strong>"+String(p).replace(".",",")+" tr/min chaque seconde</strong>"+
+      (t>=15?" : la montée est très douce." : (t<=3?" : la montée est brutale." : "."));
+  }
+  tm.addEventListener("input",peindre);
+  peindre();
+})();
+</script>
+</body>
+</html>
