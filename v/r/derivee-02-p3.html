@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Correction détaillée — accélération d'un moteur</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="mac.css">
+</head>
+<body data-f="voir-faire">
+
+<div class="bandeau"><div class="in">
+  <span class="famille">✎ Palier 3 — Correction</span>
+  <h1>Je résous devant toi, étape par étape</h1>
+  <p>Découvre une étape à la fois, et essaie de deviner la suivante avant de l'ouvrir.</p>
+  <span class="chrono">⏱ environ 3 min</span>
+</div></div>
+
+<main>
+  <div class="carte"><p style="margin:0"><strong>L'exemple travaillé</strong> — moteur de pompe de refroidissement.<br>
+  Sa vitesse passe de <strong>300 tr/min</strong> à <strong>1200 tr/min</strong> entre <strong>t = 1 s</strong> et <strong>t = 4 s</strong>.<br>
+  Question : quelle est son accélération ?</p></div>
+
+  <p class="etape">Étape par étape</p>
+
+  <div class="carte" data-etape>
+    <h2>1. Je repère mes deux points</h2>
+    <button class="btn creux" type="button">Afficher cette étape</button>
+    <div class="reponse" hidden>
+      <p style="margin:0;font-family:ui-monospace,monospace;font-size:16px;line-height:1.9">
+        départ&nbsp;&nbsp;: t = 1 s, v = 300 tr/min<br>
+        arrivée : t = 4 s, v = 1200 tr/min</p>
+      <p style="margin:10px 0 0;color:var(--gris);font-size:15px">Les écrire sépare la lecture de l'énoncé du calcul. C'est là que se jouent la plupart des erreurs.</p>
+    </div>
+  </div>
+
+  <div class="carte" data-etape>
+    <h2>2. Je calcule Δv</h2>
+    <button class="btn creux" type="button">Afficher cette étape</button>
+    <div class="reponse" hidden>
+      <p style="margin:0;font-size:19px"><strong>Δv = 1200 − 300 = 900 tr/min</strong></p>
+      <p style="margin:8px 0 0;color:var(--gris);font-size:15px">Arrivée moins départ. Le résultat est positif : la vitesse a bien augmenté.</p>
+    </div>
+  </div>
+
+  <div class="carte" data-etape>
+    <h2>3. Je calcule Δt</h2>
+    <button class="btn creux" type="button">Afficher cette étape</button>
+    <div class="reponse" hidden>
+      <p style="margin:0;font-size:19px"><strong>Δt = 4 − 1 = 3 s</strong></p>
+      <p style="margin:8px 0 0;color:var(--gris);font-size:15px">Et non 4 s. La montée ne commence pas à l'instant zéro : elle dure 3 secondes.</p>
+    </div>
+  </div>
+
+  <div class="carte" data-etape>
+    <h2>4. Je divise</h2>
+    <button class="btn creux" type="button">Afficher cette étape</button>
+    <div class="reponse" hidden>
+      <div class="formule" style="margin:4px 0 0">a = 900 ÷ 3 = 300<small>tr/min par seconde</small></div>
+    </div>
+  </div>
+
+  <div class="carte" data-etape>
+    <h2>5. Je vérifie</h2>
+    <button class="btn creux" type="button">Afficher cette étape</button>
+    <div class="reponse" hidden>
+      <p style="margin:0">• <strong>Unité</strong> : des tr/min divisés par des secondes → des tr/min par seconde. Correct.<br>
+      • <strong>Signe</strong> : a &gt; 0, le moteur accélère. Cohérent avec l'énoncé.<br>
+      • <strong>Ordre de grandeur</strong> : 300 tr/min gagnés chaque seconde pendant 3 s → 900 tr/min gagnés en tout. On retombe sur Δv. ✔</p>
+    </div>
+  </div>
+
+  <p class="etape">Le piège</p>
+  <div class="piege">
+    <div class="t">⚠ Diviser par 4 au lieu de 3</div>
+    <p style="margin:0">On trouverait 225 tr/min par seconde. Le contrôle de l'étape 5 l'aurait détecté : 225 × 3 = 675, ce qui ne redonne pas les 900 tr/min gagnés.</p>
+    <p style="margin:8px 0 0"><strong>Ce contrôle‑là vaut deux minutes de relecture.</strong></p>
+  </div>
+
+  <div class="atoi">
+    <div class="t">✍ À toi, maintenant</div>
+    <p style="margin:0">Refais l'exercice de ta feuille <strong>sans cette page</strong>. Les nombres sont différents, la démarche est exactement la même.</p>
+  </div>
+
+  <footer><b>Maths au Cube</b> — ressource <code>derivee-02</code>, palier 3<br>Aucune donnée n'est collectée sur cette page.</footer>
+</main>
+
+<script>
+(function(){
+  "use strict";
+  Array.prototype.forEach.call(document.querySelectorAll("[data-etape]"), function(c){
+    var b=c.querySelector("button"), r=c.querySelector(".reponse");
+    b.addEventListener("click", function(){ r.hidden=false; b.hidden=true; });
+  });
+})();
+</script>
+</body>
+</html>

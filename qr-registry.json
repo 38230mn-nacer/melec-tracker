@@ -1,11 +1,12 @@
 {
-  "version": "2026-09-15",
-  "doc": "Registre des adresses permanentes Maths au Cube. Source de vérité des QR imprimés. Voir docs/STANDARD-DOCUMENT-AUGMENTE.md. Un slug imprimé n'est JAMAIS supprimé ni réattribué : on change uniquement sa cible.",
+  "version": "2026-11-09",
+  "doc": "Registre des adresses permanentes Maths au Cube. Source de vérité des QR imprimés. Voir docs/STANDARD-DOCUMENT-AUGMENTE.md. Un slug imprimé n'est JAMAIS supprimé ni réattribué : on change uniquement sa cible. Pour remplacer une fiche interactive par la microvidéo tournée, il suffit de changer `url` et `format` — les documents déjà imprimés restent valables.",
   "schema": {
     "slug": "identifiant permanent, minuscules sans accent : <notion>-<numero>[-<palier>]",
     "famille": "comprendre | voir-faire | debloquer | se-tester",
     "titre": "question ou promesse affichée sous le QR sur le papier",
     "duree": "durée réelle de la ressource, format m:ss, à ±15 s de la durée imprimée",
+    "format": "video (microvidéo tournée) | interactif (fiche web en attendant le tournage)",
     "statut": "publie | a_produire",
     "type": "direct (une seule ressource) | gradue (aide en 3 paliers)",
     "url": "cible actuelle, pour type=direct",
@@ -17,33 +18,36 @@
       "slug": "derivee-01",
       "famille": "comprendre",
       "titre": "Pourquoi la pente représente-t-elle l'accélération ?",
-      "duree": "3:10",
-      "statut": "a_produire",
+      "duree": "3:00",
+      "format": "interactif",
+      "statut": "publie",
       "type": "direct",
-      "url": "",
+      "url": "r/derivee-01.html",
       "papier": "Reprends le graphe de la fiche : calcule Δv puis Δt, et réponds à la question 1."
     },
     {
       "slug": "derivee-01-sos",
       "famille": "debloquer",
       "titre": "Je ne comprends pas le symbole Δ",
-      "duree": "1:15",
-      "statut": "a_produire",
+      "duree": "1:30",
+      "format": "interactif",
+      "statut": "publie",
       "type": "direct",
-      "url": "",
+      "url": "r/derivee-01-sos.html",
       "papier": "Δ signifie « variation » : Δv = valeur d'arrivée − valeur de départ. Reprends le calcul de a."
     },
     {
       "slug": "derivee-02",
       "famille": "voir-faire",
       "titre": "Regarde-moi résoudre un exemple similaire",
-      "duree": "4:00",
-      "statut": "a_produire",
+      "duree": "3:00",
+      "format": "interactif",
+      "statut": "publie",
       "type": "gradue",
       "paliers": [
-        { "titre": "Indice", "duree": "0:40", "url": "" },
-        { "titre": "Méthode", "duree": "1:30", "url": "" },
-        { "titre": "Correction détaillée", "duree": "4:00", "url": "" }
+        { "titre": "Indice", "duree": "0:40", "url": "r/derivee-02-p1.html" },
+        { "titre": "Méthode", "duree": "1:30", "url": "r/derivee-02-p2.html" },
+        { "titre": "Correction détaillée", "duree": "3:00", "url": "r/derivee-02-p3.html" }
       ],
       "papier": "Relis l'exemple résolu de la fiche, puis fais la question 2 seul."
     },
@@ -51,10 +55,11 @@
       "slug": "derivee-03",
       "famille": "se-tester",
       "titre": "Vérifie ta compréhension — correction du ticket de sortie",
-      "duree": "1:30",
-      "statut": "a_produire",
+      "duree": "2:00",
+      "format": "interactif",
+      "statut": "publie",
       "type": "direct",
-      "url": "",
+      "url": "r/derivee-03.html",
       "papier": "Compare tes 4 réponses avec ton voisin, puis avec la correction en fin de séance."
     }
   ]
