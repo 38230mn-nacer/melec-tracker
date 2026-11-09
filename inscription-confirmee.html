@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Inscription confirmée</title>
+<style>
+/* =========================================================================
+   PAGE DE CONFIRMATION D'INSCRIPTION — Maths au Cube
+   Modèle réutilisable : tout se règle dans CONFIG (bas de page).
+   URL : inscription-confirmee.html?prenom=Meslem
+   ========================================================================= */
+:root{
+  --vert:#16a34a; --vert-f:#15803d; --bleu:#1d4ed8; --bleu-f:#1e3a8a;
+  --orange:#f97316; --orange-f:#c2410c;
+  --encre:#0f172a; --texte:#334155; --doux:#64748b;
+  --fond:#f1f5f9; --carte:#ffffff; --bord:#e2e8f0;
+  --ombre:0 10px 30px -12px rgba(15,23,42,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--fond);color:var(--texte);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+
+/* Bandeau haut */
+.bandeau{background:var(--bleu-f);color:#fff;font-size:15px;font-weight:600;padding:12px 16px;display:flex;gap:10px;align-items:center;justify-content:center;text-align:center;position:sticky;top:0;z-index:5}
+.pastille{width:10px;height:10px;border-radius:50%;background:var(--orange);flex:none;box-shadow:0 0 0 0 rgba(249,115,22,.7);animation:pulse 1.6s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 10px rgba(249,115,22,0)}100%{box-shadow:0 0 0 0 rgba(249,115,22,0)}}
+
+/* Héros */
+.hero{background:linear-gradient(180deg,#e0ecff 0%,var(--fond) 100%);padding:36px 0 8px;text-align:center}
+h1{font-size:clamp(28px,8vw,40px);line-height:1.12;color:var(--encre);margin:0 0 14px;letter-spacing:-.02em}
+h1 .accent{color:var(--vert)}
+.sous{font-size:18px;margin:0 auto 24px;max-width:30ch}
+.sous b{color:var(--encre)}
+
+/* Visuel : image fournie OU cube CSS */
+.visuel{position:relative;border-radius:22px;overflow:hidden;box-shadow:var(--ombre);aspect-ratio:16/10;background:linear-gradient(135deg,var(--bleu) 0%,var(--vert) 100%);display:grid;place-items:center}
+.visuel img{width:100%;height:100%;object-fit:cover;display:block}
+.cube{width:110px;height:110px;position:relative;transform-style:preserve-3d;animation:tourne 9s linear infinite}
+.cube i{position:absolute;inset:0;border:3px solid rgba(255,255,255,.9);border-radius:10px;background:rgba(255,255,255,.08)}
+.cube i:nth-child(1){transform:translateZ(55px);background:rgba(249,115,22,.55)}
+.cube i:nth-child(2){transform:rotateY(180deg) translateZ(55px)}
+.cube i:nth-child(3){transform:rotateY(90deg) translateZ(55px);background:rgba(22,163,74,.5)}
+.cube i:nth-child(4){transform:rotateY(-90deg) translateZ(55px)}
+.cube i:nth-child(5){transform:rotateX(90deg) translateZ(55px);background:rgba(29,78,216,.5)}
+.cube i:nth-child(6){transform:rotateX(-90deg) translateZ(55px)}
+@keyframes tourne{from{transform:rotateX(-20deg) rotateY(0)}to{transform:rotateX(-20deg) rotateY(360deg)}}
+.etiquette{position:absolute;left:50%;bottom:16px;transform:translateX(-50%) rotate(-2deg);background:var(--orange);color:#fff;font-weight:800;font-style:italic;font-size:clamp(18px,5.5vw,24px);padding:6px 18px;border-radius:12px;white-space:nowrap;box-shadow:0 6px 18px rgba(194,65,12,.45)}
+
+/* Boutons */
+.btn{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;text-decoration:none;color:#fff;border:0;border-radius:999px;padding:16px 20px;font:inherit;cursor:pointer;text-align:center;transition:transform .12s ease,filter .12s ease}
+.btn:active{transform:translateY(2px)}
+.btn:hover{filter:brightness(1.05)}
+.btn .l1{display:flex;gap:10px;align-items:center;font-size:19px;font-weight:800}
+.btn .l2{font-size:15px;opacity:.95}
+.btn svg{width:26px;height:26px;flex:none}
+.btn-vert{background:linear-gradient(180deg,#22c55e,var(--vert-f));box-shadow:0 5px 0 #14532d,0 14px 28px -10px rgba(22,163,74,.6)}
+.btn-orange{background:linear-gradient(180deg,#fb923c,var(--orange-f));box-shadow:0 5px 0 #7c2d12,0 14px 28px -10px rgba(249,115,22,.6)}
+.btn-bleu{background:linear-gradient(180deg,#3b82f6,var(--bleu-f));box-shadow:0 5px 0 #172554,0 14px 28px -10px rgba(29,78,216,.6)}
+.cta-principal{margin:28px 0 18px}
+
+/* Carte assistant */
+.carte{background:var(--carte);border:1px solid var(--bord);border-radius:22px;padding:20px;box-shadow:var(--ombre)}
+.assistant{display:flex;gap:16px;align-items:center;text-align:left}
+.avatar{position:relative;width:72px;height:72px;flex:none;border-radius:50%;border:3px solid #86efac;background:linear-gradient(135deg,var(--vert),var(--bleu));color:#fff;font-weight:800;font-size:28px;display:grid;place-items:center;overflow:visible}
+.avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.avatar::after{content:"";position:absolute;right:0;bottom:2px;width:16px;height:16px;border-radius:50%;background:#22c55e;border:3px solid #fff}
+.assistant .nom{font-weight:800;color:var(--encre);font-size:18px}
+.assistant .role{color:var(--bleu);font-weight:600;font-size:14px;margin-left:6px}
+.assistant .enligne{color:var(--vert);font-weight:600;font-size:14px;margin-left:6px}
+.assistant p{margin:4px 0 0}
+
+/* Date + compte à rebours */
+.date{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;margin:26px 0 8px;font-weight:600;color:var(--encre);font-size:17px}
+.date svg{width:28px;height:28px;color:var(--orange)}
+.rebours{display:flex;justify-content:center;gap:10px;margin:14px 0 34px}
+.rebours div{background:var(--carte);border:1px solid var(--bord);border-radius:14px;min-width:66px;padding:8px 6px;text-align:center}
+.rebours b{display:block;font-size:26px;color:var(--bleu-f);font-variant-numeric:tabular-nums}
+.rebours span{font-size:12px;color:var(--doux);text-transform:uppercase;letter-spacing:.06em}
+.rebours.live div{border-color:var(--vert)}
+
+/* Étapes */
+.section-etapes{background:#fff;border-top:1px solid var(--bord);padding:40px 0 48px}
+.surtitre{text-align:center;color:var(--orange-f);font-weight:800;letter-spacing:.18em;text-transform:uppercase;font-size:13px;margin:0 0 8px}
+h2{text-align:center;color:var(--encre);font-size:clamp(24px,7vw,32px);line-height:1.15;margin:0 0 10px}
+h2 .accent{color:var(--orange)}
+.progression{max-width:320px;margin:0 auto 26px;text-align:center;font-size:14px;color:var(--doux)}
+.barre{height:10px;border-radius:99px;background:var(--bord);overflow:hidden;margin-top:6px}
+.barre i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--vert),var(--bleu));transition:width .4s ease}
+.etape{background:var(--fond);border:1px solid var(--bord);border-radius:22px;padding:22px;margin-bottom:18px;position:relative}
+.etape.faite{border-color:#86efac;background:#f0fdf4}
+.badge{display:inline-flex;gap:8px;align-items:center;background:#fff;border:1px solid var(--bord);border-radius:999px;padding:6px 14px;font-weight:600;color:var(--encre);font-size:15px}
+.etape.faite .badge{background:var(--vert);color:#fff;border-color:var(--vert)}
+.etape h3{font-size:22px;color:var(--encre);margin:14px 0 6px}
+.etape h3 .accent{color:var(--orange)}
+.etape p{margin:0 0 18px;font-size:16px}
+.lien-sec{display:inline-block;margin-top:14px;font-weight:600;color:var(--bleu-f);background:none;border:0;padding:0;font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+
+/* Pied */
+footer{background:var(--encre);color:#cbd5e1;padding:36px 0 40px;text-align:center;font-size:14px}
+.marque{font-size:22px;font-weight:900;color:#fff;letter-spacing:-.01em;margin-bottom:4px}
+.marque .v{color:#4ade80}.marque .b{color:#60a5fa}.marque .o{color:#fb923c}
+footer nav{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:16px 0}
+footer small{display:block;color:#94a3b8;margin-top:14px;line-height:1.5}
+
+/* Boîte à outils (navigation) */
+.outils-nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 30px}
+.outils-nav a{background:#fff;border:1px solid var(--bord);border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;color:var(--bleu-f);text-decoration:none}
+.outils-nav a:hover{border-color:var(--bleu)}
+
+/* Sections outils */
+.bloc{padding:40px 0;border-top:1px solid var(--bord)}
+.bloc.blanc{background:#fff}
+.bloc p.intro{text-align:center;max-width:44ch;margin:0 auto 22px}
+
+/* Programme */
+.prog{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.prog li{display:flex;gap:14px;align-items:center;background:#fff;border:1px solid var(--bord);border-radius:16px;padding:12px 14px}
+.prog .jour{flex:none;width:58px;text-align:center;border-radius:12px;background:#eff6ff;color:var(--bleu-f);font-weight:800;line-height:1.1;padding:6px 0}
+.prog .jour small{display:block;font-weight:600;font-size:11px;text-transform:uppercase}
+.prog .theme{font-weight:700;color:var(--encre)}
+.prog .detail{font-size:14px;color:var(--doux)}
+.prog li.cesoir{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.15)}
+.prog li.passee{opacity:.55}
+.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:99px;padding:2px 8px;margin-left:6px;vertical-align:middle;background:var(--orange);color:#fff}
+
+/* Mini-test */
+.q{background:#fff;border:1px solid var(--bord);border-radius:18px;padding:16px;margin-bottom:12px}
+.q .enonce{font-weight:700;color:var(--encre);margin-bottom:10px}
+.q .num{color:var(--orange-f);margin-right:6px}
+.choix{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.choix button{font:inherit;font-weight:600;font-size:16px;padding:12px 8px;border-radius:12px;border:2px solid var(--bord);background:var(--fond);color:var(--encre);cursor:pointer}
+.choix button:disabled{cursor:default}
+.choix button.bon{background:#dcfce7;border-color:var(--vert);color:#14532d}
+.choix button.faux{background:#fee2e2;border-color:#dc2626;color:#7f1d1d}
+.explic{margin-top:10px;font-size:15px;border-radius:12px;padding:10px 12px;background:#f0fdf4}
+.explic.ko{background:#fff7ed}
+.resultat{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:2px solid var(--bleu);border-radius:20px;padding:20px;text-align:center}
+.resultat .score{font-size:44px;font-weight:900;color:var(--bleu-f);line-height:1}
+.resultat .niveau{font-weight:800;font-size:19px;color:var(--encre);margin:8px 0 4px}
+.resultat .btn{margin-top:14px}
+.petit-lien{display:inline-block;margin-top:12px;font-weight:600;color:var(--doux);background:none;border:0;font:inherit;font-size:14px;text-decoration:underline;cursor:pointer}
+
+/* Checklist */
+.check{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.check label{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid var(--bord);border-radius:14px;padding:12px 14px;cursor:pointer;font-weight:600;color:var(--encre)}
+.check input{width:22px;height:22px;accent-color:var(--vert);flex:none}
+.check input:checked + span{text-decoration:line-through;color:var(--doux)}
+
+/* Parents */
+.parents{background:linear-gradient(180deg,#fff7ed,#fff)}
+.conseils{display:grid;gap:10px;margin:0 0 22px;padding:0;list-style:none}
+.conseils li{display:flex;gap:12px;background:#fff;border:1px solid #fed7aa;border-radius:16px;padding:14px}
+.conseils .ico{flex:none;width:36px;height:36px;border-radius:50%;background:var(--orange);color:#fff;font-weight:800;display:grid;place-items:center}
+.conseils b{display:block;color:var(--encre)}
+.note-rgpd{font-size:13px;color:var(--doux);text-align:center;margin-top:16px}
+.duo{display:grid;gap:12px}
+
+/* FAQ */
+.faq details{background:#fff;border:1px solid var(--bord);border-radius:14px;margin-bottom:8px;padding:0 16px}
+.faq summary{cursor:pointer;font-weight:700;color:var(--encre);padding:14px 0;list-style:none;display:flex;justify-content:space-between;gap:10px}
+.faq summary::after{content:"+";color:var(--orange);font-size:22px;line-height:1}
+.faq details[open] summary::after{content:"–"}
+.faq details p{margin:0 0 14px}
+
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--encre);color:#fff;padding:10px 18px;border-radius:999px;font-weight:600;z-index:10;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+
+@media (prefers-reduced-motion:reduce){.cube,.pastille{animation:none}}
+[hidden]{display:none!important}
+section{scroll-margin-top:64px}
+</style>
+</head>
+<body>
+
+<div class="bandeau"><span class="pastille" aria-hidden="true"></span><span id="bandeau"></span></div>
+
+<header class="hero">
+  <div class="wrap">
+    <h1 id="titre"></h1>
+    <p class="sous" id="sous"></p>
+    <div class="visuel" id="visuel">
+      <div class="cube" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <span class="etiquette" id="etiquette"></span>
+    </div>
+    <div class="cta-principal" id="cta-principal"></div>
+
+    <div class="carte assistant" id="assistant">
+      <div class="avatar" id="avatar"></div>
+      <div>
+        <div><span class="nom" id="ass-nom"></span><span class="role" id="ass-role"></span><span class="enligne">en ligne</span></div>
+        <p id="ass-msg"></p>
+      </div>
+    </div>
+
+    <div class="date">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+      <span id="date-texte"></span>
+    </div>
+    <div class="rebours" id="rebours" aria-live="polite"></div>
+    <nav class="outils-nav" id="outils-nav" aria-label="Boîte à outils"></nav>
+  </div>
+</header>
+
+<section class="section-etapes">
+  <div class="wrap">
+    <p class="surtitre">À faire maintenant</p>
+    <h2 id="titre-etapes"></h2>
+    <div class="progression"><span id="prog-texte"></span><div class="barre"><i id="prog-barre"></i></div></div>
+    <div id="etapes"></div>
+  </div>
+</section>
+
+<section class="bloc" id="programme" hidden>
+  <div class="wrap">
+    <p class="surtitre">Le programme</p>
+    <h2>Ce qu'on fait <span class="accent">chaque soir</span></h2>
+    <p class="intro">Une notion par soir, des exemples tirés du métier d'électricien.</p>
+    <ul class="prog" id="prog"></ul>
+  </div>
+</section>
+
+<section class="bloc blanc" id="test" hidden>
+  <div class="wrap">
+    <p class="surtitre">Pour les élèves · 3 min</p>
+    <h2>Mini-test : <span class="accent">d'où tu pars ?</span></h2>
+    <p class="intro">Pas de note, pas de piège : ça m'aide à préparer les sessions pour toi. Réponds sans calculatrice.</p>
+    <div id="quiz"></div>
+    <div id="quiz-res"></div>
+  </div>
+</section>
+
+<section class="bloc" id="checklist" hidden>
+  <div class="wrap">
+    <p class="surtitre">Pour les élèves</p>
+    <h2>Prêt pour <span class="accent">la 1re session</span> ?</h2>
+    <p class="intro" id="check-prog"></p>
+    <ul class="check" id="check"></ul>
+  </div>
+</section>
+
+<section class="bloc parents" id="parents" hidden>
+  <div class="wrap">
+    <p class="surtitre">Espace parents</p>
+    <h2 id="par-titre"></h2>
+    <p class="intro" id="par-intro"></p>
+    <ul class="conseils" id="par-conseils"></ul>
+    <div class="duo" id="par-actions"></div>
+    <p class="note-rgpd" id="par-note"></p>
+  </div>
+</section>
+
+<section class="bloc blanc faq" id="faq" hidden>
+  <div class="wrap">
+    <p class="surtitre">Questions fréquentes</p>
+    <h2>Élèves &amp; <span class="accent">parents</span></h2>
+    <div id="faq-liste"></div>
+  </div>
+</section>
+
+<div class="toast" id="toast" role="status"></div>
+
+<footer>
+  <div class="wrap">
+    <div class="marque" id="marque"></div>
+    <div id="nom-evenement"></div>
+    <nav id="liens-legaux"></nav>
+    <div id="copyright"></div>
+    <small id="mention"></small>
+  </div>
+</footer>
+
+<script>
+/* =========================================================================
+   CONFIG — la seule partie à modifier pour réutiliser la page
+   ========================================================================= */
+const CONFIG = {
+  marque: "Maths au Cube",
+  evenement: "Semaine Réussite Maths",
+  etiquetteVisuel: "Du lundi au vendredi",
+  image: "",                       // URL d'une photo ; vide = cube animé
+
+  // Sessions : 1re séance (heure de Paris) + nombre de soirs consécutifs
+  debut: "2026-11-16T19:00:00+01:00",
+  nbSessions: 5,
+  dureeMin: 60,
+  dateTexte: "Du lundi 16 au vendredi 20 novembre 2026 · 19h (heure de Paris)",
+  lieu: "En ligne — lien envoyé par email",
+  description: "5 sessions en direct pour reprendre confiance en maths.",
+
+  sousTitre: "Les sessions sont <b>en direct</b> : bloque le créneau dès maintenant. Il te reste <b>{n} étapes</b> pour bien démarrer.",
+
+  whatsapp: "https://chat.whatsapp.com/BMAXstZuLrx0JAfjnktKbi",
+
+  assistant: {
+    nom: "Nacer",
+    role: "Ton prof",
+    photo: "",                     // URL ; vide = initiale
+    message: "Salut, c'est <b>Nacer</b> ! Je t'écris <b>sur WhatsApp</b> avant chaque session. Pense à enregistrer mon numéro."
+  },
+
+  // Étapes : type "whatsapp" | "agenda" | "lien"
+  etapes: [
+    { type: "whatsapp", titre: 'Rejoins le groupe <span class="accent">WhatsApp</span>',
+      texte: "C'est là que tu recevras les rappels avant chaque session, les fiches et les exercices bonus." },
+    { type: "agenda", titre: 'Ajoute la date à <span class="accent">ton agenda</span>',
+      texte: "Bloque dès maintenant les créneaux pour ne rien manquer. Tu recevras aussi ton lien de connexion par email." },
+    { type: "test", titre: 'Fais le <span class="accent">mini-test</span>',
+      texte: "7 questions, 3 minutes. Je saurai d'où tu pars et j'adapterai les sessions." }
+    // { type:"lien", titre:"...", texte:"...", url:"https://...", bouton:"J'y vais", sous:"5 min · gratuit" }
+  ],
+
+  // Numéro WhatsApp du prof au format international SANS + ni espaces (ex. 33612345678).
+  // Vide = les boutons « envoyer au prof » deviennent « copier ».
+  numeroProf: "33613436994",
+
+  // Programme : un thème par session (dans l'ordre). Vide = section masquée.
+  programme: [
+    { theme: "Les nombres sans peur", detail: "Signes, priorités, fractions — les automatismes" },
+    { theme: "Puissances de 10 & unités", detail: "kW, mA, MΩ : convertir sans se tromper" },
+    { theme: "Équations du 1er degré", detail: "Isoler une grandeur dans U = R × I, P = U × I" },
+    { theme: "Lire et tracer un graphique", detail: "Caractéristique d'un dipôle, proportionnalité" },
+    { theme: "Spécial CCF", detail: "Méthode « je vois → je pense → je fais → je vérifie »" }
+  ],
+
+  // Mini-test (QCM). bonne = index de la bonne réponse (0 = première). Vide = section masquée.
+  quiz: [
+    { q: "(−3) × (−4) = ?", choix: ["12", "−12", "−7", "7"], bonne: 0, notion: "règle des signes",
+      explic: "Moins × moins = plus. Donc (−3) × (−4) = +12." },
+    { q: "2 + 3 × 4 = ?", choix: ["20", "14", "24", "9"], bonne: 1, notion: "priorités opératoires",
+      explic: "La multiplication passe avant l'addition : 3 × 4 = 12, puis 2 + 12 = 14." },
+    { q: "1/2 + 1/4 = ?", choix: ["2/6", "1/8", "3/4", "2/4"], bonne: 2, notion: "fractions",
+      explic: "Même dénominateur d'abord : 1/2 = 2/4, donc 2/4 + 1/4 = 3/4." },
+    { q: "10³ = ?", choix: ["30", "103", "10 000", "1 000"], bonne: 3, notion: "puissances de 10",
+      explic: "10³ = 10 × 10 × 10 = 1 000. C'est le « kilo » : 1 kW = 10³ W." },
+    { q: "Résous : 2x + 6 = 0", choix: ["x = 3", "x = −3", "x = −12", "x = 6"], bonne: 1, notion: "équations",
+      explic: "2x = −6, puis x = −6 ÷ 2 = −3. Vérif : 2 × (−3) + 6 = 0 ✓" },
+    { q: "U = R × I. Avec R = 10 Ω et I = 2 A, U = ?", choix: ["5 V", "20 V", "12 V", "0,2 V"], bonne: 1, notion: "loi d'Ohm (calcul)",
+      explic: "U = 10 × 2 = 20 V. Ordre de grandeur cohérent pour un petit circuit." },
+    { q: "À partir de U = R × I, on obtient I = ?", choix: ["U × R", "R ÷ U", "U ÷ R", "U − R"], bonne: 2, notion: "isoler une grandeur",
+      explic: "On divise les deux côtés par R : I = U ÷ R. Vérif : 20 ÷ 10 = 2 A ✓" }
+  ],
+  niveaux: [  // du plus bas au plus haut ; min = score minimum
+    { min: 0, titre: "On sécurise les bases", texte: "Parfait pour démarrer : les sessions sont faites pour toi. Tu vas gagner des automatismes dès le 1er soir." },
+    { min: 4, titre: "Bonne base", texte: "Il reste quelques points à consolider : on va les travailler ensemble." },
+    { min: 6, titre: "Solide !", texte: "Tu as les bases. Les sessions vont t'aider à aller vite et à viser le maximum au CCF." }
+  ],
+
+  // Checklist élève (mémorisée sur l'appareil). Vide = section masquée.
+  checklist: [
+    "J'ai testé le lien de connexion (reçu par email)",
+    "J'ai une calculatrice et sa batterie est chargée",
+    "J'ai un cahier ou des feuilles + un stylo",
+    "J'ai un coin calme et des écouteurs",
+    "J'ai mis une alarme 10 min avant 19h"
+  ],
+
+  // Espace parents. null = section masquée.
+  parents: {
+    titre: 'Votre enfant est <span class="accent">inscrit</span>',
+    intro: "5 soirées d'1 h, en ligne et gratuites, pour reprendre confiance en mathématiques avant le CCF. Voici comment l'aider, sans être prof de maths.",
+    conseils: [
+      { titre: "Préparez le créneau", texte: "Un coin calme, le téléphone en silencieux, 5 min avant 19h." },
+      { titre: "Posez une seule question", texte: "« Qu'est-ce que tu as compris ce soir ? » — l'expliquer aide à retenir." },
+      { titre: "Valorisez l'effort", texte: "Sa présence et sa régularité comptent plus qu'un score." }
+    ],
+    note: "Les réponses au mini-test et la checklist restent sur l'appareil. Rien n'est transmis, sauf si votre enfant choisit de l'envoyer au professeur."
+  },
+
+  // FAQ. Vide = section masquée.
+  faq: [
+    { q: "Combien ça coûte ?", r: "C'est gratuit." },
+    { q: "Faut-il allumer sa caméra ?", r: "Non. Un micro est utile pour poser des questions, mais le chat suffit." },
+    { q: "Et si mon enfant rate une session ?", r: "Les sessions sont en direct. Une fiche résumé est partagée dans le groupe WhatsApp après chaque soir." },
+    { q: "Qui peut écrire dans le groupe WhatsApp ?", r: "Le groupe est en mode « annonces » : seul le professeur y publie. Pour une question personnelle, écrivez-moi directement." },
+    { q: "Mon enfant n'a pas WhatsApp", r: "Pas de problème : toutes les infos importantes sont aussi envoyées par email." }
+  ],
+
+  liensLegaux: [
+    { texte: "Mentions légales", url: "#" },
+    { texte: "Politique de confidentialité", url: "#" }
+  ],
+  mention: "",
+  prenomParDefaut: ""
+};
+
+/* =========================================================================
+   MOTEUR — pas besoin de modifier en dessous
+   ========================================================================= */
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const params = new URLSearchParams(location.search);
+  const prenomBrut = (params.get("prenom") || params.get("first_name") || CONFIG.prenomParDefaut || "").trim().slice(0, 40);
+  const prenom = prenomBrut ? esc(prenomBrut.charAt(0).toUpperCase() + prenomBrut.slice(1)) : "";
+  const cle = "confirm:" + CONFIG.evenement + ":" + CONFIG.debut;
+  const store = {
+    get(){ try { return JSON.parse(localStorage.getItem(cle)) || {}; } catch(e){ return {}; } },
+    set(v){ try { localStorage.setItem(cle, JSON.stringify(v)); } catch(e){} }
+  };
+  let faites = store.get();
+  const n = CONFIG.etapes.length;
+
+  const ICONES = {
+    whatsapp: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.4-.2z"/></svg>',
+    agenda: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M12 13v5M9.5 15.5h5"/></svg>',
+    lien: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+    test: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>'
+  };
+
+  /* ---- Dates ---- */
+  const t0 = new Date(CONFIG.debut);
+  const sessions = Array.from({length: CONFIG.nbSessions}, (_, i) => {
+    const d = new Date(t0.getTime() + i * 864e5);
+    return { debut: d, fin: new Date(d.getTime() + CONFIG.dureeMin * 6e4) };
+  });
+  const finTout = sessions[sessions.length - 1].fin;
+  const utc = (d) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const jjmm = (d) => d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", timeZone: "Europe/Paris" });
+
+  function lienGoogle() {
+    const s = sessions[0];
+    const p = new URLSearchParams({
+      action: "TEMPLATE", text: CONFIG.evenement, dates: utc(s.debut) + "/" + utc(s.fin),
+      details: CONFIG.description + (CONFIG.whatsapp ? "\nGroupe WhatsApp : " + CONFIG.whatsapp : ""),
+      location: CONFIG.lieu
+    });
+    if (CONFIG.nbSessions > 1) p.set("recur", "RRULE:FREQ=DAILY;COUNT=" + CONFIG.nbSessions);
+    return "https://calendar.google.com/calendar/render?" + p.toString();
+  }
+
+  function telechargerIcs() {
+    const icsEsc = (s) => String(s).replace(/\\/g, "\\\\").replace(/[,;]/g, m => "\\" + m).replace(/\n/g, "\\n");
+    const now = utc(new Date());
+    const lignes = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//" + CONFIG.marque + "//Confirmation//FR", "CALSCALE:GREGORIAN", "METHOD:PUBLISH"];
+    sessions.forEach((s, i) => lignes.push(
+      "BEGIN:VEVENT",
+      "UID:" + utc(s.debut) + "-" + i + "@" + CONFIG.marque.replace(/\W+/g, "").toLowerCase(),
+      "DTSTAMP:" + now, "DTSTART:" + utc(s.debut), "DTEND:" + utc(s.fin),
+      "SUMMARY:" + icsEsc(CONFIG.evenement + (CONFIG.nbSessions > 1 ? " — Session " + (i + 1) + "/" + CONFIG.nbSessions : "")),
+      "DESCRIPTION:" + icsEsc(CONFIG.description), "LOCATION:" + icsEsc(CONFIG.lieu),
+      "BEGIN:VALARM", "TRIGGER:-PT30M", "ACTION:DISPLAY", "DESCRIPTION:" + icsEsc(CONFIG.evenement + " dans 30 min"), "END:VALARM",
+      "END:VEVENT"));
+    lignes.push("END:VCALENDAR");
+    const blob = new Blob([lignes.join("\r\n")], { type: "text/calendar;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = CONFIG.evenement.replace(/[^\w\- ]+/g, "").trim().replace(/\s+/g, "-") + ".ics";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
+
+  /* ---- Rendu ---- */
+  $("titre").innerHTML = (prenom ? "Bravo " + prenom + ",<br>" : "Bravo,<br>") + 'ta place est <span class="accent">réservée</span>';
+  $("sous").innerHTML = CONFIG.sousTitre.replace("{n}", n);
+  $("etiquette").textContent = CONFIG.etiquetteVisuel;
+  if (CONFIG.image) {
+    const img = new Image(); img.src = CONFIG.image; img.alt = ""; img.loading = "eager";
+    $("visuel").querySelector(".cube").replaceWith(img);
+  }
+  $("date-texte").textContent = CONFIG.dateTexte;
+
+  const a = CONFIG.assistant;
+  $("ass-nom").textContent = a.nom; $("ass-role").textContent = a.role; $("ass-msg").innerHTML = a.message;
+  $("avatar").innerHTML = a.photo ? '<img src="' + esc(a.photo) + '" alt="' + esc(a.nom) + '">' : esc(a.nom.charAt(0));
+
+  function bouton(classe, href, icone, l1, l2, id, extraAttrs) {
+    return '<a class="btn ' + classe + '" href="' + esc(href) + '"' + (id ? ' data-etape="' + id + '"' : "") + (extraAttrs || "") + '>' +
+      '<span class="l1">' + icone + l1 + '</span>' + (l2 ? '<span class="l2">' + l2 + '</span>' : "") + '</a>';
+  }
+  const ext = ' target="_blank" rel="noopener"';
+
+  if (CONFIG.whatsapp) {
+    $("cta-principal").innerHTML = bouton("btn-vert", CONFIG.whatsapp, ICONES.whatsapp, "Je rejoins le groupe WhatsApp", "Accès immédiat · gratuit", "0", ext);
+  }
+
+  $("titre-etapes").innerHTML = 'Encore <span class="accent">' + n + ' étape' + (n > 1 ? "s" : "") + '</span> pour ne rien rater';
+  $("etapes").innerHTML = CONFIG.etapes.map((e, i) => {
+    let action = "";
+    if (e.type === "whatsapp") action = bouton("btn-vert", CONFIG.whatsapp, ICONES.whatsapp, "Je rejoins le groupe WhatsApp", "Accès immédiat · gratuit", i, ext);
+    else if (e.type === "agenda") action =
+      bouton("btn-orange", lienGoogle(), ICONES.agenda, "J'ajoute la date à mon agenda", "Google Agenda · " + CONFIG.nbSessions + " session" + (CONFIG.nbSessions > 1 ? "s" : "") + " · du " + jjmm(sessions[0].debut) + " au " + jjmm(finTout), i, ext) +
+      '<button class="lien-sec" type="button" data-ics="' + i + '">Apple Calendrier, Outlook ou autre (.ics)</button>';
+    else if (e.type === "test") action = bouton("btn-bleu", "#test", ICONES.test, e.bouton || "Je fais le mini-test", e.sous || (CONFIG.quiz.length + " questions · 3 min"), "", "");
+    else action = bouton("btn-bleu", e.url || "#", ICONES.lien, e.bouton || "J'y vais", e.sous || "", i, ext);
+    return '<article class="etape" id="etape-' + i + '">' +
+      '<span class="badge">' + (ICONES[e.type] || ICONES.lien).replace('aria-hidden="true"', 'aria-hidden="true" width="18" height="18"') + '<span class="badge-txt">Étape ' + (i + 1) + '</span></span>' +
+      '<h3>' + e.titre + '</h3><p>' + e.texte + '</p>' + action + '</article>';
+  }).join("");
+
+  /* ---- Suivi des étapes (mémorisé sur l'appareil) ---- */
+  // Le bouton WhatsApp du haut valide l'étape WhatsApp si elle existe
+  const idxWa = CONFIG.etapes.findIndex(e => e.type === "whatsapp");
+  function majProgression() {
+    let k = 0;
+    CONFIG.etapes.forEach((_, i) => {
+      const el = $("etape-" + i), ok = !!faites[i];
+      el.classList.toggle("faite", ok);
+      el.querySelector(".badge-txt").textContent = ok ? "Étape " + (i + 1) + " ✓ faite" : "Étape " + (i + 1);
+      if (ok) k++;
+    });
+    $("prog-texte").textContent = k === n ? "Tout est prêt, à très vite !" : k + " / " + n + " étape" + (n > 1 ? "s" : "") + " faite" + (k > 1 ? "s" : "");
+    $("prog-barre").style.width = (100 * k / n) + "%";
+    const r = n - k;
+    $("bandeau").textContent = r ? "Ta place est réservée · encore " + r + " étape" + (r > 1 ? "s" : "") + " pour bien vivre " + CONFIG.evenement : "Ta place est réservée · tout est prêt pour " + CONFIG.evenement;
+  }
+  function valider(i) { if (i < 0 || i >= n) return; faites[i] = true; store.set(faites); majProgression(); }
+  document.addEventListener("click", (ev) => {
+    const ics = ev.target.closest("[data-ics]");
+    if (ics) { telechargerIcs(); valider(+ics.dataset.ics); return; }
+    const b = ev.target.closest("[data-etape]");
+    if (b) {
+      const i = +b.dataset.etape;
+      valider(b.closest("#cta-principal") ? idxWa : i);
+    }
+  });
+  majProgression();
+
+  /* =====================================================================
+     BOÎTE À OUTILS ÉLÈVES & PARENTS
+     ===================================================================== */
+  const memo = (suffixe) => ({
+    get(def){ try { const v = JSON.parse(localStorage.getItem(cle + ":" + suffixe)); return v == null ? def : v; } catch(e){ return def; } },
+    set(v){ try { localStorage.setItem(cle + ":" + suffixe, JSON.stringify(v)); } catch(e){} }
+  });
+  const urlPage = location.href.split("#")[0];
+  const prenomTxt = prenomBrut ? prenomBrut.charAt(0).toUpperCase() + prenomBrut.slice(1) : "";
+  function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("on"), 2200); }
+  async function copier(txt) {
+    try { await navigator.clipboard.writeText(txt); toast("Copié ✓"); }
+    catch (e) { window.prompt("Copie ce texte :", txt); }
+  }
+  // Envoie au prof sur WhatsApp si numeroProf est renseigné, sinon copie le texte
+  function versProf(txt) {
+    if (CONFIG.numeroProf) window.open("https://wa.me/" + CONFIG.numeroProf + "?text=" + encodeURIComponent(txt), "_blank", "noopener");
+    else copier(txt);
+  }
+  const libProf = CONFIG.numeroProf ? "Envoyer à " + CONFIG.assistant.nom + " sur WhatsApp" : "Copier pour l'envoyer à " + CONFIG.assistant.nom;
+  const nav = [];
+
+  /* ---- Programme ---- */
+  if (CONFIG.programme && CONFIG.programme.length) {
+    $("programme").hidden = false; nav.push(["#programme", "📅 Programme"]);
+    const fmt = (d, o) => d.toLocaleDateString("fr-FR", Object.assign({ timeZone: "Europe/Paris" }, o));
+    const auj = fmt(new Date(), { dateStyle: "short" });
+    $("prog").innerHTML = CONFIG.programme.slice(0, sessions.length).map((p, i) => {
+      const s = sessions[i], fini = s.fin.getTime() < Date.now(), soir = !fini && fmt(s.debut, { dateStyle: "short" }) === auj;
+      return '<li class="' + (soir ? "cesoir" : fini ? "passee" : "") + '"><div class="jour"><small>' + fmt(s.debut, { weekday: "short" }) + '</small>' + fmt(s.debut, { day: "numeric" }) + '</div>' +
+        '<div><div class="theme">' + esc(p.theme) + (soir ? '<span class="tag">Ce soir</span>' : fini ? ' ✓' : '') + '</div><div class="detail">' + esc(p.detail || "") + '</div></div></li>';
+    }).join("");
+  }
+
+  /* ---- Mini-test ---- */
+  const idxTest = CONFIG.etapes.findIndex(e => e.type === "test");
+  if (CONFIG.quiz && CONFIG.quiz.length) {
+    $("test").hidden = false; nav.push(["#test", "✅ Mini-test"]);
+    const mq = memo("quiz");
+    let rep = mq.get({});
+    const Q = CONFIG.quiz;
+    function rendreQuiz() {
+      $("quiz").innerHTML = Q.map((x, i) => {
+        const r = rep[i], fait = r !== undefined;
+        return '<div class="q"><div class="enonce"><span class="num">' + (i + 1) + '/' + Q.length + '</span>' + esc(x.q) + '</div><div class="choix">' +
+          x.choix.map((c, j) => {
+            const cls = fait ? (j === x.bonne ? "bon" : j === r ? "faux" : "") : "";
+            return '<button type="button" data-q="' + i + '" data-c="' + j + '" class="' + cls + '"' + (fait ? " disabled" : "") + '>' + esc(c) + '</button>';
+          }).join("") + '</div>' +
+          (fait ? '<div class="explic' + (r === x.bonne ? "" : " ko") + '">' + (r === x.bonne ? "✅ Bravo. " : "💡 Pas grave, c'est noté. ") + esc(x.explic) + '</div>' : "") + '</div>';
+      }).join("");
+      const nb = Object.keys(rep).length;
+      if (nb < Q.length) { $("quiz-res").innerHTML = ""; return; }
+      const score = Q.filter((x, i) => rep[i] === x.bonne).length;
+      const niv = CONFIG.niveaux.filter(v => score >= v.min).pop();
+      const aRevoir = Q.filter((x, i) => rep[i] !== x.bonne).map(x => x.notion);
+      const msg = "Bonjour " + CONFIG.assistant.nom + ", c'est " + (prenomTxt || "un élève inscrit") + ". Mini-test " + CONFIG.evenement + " : " + score + "/" + Q.length + "." +
+        (aRevoir.length ? " À revoir : " + aRevoir.join(", ") + "." : " Tout juste !");
+      $("quiz-res").innerHTML = '<div class="resultat"><div class="score">' + score + '/' + Q.length + '</div><div class="niveau">' + esc(niv.titre) + '</div><p>' + esc(niv.texte) + '</p>' +
+        (aRevoir.length ? '<p><b>À revoir :</b> ' + esc(aRevoir.join(" · ")) + '</p>' : "") +
+        '<button class="btn btn-vert" type="button" id="quiz-envoi"><span class="l1">' + ICONES.whatsapp + esc(libProf) + '</span><span class="l2">Pour que les sessions collent à ton niveau</span></button>' +
+        '<button class="petit-lien" type="button" id="quiz-raz">Recommencer le test</button></div>';
+      $("quiz-envoi").onclick = () => versProf(msg);
+      $("quiz-raz").onclick = () => { rep = {}; mq.set(rep); rendreQuiz(); $("test").scrollIntoView({ behavior: "smooth" }); };
+      valider(idxTest);
+    }
+    $("quiz").addEventListener("click", (ev) => {
+      const b = ev.target.closest("[data-q]"); if (!b || b.disabled) return;
+      rep[+b.dataset.q] = +b.dataset.c; mq.set(rep); rendreQuiz();
+    });
+    rendreQuiz();
+  }
+
+  /* ---- Checklist ---- */
+  if (CONFIG.checklist && CONFIG.checklist.length) {
+    $("checklist").hidden = false; nav.push(["#checklist", "🎒 Checklist"]);
+    const mc = memo("check"); let coche = mc.get({});
+    const majCheck = () => {
+      const k = CONFIG.checklist.filter((_, i) => coche[i]).length;
+      $("check-prog").textContent = k === CONFIG.checklist.length ? "Tout est prêt 🎉" : k + " / " + CONFIG.checklist.length + " — coche au fur et à mesure.";
+    };
+    $("check").innerHTML = CONFIG.checklist.map((c, i) =>
+      '<li><label><input type="checkbox" data-ck="' + i + '"' + (coche[i] ? " checked" : "") + '><span>' + esc(c) + '</span></label></li>').join("");
+    $("check").addEventListener("change", (ev) => { const i = ev.target.dataset.ck; if (i == null) return; coche[i] = ev.target.checked; mc.set(coche); majCheck(); });
+    majCheck();
+  }
+
+  /* ---- Espace parents ---- */
+  if (CONFIG.parents) {
+    const P = CONFIG.parents;
+    $("parents").hidden = false; nav.push(["#parents", "👪 Parents"]);
+    $("par-titre").innerHTML = P.titre;
+    $("par-intro").textContent = P.intro;
+    $("par-conseils").innerHTML = P.conseils.map((c, i) => '<li><span class="ico">' + (i + 1) + '</span><div><b>' + esc(c.titre) + '</b>' + esc(c.texte) + '</div></li>').join("");
+    $("par-note").textContent = P.note || "";
+    const urlParent = urlPage.split("?")[0] + "#parents"; // sans le prénom dans l'URL partagée
+    const txtParent = (prenomTxt ? "C'est " + prenomTxt + ". " : "") + "Je suis inscrit(e) à « " + CONFIG.evenement + " » (" + CONFIG.marque + ") : " + CONFIG.dateTexte + ". Infos et conseils pour les parents : " + urlParent;
+    const fichierIcs = '<button class="lien-sec" type="button" data-ics="-1" style="justify-self:center">Ajouter les dates à votre agenda (.ics)</button>';
+    $("par-actions").innerHTML =
+      '<button class="btn btn-orange" type="button" id="par-partage"><span class="l1">' + ICONES.lien + 'Envoyer l\'info à mon parent</span><span class="l2">Bouton pour l\'élève · WhatsApp, SMS, email</span></button>' +
+      '<button class="btn btn-bleu" type="button" id="par-contact"><span class="l1">' + ICONES.whatsapp + (CONFIG.numeroProf ? "Contacter " + esc(CONFIG.assistant.nom) : "Copier le message pour " + esc(CONFIG.assistant.nom)) + '</span><span class="l2">Une question ? Je réponds personnellement</span></button>' + fichierIcs;
+    $("par-partage").onclick = async () => {
+      if (navigator.share) { try { await navigator.share({ title: CONFIG.evenement, text: txtParent }); return; } catch (e) { if (e.name === "AbortError") return; } }
+      window.open("https://wa.me/?text=" + encodeURIComponent(txtParent), "_blank", "noopener");
+    };
+    $("par-contact").onclick = () => versProf("Bonjour " + CONFIG.assistant.nom + ", je suis parent " + (prenomTxt ? "de " + prenomTxt + " " : "d'un élève ") + "inscrit à « " + CONFIG.evenement + " ». Ma question : ");
+  }
+
+  /* ---- FAQ ---- */
+  if (CONFIG.faq && CONFIG.faq.length) {
+    $("faq").hidden = false; nav.push(["#faq", "❓ FAQ"]);
+    $("faq-liste").innerHTML = CONFIG.faq.map(f => '<details><summary>' + esc(f.q) + '</summary><p>' + esc(f.r) + '</p></details>').join("");
+  }
+
+  $("outils-nav").innerHTML = nav.map(([h, t]) => '<a href="' + h + '">' + t + '</a>').join("");
+
+  /* ---- Compte à rebours ---- */
+  function rebours() {
+    const now = Date.now(), el = $("rebours");
+    const prochaine = sessions.find(s => s.fin.getTime() > now);
+    if (!prochaine) { el.innerHTML = "<div><b>✓</b><span>Terminé</span></div>"; return; }
+    if (prochaine.debut.getTime() <= now) { el.classList.add("live"); el.innerHTML = "<div><b>🔴</b><span>En direct</span></div>"; return; }
+    let s = Math.floor((prochaine.debut.getTime() - now) / 1000);
+    const parts = [["j", 86400], ["h", 3600], ["min", 60], ["s", 1]].map(([u, v]) => { const q = Math.floor(s / v); s -= q * v; return [u, q]; });
+    el.innerHTML = parts.map(([u, q]) => "<div><b>" + String(q).padStart(2, "0") + "</b><span>" + u + "</span></div>").join("");
+  }
+  rebours(); setInterval(rebours, 1000);
+
+  /* ---- Pied ---- */
+  const m = CONFIG.marque.split(" ");
+  $("marque").innerHTML = m.length === 3 ? '<span class="v">' + esc(m[0]) + '</span> <span class="b">' + esc(m[1]) + '</span> <span class="o">' + esc(m[2]) + '</span>' : esc(CONFIG.marque);
+  $("nom-evenement").textContent = CONFIG.evenement;
+  $("liens-legaux").innerHTML = CONFIG.liensLegaux.map(l => '<a href="' + esc(l.url) + '">' + esc(l.texte) + '</a>').join("");
+  $("copyright").textContent = "© " + new Date().getFullYear() + " " + CONFIG.marque + " · " + CONFIG.evenement;
+  $("mention").textContent = CONFIG.mention;
+  document.title = "Inscription confirmée · " + CONFIG.evenement;
+})();
+</script>
+</body>
+</html>
