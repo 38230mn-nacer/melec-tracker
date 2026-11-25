@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Labo Pont de Graëtz</title>
+<meta name="description" content="Simulateur interactif : transformateur, pont de Graëtz et filtrage par condensateur. Terminale Bac Pro MELEC — Maths au Cube.">
+<meta name="theme-color" content="#14231F">
+<style>
+  :root{
+    --bg:#F5F8F5; --bg-panel:#FFFFFF; --bg-sunken:#EEF3EF;
+    --border:#D8E3DC; --border-strong:#C2D2C8;
+    --ink:#14231F; --ink-soft:#4E6059; --ink-mute:#7D948C;
+    --blue:#1D63C9; --blue-soft:#E3EDFB;
+    --orange:#CC6A12; --orange-soft:#F8E9D9;
+    --green:#1E8E5A; --green-soft:#DEF3E8;
+    --red:#C4432E; --red-soft:#FBE3DE;
+    --scope-bg:#0E1A14; --scope-grid:#21402F; --scope-ink:#9FC7AF;
+    --shadow:0 1px 2px rgba(20,35,31,.06),0 8px 24px -12px rgba(20,35,31,.18);
+    --r-lg:18px; --r-md:12px; --r-sm:8px;
+    --fs:16px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0F1713; --bg-panel:#17211C; --bg-sunken:#131C17;
+      --border:#2B3A32; --border-strong:#3A4C42;
+      --ink:#EAF2EC; --ink-soft:#AFC2B8; --ink-mute:#7E9088;
+      --blue:#6FA8F5; --blue-soft:#1C2C40;
+      --orange:#F0994A; --orange-soft:#3A2A17;
+      --green:#4CC48A; --green-soft:#16301F;
+      --red:#EF7A64; --red-soft:#3A1D18;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0F1713; --bg-panel:#17211C; --bg-sunken:#131C17;
+    --border:#2B3A32; --border-strong:#3A4C42;
+    --ink:#EAF2EC; --ink-soft:#AFC2B8; --ink-mute:#7E9088;
+    --blue:#6FA8F5; --blue-soft:#1C2C40;
+    --orange:#F0994A; --orange-soft:#3A2A17;
+    --green:#4CC48A; --green-soft:#16301F;
+    --red:#EF7A64; --red-soft:#3A1D18;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+  }
+  body.prof{ --fs:20px; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{
+    background:var(--bg); color:var(--ink);
+    font:var(--fs)/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{ max-width:1100px; margin:0 auto; padding:16px; }
+  header{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+  .logo{ width:40px; height:40px; border-radius:10px; flex:none;
+    background:linear-gradient(135deg,var(--green) 0 33%,var(--blue) 33% 66%,var(--orange) 66%); }
+  h1{ font-size:1.3em; margin:0; line-height:1.2; }
+  .sub{ color:var(--ink-soft); font-size:.85em; margin:0; }
+  .spacer{ flex:1; }
+  button{ font:inherit; cursor:pointer; }
+  .btn{ border:1px solid var(--border-strong); background:var(--bg-panel); color:var(--ink);
+    border-radius:var(--r-sm); padding:6px 12px; font-size:.85em; }
+  .btn:hover{ border-color:var(--blue); }
+  .btn.primary{ background:var(--blue); border-color:var(--blue); color:#fff; }
+  .btn.on{ background:var(--orange-soft); border-color:var(--orange); }
+  nav.tabs{ display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:12px; scrollbar-width:thin; }
+  nav.tabs button{ flex:none; border:1px solid var(--border); background:var(--bg-panel); color:var(--ink-soft);
+    border-radius:999px; padding:7px 14px; font-size:.9em; }
+  nav.tabs button[aria-selected="true"]{ background:var(--green); border-color:var(--green); color:#fff; font-weight:600; }
+  .card{ background:var(--bg-panel); border:1px solid var(--border); border-radius:var(--r-lg);
+    box-shadow:var(--shadow); padding:16px; margin-bottom:14px; }
+  .card h2{ font-size:1.1em; margin:0 0 8px; }
+  .card h3{ font-size:1em; margin:12px 0 6px; }
+  .muted{ color:var(--ink-soft); }
+  .grid2{ display:grid; grid-template-columns:1fr; gap:14px; }
+  @media (min-width:900px){ .grid2{ grid-template-columns:1.1fr 1fr; } }
+  .pill{ display:inline-block; padding:1px 9px; border-radius:999px; font-size:.78em; font-weight:600; }
+  .pill.g{ background:var(--green-soft); color:var(--green); }
+  .pill.b{ background:var(--blue-soft); color:var(--blue); }
+  .pill.o{ background:var(--orange-soft); color:var(--orange); }
+  .pill.r{ background:var(--red-soft); color:var(--red); }
+  .hidden{ display:none !important; }
+
+  /* Schéma */
+  svg.schema{ width:100%; height:auto; display:block; }
+  .w{ stroke:var(--ink-mute); stroke-width:2.5; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .w.live{ stroke:var(--orange); stroke-width:3.5; stroke-dasharray:8 8; animation:flow .6s linear infinite; }
+  @keyframes flow{ to{ stroke-dashoffset:-16; } }
+  @media (prefers-reduced-motion: reduce){ .w.live{ animation:none; stroke-dasharray:none; } }
+  .comp{ stroke:var(--ink); stroke-width:2.5; fill:none; }
+  .compfill{ fill:var(--ink); }
+  .diode polygon{ fill:var(--ink-mute); stroke:var(--ink-mute); }
+  .diode line{ stroke:var(--ink-mute); stroke-width:3; }
+  .diode.on polygon{ fill:var(--orange); stroke:var(--orange); }
+  .diode.on line{ stroke:var(--orange); }
+  .diode.dead polygon{ fill:var(--red); stroke:var(--red); opacity:.5; }
+  .lbl{ fill:var(--ink-soft); font-size:13px; font-family:inherit; }
+  .lbl.big{ fill:var(--ink); font-size:15px; font-weight:600; }
+  .ghost{ opacity:.12; }
+  .piece{ transition:opacity .5s; }
+
+  /* Oscillo */
+  .scope-wrap{ background:var(--scope-bg); border-radius:var(--r-md); padding:8px; }
+  canvas#scope{ width:100%; aspect-ratio:10/7; display:block; }
+  .scope-legend{ display:flex; gap:12px; flex-wrap:wrap; font-size:.78em; color:var(--scope-ink); padding:6px 4px 0; }
+  .sw{ display:inline-block; width:14px; height:3px; vertical-align:middle; margin-right:4px; border-radius:2px; }
+
+  /* Mesures */
+  .meas{ display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px; margin-top:10px; }
+  .m{ background:var(--bg-sunken); border:1px solid var(--border); border-radius:var(--r-sm); padding:6px 10px; }
+  .m .k{ font-size:.75em; color:var(--ink-soft); }
+  .m .v{ font-size:1.15em; font-weight:700; font-variant-numeric:tabular-nums; }
+  .m.hl{ border-color:var(--orange); }
+
+  /* Contrôles */
+  .ctl{ display:grid; grid-template-columns:1fr; gap:12px; }
+  .ctl label{ font-size:.9em; font-weight:600; display:block; margin-bottom:4px; }
+  .ctl output{ font-weight:700; color:var(--blue); font-variant-numeric:tabular-nums; }
+  input[type=range]{ width:100%; accent-color:var(--blue); }
+  .seg{ display:flex; flex-wrap:wrap; gap:6px; }
+  .seg button{ border:1px solid var(--border-strong); background:var(--bg-panel); color:var(--ink); border-radius:var(--r-sm); padding:5px 10px; font-size:.85em; }
+  .seg button[aria-pressed="true"]{ background:var(--blue); border-color:var(--blue); color:#fff; }
+  .toggles{ display:flex; gap:8px; flex-wrap:wrap; }
+
+  /* Étapes / défis */
+  .step{ border-left:4px solid var(--border); padding:6px 0 6px 12px; margin:8px 0; }
+  .step.done{ border-color:var(--green); }
+  .step.cur{ border-color:var(--orange); background:var(--orange-soft); border-radius:0 var(--r-sm) var(--r-sm) 0; }
+  .q{ border:1px solid var(--border); border-radius:var(--r-md); padding:12px; margin:10px 0; }
+  .q .opts{ display:flex; flex-wrap:wrap; gap:8px; margin:8px 0; }
+  .q .opts button{ border:1px solid var(--border-strong); background:var(--bg-panel); color:var(--ink); border-radius:var(--r-sm); padding:7px 14px; }
+  .q .opts button.ok{ background:var(--green-soft); border-color:var(--green); color:var(--green); font-weight:700; }
+  .q .opts button.ko{ background:var(--red-soft); border-color:var(--red); color:var(--red); }
+  .fb{ font-size:.92em; padding:8px 10px; border-radius:var(--r-sm); background:var(--bg-sunken); }
+  .score{ font-weight:700; color:var(--green); }
+
+  /* Fiche réflexe */
+  .reflex{ display:grid; grid-template-columns:1fr; gap:10px; }
+  @media (min-width:700px){ .reflex{ grid-template-columns:repeat(4,1fr); } }
+  .rx{ border-radius:var(--r-md); padding:10px 12px; border:2px solid; }
+  .rx h4{ margin:0 0 6px; font-size:.95em; letter-spacing:.04em; }
+  .rx ul{ margin:0; padding-left:18px; font-size:.9em; }
+  .rx.v{ border-color:var(--blue); } .rx.v h4{ color:var(--blue); }
+  .rx.p{ border-color:var(--green); } .rx.p h4{ color:var(--green); }
+  .rx.f{ border-color:var(--orange); } .rx.f h4{ color:var(--orange); }
+  .rx.c{ border-color:var(--ink-mute); }
+  table.trap{ width:100%; border-collapse:collapse; font-size:.9em; }
+  table.trap td,table.trap th{ border-bottom:1px solid var(--border); padding:7px 6px; text-align:left; vertical-align:top; }
+  .formula{ font-family:ui-monospace,Menlo,Consolas,monospace; background:var(--bg-sunken); padding:2px 6px; border-radius:6px; white-space:nowrap; }
+  .warn{ border-left:4px solid var(--red); background:var(--red-soft); padding:8px 12px; border-radius:0 var(--r-sm) var(--r-sm) 0; font-size:.92em; }
+  footer{ color:var(--ink-mute); font-size:.78em; text-align:center; padding:16px 0 24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo" aria-hidden="true"></div>
+    <div>
+      <h1>Labo Pont de Graëtz</h1>
+      <p class="sub">De l'alternatif au continu · Terminale Bac Pro MELEC · Maths au Cube</p>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn" id="btnProf" aria-pressed="false" title="Gros caractères + formules (vidéoprojection)">Mode prof</button>
+    <button class="btn" id="btnTheme" title="Thème clair / sombre">◐</button>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="pourquoi" aria-selected="true">1 · Pourquoi ?</button>
+    <button role="tab" data-tab="construire" aria-selected="false">2 · Construire</button>
+    <button role="tab" data-tab="explorer" aria-selected="false">3 · Explorer</button>
+    <button role="tab" data-tab="defis" aria-selected="false">4 · Défis</button>
+    <button role="tab" data-tab="fiche" aria-selected="false">5 · Fiche réflexe</button>
+  </nav>
+
+  <!-- ============ 1. POURQUOI ============ -->
+  <section data-panel="pourquoi">
+    <div class="card">
+      <h2>Le problème</h2>
+      <p>Le réseau électrique fournit du <b>230 V alternatif, 50 Hz</b> : la tension change de sens 100 fois par seconde.</p>
+      <p>Pourtant, l'alimentation <b>24 V</b> d'un automate, la bobine d'un contacteur <b>DC</b>, un chargeur de batterie ou une carte électronique veulent une tension <b>continue</b>, qui ne change jamais de sens.</p>
+      <p><b>Ta mission :</b> construire, pièce par pièce, le montage qui transforme l'un en l'autre.</p>
+    </div>
+    <div class="card">
+      <h2>Sur le terrain</h2>
+      <p>Dans une alimentation de tableau électrique, tu trouves presque toujours :</p>
+      <ul>
+        <li>un <b>transformateur</b>, qui abaisse la tension ;</li>
+        <li>un <b>pont de diodes</b> : un petit bloc à 4 pattes marquées <b>~ ~ + −</b> ;</li>
+        <li>un gros <b>condensateur chimique</b>, qui lisse la tension.</li>
+      </ul>
+      <p class="warn"><b>Sécurité :</b> un condensateur reste chargé même quand l'appareil est hors tension. On ne touche jamais une carte sans avoir consigné l'installation et vérifié l'absence de tension.</p>
+      <p><button class="btn primary" data-goto="construire">Je construis le montage →</button></p>
+    </div>
+  </section>
+
+  <!-- ============ 2. CONSTRUIRE ============ -->
+  <section data-panel="construire" class="hidden">
+    <div class="card">
+      <h2>Construis le montage, une pièce à la fois</h2>
+      <div id="steps"></div>
+      <div class="toggles" style="margin-top:8px">
+        <button class="btn" id="stepPrev">← Pièce précédente</button>
+        <button class="btn primary" id="stepNext">Ajouter la pièce suivante →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. EXPLORER ============ -->
+  <section data-panel="explorer" class="hidden">
+    <div class="card">
+      <h2>Explore : change un réglage, observe l'oscilloscope</h2>
+      <div class="ctl">
+        <div>
+          <label for="u2">Tension efficace au secondaire U₂ : <output id="u2o">12 V</output></label>
+          <input type="range" id="u2" min="6" max="48" step="1" value="12">
+        </div>
+        <div>
+          <label>Résistance de charge R</label>
+          <div class="seg" id="segR"></div>
+        </div>
+        <div>
+          <label>Condensateur de filtrage C</label>
+          <div class="seg" id="segC"></div>
+        </div>
+        <div class="toggles">
+          <button class="btn on" id="tReal" aria-pressed="true">Diodes réelles (seuil 0,7 V)</button>
+          <button class="btn" id="tFault" aria-pressed="false">Simuler une panne de D2</button>
+          <button class="btn on" id="tCh1" aria-pressed="true">Afficher u₂ sur l'oscillo</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. DÉFIS ============ -->
+  <section data-panel="defis" class="hidden">
+    <div class="card">
+      <h2>Défis : prédis d'abord, vérifie ensuite <span class="score" id="score"></span></h2>
+      <p class="muted">Réponds sans calculatrice ni simulateur. Ensuite, vérifie sur l'oscilloscope.</p>
+      <div id="quiz"></div>
+    </div>
+  </section>
+
+  <!-- ============ 5. FICHE ============ -->
+  <section data-panel="fiche" class="hidden">
+    <div class="card">
+      <h2>Fiche réflexe : redressement double alternance</h2>
+      <div class="reflex">
+        <div class="rx v"><h4>JE VOIS</h4><ul>
+          <li>« alternatif → continu »</li><li>4 diodes en losange (~ ~ + −)</li><li>les mots « redressé », « filtré », « ondulation »</li></ul></div>
+        <div class="rx p"><h4>JE PENSE</h4><ul>
+          <li>Û = U × √2 (max ≠ efficace)</li><li>2 diodes conduisent à la fois</li><li>f de sortie = 2 × 50 = <b>100 Hz</b></li><li>C lisse, R consomme</li></ul></div>
+        <div class="rx f"><h4>JE FAIS</h4><ul>
+          <li>Û₂ = U₂ × 1,414</li><li>U<sub>max</sub> = Û₂ − 2 × 0,7 V</li><li>I ≈ U<sub>max</sub> / R</li><li>ΔU ≈ I / (100 × C), avec C en farads</li></ul></div>
+        <div class="rx c"><h4>JE VÉRIFIE</h4><ul>
+          <li>U<sub>moy</sub> &lt; U<sub>max</sub></li><li>ΔU petit devant U<sub>max</sub></li><li>µF × 10⁻⁶ → F</li><li>ordre de grandeur cohérent</li></ul></div>
+      </div>
+      <h3>Exemple guidé</h3>
+      <p>U₂ = 12 V, R = 100 Ω, C = 2 200 µF.</p>
+      <p>Û₂ = 12 × 1,414 ≈ 17,0 V → U<sub>max</sub> = 17,0 − 1,4 = <b>15,6 V</b> → I ≈ 15,6 / 100 = 0,156 A → ΔU ≈ 0,156 / (100 × 0,0022) ≈ <b>0,71 V</b>.</p>
+      <p><button class="btn" data-preset="12,100,2200">Vérifier sur le simulateur →</button></p>
+      <h3>Pièges : faux / juste</h3>
+      <table class="trap">
+        <tr><th>✗ Faux</th><th>✓ Juste</th></tr>
+        <tr><td>« U₂ = 12 V, donc la tension max vaut 12 V »</td><td>12 V est la valeur <b>efficace</b>. Le max vaut 12 × √2 ≈ 17 V.</td></tr>
+        <tr><td>« Une seule diode conduit, donc 0,7 V de perte »</td><td>Dans un pont, le courant traverse toujours <b>2 diodes</b> : 1,4 V de perte.</td></tr>
+        <tr><td>« La sortie est à 50 Hz comme le réseau »</td><td>Deux bosses par période : <b>100 Hz</b>. Si tu mesures 50 Hz, une diode est probablement coupée.</td></tr>
+        <tr><td>ΔU = 0,156 / (100 × 2200)</td><td>Il faut convertir : 2 200 µF = 0,0022 F.</td></tr>
+        <tr><td>« Je branche les deux voies de l'oscillo pour voir u₂ et u<sub>R</sub> en même temps »</td><td>Les masses de l'oscillo sont communes : cela court-circuite une diode du pont. Il faut une <b>sonde différentielle</b>.</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ SIMULATEUR (partagé) ============ -->
+  <section id="sim" class="hidden">
+    <div class="grid2">
+      <div class="card">
+        <h2>Schéma <span class="pill o" id="phase">—</span></h2>
+        <svg class="schema" viewBox="0 0 620 330" role="img" aria-label="Schéma du montage : transformateur, pont de diodes, condensateur et résistance de charge">
+          <!-- Primaire -->
+          <g id="pPrim" class="piece">
+            <path class="w" d="M20 90 H60 M20 210 H60"/>
+            <text class="lbl" x="4" y="80">230 V ~</text><text class="lbl" x="4" y="232">50 Hz</text>
+            <path class="comp" d="M60 90 v12 a10 10 0 0 1 0 20 a10 10 0 0 1 0 20 a10 10 0 0 1 0 20 a10 10 0 0 1 0 20 a10 10 0 0 1 0 20 v8" transform="translate(0,0)"/>
+            <line x1="88" y1="92" x2="88" y2="208" stroke="var(--ink)" stroke-width="2"/><line x1="94" y1="92" x2="94" y2="208" stroke="var(--ink)" stroke-width="2"/>
+            <path class="comp" d="M122 90 v12 a10 10 0 0 0 0 20 a10 10 0 0 0 0 20 a10 10 0 0 0 0 20 a10 10 0 0 0 0 20 a10 10 0 0 0 0 20 v8"/>
+            <text class="lbl big" x="62" y="250">Transfo</text>
+            <text class="lbl" x="128" y="186" id="lblU2">U₂</text>
+          </g>
+          <!-- Liaisons secondaire → pont -->
+          <g id="pBridge" class="piece">
+            <path class="w" id="wTop" d="M122 90 V40 H300 V60"/>
+            <path class="w" id="wBot" d="M122 210 V260 H300 V240"/>
+            <!-- losange -->
+            <path class="w" d="M300 60 L390 150 L300 240 L210 150 Z"/>
+            <g id="D1" class="diode"></g><g id="D2" class="diode"></g><g id="D3" class="diode"></g><g id="D4" class="diode"></g>
+            <text class="lbl big" x="352" y="92">D1</text><text class="lbl big" x="352" y="222">D2</text>
+            <text class="lbl big" x="222" y="92">D3</text><text class="lbl big" x="222" y="222">D4</text>
+            <text class="lbl big" x="396" y="140">+</text><text class="lbl big" x="196" y="140">−</text>
+            <!-- sorties -->
+            <path class="w" id="wPlus" d="M390 150 H460 V60 H570 V120"/>
+            <path class="w" id="wMinus" d="M210 150 V252 A8 8 0 0 1 210 268 V295 H570 V230"/>
+            <!-- R -->
+            <rect x="556" y="120" width="28" height="110" rx="3" class="comp"/>
+            <text class="lbl big" x="592" y="170">R</text>
+            <path id="arrowI" d="M600 190 v22 m-6 -8 l6 8 l6 -8" stroke="var(--orange)" stroke-width="2.5" fill="none"/>
+            <text class="lbl" x="594" y="232" id="lblI">I</text>
+          </g>
+          <!-- C -->
+          <g id="pCap" class="piece">
+            <path class="w" id="wC1" d="M500 60 V166"/><path class="w" id="wC2" d="M500 184 V295"/>
+            <line x1="480" y1="166" x2="520" y2="166" stroke="var(--ink)" stroke-width="4"/>
+            <path d="M480 186 Q500 178 520 186" stroke="var(--ink)" stroke-width="4" fill="none"/>
+            <text class="lbl" x="482" y="160">+</text>
+            <text class="lbl big" x="526" y="182">C</text>
+          </g>
+          <circle cx="500" cy="60" r="3.5" class="compfill" id="nodeC1"/><circle cx="500" cy="295" r="3.5" class="compfill" id="nodeC2"/>
+        </svg>
+        <p class="muted" style="font-size:.85em;margin:6px 0 0">En orange : les diodes qui conduisent <b>à cet instant</b>. Le temps est ralenti 50 fois.</p>
+      </div>
+      <div class="card">
+        <h2>Oscilloscope <span class="pill b" id="scale"></span></h2>
+        <div class="scope-wrap">
+          <canvas id="scope" width="1000" height="700"></canvas>
+          <div class="scope-legend">
+            <span id="legU2"><span class="sw" style="background:#6FA8F5"></span>u₂ (secondaire)</span>
+            <span id="legUR"><span class="sw" style="background:#F0994A"></span>u<sub>R</sub> (charge)</span>
+            <span>4 ms/div</span>
+          </div>
+        </div>
+        <div class="meas" id="meas"></div>
+      </div>
+    </div>
+    <div class="card hidden" id="profPanel">
+      <h2>Modèle utilisé (mode prof)</h2>
+      <ul style="font-size:.92em">
+        <li>u₂(t) = U₂√2 · sin(2π · 50 · t). Transformateur idéal.</li>
+        <li>Pont : deux diodes en série conduisent ; seuil 0,7 V chacune (ou 0 V en mode idéal). Source redressée : |u₂| − 1,4 V.</li>
+        <li>Sans C : u<sub>R</sub> = max(|u₂| − 1,4 ; 0). Valeur moyenne théorique (diodes idéales) : 2Û₂/π.</li>
+        <li>Avec C : u<sub>C</sub> = max(source ; u<sub>C</sub> déchargée), et pendant la décharge du<sub>C</sub>/dt = −u<sub>C</sub>/(RC). Pas de calcul de 10 µs, régime établi après 5 périodes.</li>
+        <li>Ondulation approchée : ΔU ≈ I/(2fC) = U<sub>max</sub>/(100·R·C). La valeur simulée est légèrement inférieure, car la décharge dure un peu moins de 10 ms.</li>
+        <li>Panne de D2 = diode ouverte : l'alternance négative ne passe plus, on obtient un redressement simple alternance à 50 Hz.</li>
+        <li>Limites : pas de résistance série, ni de courant d'appel, ni de chute de tension du transformateur en charge.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Maths au Cube · Labo Maths-Sciences Électro · fonctionne hors ligne · aucune donnée collectée</footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
+  const fmt = (x, d = 1) => x.toFixed(d).replace(".", ",");
+  const R_VALUES = [22, 47, 100, 220, 470, 1000];
+  const C_VALUES = [0, 100, 220, 470, 1000, 2200, 4700]; // µF
+
+  const state = {
+    tab: "pourquoi",
+    stage: 0,       // 0 transfo seul, 1 + pont + R, 2 + C
+    U2: 12, R: 100, C: 1000, real: true, fault: false, ch1: true,
+  };
+  let sim = null, t0 = performance.now();
+
+  /* ---------- Simulation physique ---------- */
+  function simulate(p) {
+    const f = 50, w = 2 * Math.PI * f, Um = p.U2 * Math.SQRT2;
+    const Vd = p.real ? 1.4 : 0;
+    const dt = 1e-5, warm = p.C > 0 ? 0.1 : 0, win = 0.04;
+    const C = p.C * 1e-6;
+    const N = Math.round(win / dt);
+    const t = new Float32Array(N), u2 = new Float32Array(N), u = new Float32Array(N);
+    const cond = new Uint8Array(N);
+    let uC = 0, k = 0;
+    const total = Math.round((warm + win) / dt);
+    for (let i = 0; i < total; i++) {
+      const ti = i * dt, v2 = Um * Math.sin(w * ti);
+      let src = p.fault ? (v2 > 0 ? v2 - Vd : -1) : Math.abs(v2) - Vd;
+      let out, c;
+      if (C === 0) { out = Math.max(src, 0); c = src > 0; }
+      else {
+        const dis = uC - uC / (p.R * C) * dt;
+        if (src >= dis) { uC = src; c = true; } else { uC = dis; c = false; }
+        out = uC;
+      }
+      if (ti >= warm && k < N) { t[k] = ti - warm; u2[k] = v2; u[k] = out; cond[k] = c ? 1 : 0; k++; }
+    }
+    let mx = -1e9, mn = 1e9, s = 0;
+    for (let i = 0; i < N; i++) { mx = Math.max(mx, u[i]); mn = Math.min(mn, u[i]); s += u[i]; }
+    const moy = s / N;
+    return { t, u2, u, cond, N, Um, Umax: mx, Umin: mn, Umoy: moy, dU: mx - mn, I: moy / p.R,
+             f: p.fault ? 50 : 100, Vd };
+  }
+
+  function recompute() { sim = simulate(state); renderMeasures(); drawStatic(); }
+
+  /* ---------- Diodes SVG ---------- */
+  const DIODES = { // de → vers (sens passant)
+    D1: [[300, 60], [390, 150]], D2: [[300, 240], [390, 150]],
+    D3: [[210, 150], [300, 60]], D4: [[210, 150], [300, 240]],
+  };
+  for (const [id, [a, b]] of Object.entries(DIODES)) {
+    const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+    const ang = Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI;
+    $("#" + id).innerHTML =
+      `<g transform="translate(${mx} ${my}) rotate(${ang})">
+         <polygon points="-11,-12 -11,12 11,0"/><line x1="11" y1="-13" x2="11" y2="13"/>
+       </g>`;
+  }
+
+  /* ---------- Oscilloscope ---------- */
+  const cv = $("#scope"), ctx = cv.getContext("2d");
+  const W = cv.width, H = cv.height, DIVX = 10, DIVY = 8;
+  function vdiv() {
+    const need = state.U2 * Math.SQRT2 / 3.6;
+    return [1, 2, 5, 10, 20].find(v => v >= need) || 20;
+  }
+  function drawStatic(cursorIdx = -1) {
+    const vd = vdiv();
+    $("#scale").textContent = vd + " V/div";
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = getCss("--scope-bg"); ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = getCss("--scope-grid"); ctx.lineWidth = 1;
+    for (let i = 0; i <= DIVX; i++) { const x = i * W / DIVX; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+    for (let j = 0; j <= DIVY; j++) { const y = j * H / DIVY; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    ctx.strokeStyle = "#3C6E52"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, H / 2); ctx.lineTo(W, H / 2); ctx.stroke();
+    if (!sim) return;
+    const py = v => H / 2 - v / vd * (H / DIVY);
+    const px = i => i / (sim.N - 1) * W;
+    const step = 4;
+    if (state.ch1 || state.stage === 0) {
+      ctx.strokeStyle = "#6FA8F5"; ctx.lineWidth = state.stage === 0 ? 4 : 2.5;
+      ctx.beginPath();
+      for (let i = 0; i < sim.N; i += step) { const x = px(i), y = py(sim.u2[i]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+      ctx.stroke();
+    }
+    if (state.stage >= 1) {
+      ctx.strokeStyle = "#F0994A"; ctx.lineWidth = 5;
+      ctx.beginPath();
+      for (let i = 0; i < sim.N; i += step) { const x = px(i), y = py(sim.u[i]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+      ctx.stroke();
+    }
+    if (cursorIdx >= 0) {
+      ctx.strokeStyle = "rgba(255,255,255,.55)"; ctx.lineWidth = 2; ctx.setLineDash([8, 8]);
+      ctx.beginPath(); ctx.moveTo(px(cursorIdx), 0); ctx.lineTo(px(cursorIdx), H); ctx.stroke(); ctx.setLineDash([]);
+    }
+    ctx.fillStyle = "#9FC7AF"; ctx.font = "26px system-ui,sans-serif";
+    ctx.fillText("0 V", 8, H / 2 - 8);
+  }
+  function getCss(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim() || "#000"; }
+
+  /* ---------- Mesures ---------- */
+  function renderMeasures() {
+    const s = sim, m = [];
+    m.push(["U₂ efficace (voltmètre AC)", fmt(state.U2, 0) + " V"]);
+    m.push(["Û₂ = U₂ × √2", fmt(s.Um) + " V"]);
+    if (state.stage >= 1) {
+      m.push(["U_max charge", fmt(s.Umax) + " V", true]);
+      m.push(["U_moy (voltmètre DC)", fmt(s.Umoy) + " V", true]);
+      m.push(["U_min charge", fmt(s.Umin) + " V"]);
+      m.push(["Ondulation ΔU", fmt(s.dU, 2) + " V", state.stage === 2 && state.C > 0]);
+      m.push(["Fréquence de u_R", s.f + " Hz"]);
+      m.push(["Courant moyen I", (s.I >= 1 ? fmt(s.I, 2) + " A" : fmt(s.I * 1000, 0) + " mA")]);
+    } else {
+      m.push(["Fréquence de u₂", "50 Hz"]);
+    }
+    $("#meas").innerHTML = m.map(([k, v, hl]) =>
+      `<div class="m${hl ? " hl" : ""}"><div class="k">${k.replace("_max", "<sub>max</sub>").replace("_moy", "<sub>moy</sub>").replace("_min", "<sub>min</sub>").replace("u_R", "u<sub>R</sub>")}</div><div class="v">${v}</div></div>`).join("");
+  }
+
+  /* ---------- Animation (ralenti ×50) ---------- */
+  function frame(now) {
+    if (sim && !$("#sim").classList.contains("hidden")) {
+      const slow = 50, tsim = ((now - t0) / 1000 / slow) % 0.04;
+      const idx = Math.min(sim.N - 1, Math.floor(tsim / 0.04 * sim.N));
+      drawStatic(idx);
+      const v2 = sim.u2[idx], c = sim.cond[idx] && state.stage >= 1;
+      const pos = v2 > 0;
+      const on = c ? (pos ? ["D1", "D4"] : ["D2", "D3"]) : [];
+      for (const d of ["D1", "D2", "D3", "D4"]) {
+        const el = $("#" + d);
+        el.classList.toggle("on", on.includes(d));
+        el.classList.toggle("dead", state.fault && d === "D2");
+      }
+      $("#wTop").classList.toggle("live", c);
+      $("#wBot").classList.toggle("live", c);
+      const flowing = state.stage >= 1 && (c || (state.stage === 2 && state.C > 0) || sim.u[idx] > 0.01);
+      $("#wPlus").classList.toggle("live", flowing);
+      $("#wMinus").classList.toggle("live", flowing);
+      let ph;
+      if (state.stage === 0) ph = pos ? "u₂ > 0" : "u₂ < 0";
+      else if (c) ph = pos ? "D1 + D4 conduisent" : "D2 + D3 conduisent";
+      else if (state.stage === 2 && state.C > 0) ph = "diodes bloquées : C alimente R";
+      else ph = "aucune diode ne conduit";
+      $("#phase").textContent = ph;
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------- Étapes de construction ---------- */
+  const STEPS = [
+    { t: "Le transformateur", d: "Il abaisse 230 V en U₂ = 12 V efficaces. La tension <b>reste alternative</b> : elle est positive, puis négative, 50 fois par seconde. Regarde la courbe bleue." },
+    { t: "Le pont de 4 diodes + la charge R", d: "Une diode ne laisse passer le courant que dans un sens. Pendant l'alternance +, <b>D1 et D4</b> conduisent ; pendant l'alternance −, <b>D2 et D3</b>. Dans R, le courant va <b>toujours dans le même sens</b> : l'alternance négative est « retournée » (courbe orange). Mais la tension ondule encore, de 0 V au maximum." },
+    { t: "Le condensateur de filtrage", d: "C se charge pendant les bosses et se décharge dans R entre deux bosses. La tension devient presque continue. Observe : les diodes ne conduisent plus que <b>pendant un court instant</b>, au sommet de chaque bosse." },
+  ];
+  function renderSteps() {
+    $("#steps").innerHTML = STEPS.map((s, i) =>
+      `<div class="step ${i < state.stage ? "done" : i === state.stage ? "cur" : ""}">
+        <b>${i + 1}. ${s.t}</b>${i <= state.stage ? `<div>${s.d}</div>` : ""}</div>`).join("");
+    $("#stepPrev").disabled = state.stage === 0;
+    $("#stepNext").disabled = state.stage === 2;
+    $("#stepNext").textContent = state.stage === 2 ? "Montage terminé ✓ (onglet 3 pour explorer)" : "Ajouter la pièce suivante →";
+  }
+  function applyStage() {
+    $("#pBridge").classList.toggle("ghost", state.stage < 1);
+    $("#pCap").classList.toggle("ghost", state.stage < 2 || state.C === 0);
+    $("#nodeC1").classList.toggle("ghost", state.stage < 2 || state.C === 0);
+    $("#nodeC2").classList.toggle("ghost", state.stage < 2 || state.C === 0);
+    $("#legUR").classList.toggle("hidden", state.stage < 1);
+    $("#lblU2").textContent = "U₂ = " + state.U2 + " V";
+  }
+  $("#stepNext").onclick = () => { if (state.stage < 2) { state.stage++; syncStage(); } };
+  $("#stepPrev").onclick = () => { if (state.stage > 0) { state.stage--; syncStage(); } };
+  function syncStage() {
+    // en mode Construire, valeurs pédagogiques fixes
+    Object.assign(state, { U2: 12, R: 100, C: state.stage === 2 ? 1000 : 0, real: true, fault: false });
+    renderSteps(); applyStage(); recompute(); syncControls();
+  }
+
+  /* ---------- Contrôles ---------- */
+  $("#segR").innerHTML = R_VALUES.map(v => `<button data-r="${v}">${v >= 1000 ? v / 1000 + " kΩ" : v + " Ω"}</button>`).join("");
+  $("#segC").innerHTML = C_VALUES.map(v => `<button data-c="${v}">${v === 0 ? "sans" : v.toLocaleString("fr-FR") + " µF"}</button>`).join("");
+  $("#segR").onclick = e => { const b = e.target.closest("button"); if (b) { state.R = +b.dataset.r; update(); } };
+  $("#segC").onclick = e => { const b = e.target.closest("button"); if (b) { state.C = +b.dataset.c; update(); } };
+  $("#u2").oninput = e => { state.U2 = +e.target.value; update(); };
+  const tog = (id, key) => $(id).onclick = () => { state[key] = !state[key]; update(); };
+  tog("#tReal", "real"); tog("#tFault", "fault"); tog("#tCh1", "ch1");
+  function syncControls() {
+    $("#u2").value = state.U2; $("#u2o").textContent = state.U2 + " V";
+    $$("#segR button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.r === state.R));
+    $$("#segC button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.c === state.C));
+    for (const [id, k] of [["#tReal", "real"], ["#tFault", "fault"], ["#tCh1", "ch1"]]) {
+      $(id).setAttribute("aria-pressed", state[k]); $(id).classList.toggle("on", state[k]);
+    }
+  }
+  function update() { state.stage = 2; syncControls(); applyStage(); recompute(); }
+
+  /* ---------- Défis ---------- */
+  const QUIZ = [
+    { q: "Sans condensateur, quelle est la fréquence de la tension u<sub>R</sub> après le pont ?",
+      o: ["25 Hz", "50 Hz", "100 Hz"], a: 2,
+      e: "Chaque période de 20 ms donne <b>deux bosses</b>, donc une bosse toutes les 10 ms : f = 1 / 0,010 = 100 Hz.",
+      p: { U2: 12, R: 100, C: 0, real: true, fault: false } },
+    { q: "U₂ = 12 V (efficace), diodes réelles. Quelle est la tension maximale aux bornes de R ?",
+      o: ["12 V", "15,6 V", "17 V"], a: 1,
+      e: "Û₂ = 12 × √2 ≈ 17 V, puis on retire 2 × 0,7 V (deux diodes en série) : 17 − 1,4 ≈ 15,6 V.",
+      p: { U2: 12, R: 100, C: 0, real: true, fault: false } },
+    { q: "On remplace C = 1 000 µF par 2 200 µF. L'ondulation ΔU…",
+      o: ["augmente", "diminue (environ ÷2)", "ne change pas"], a: 1,
+      e: "ΔU ≈ I / (100 × C) : C est au dénominateur. Si C est multiplié par 2,2, ΔU est divisée par environ 2,2. Teste 1 000 µF, puis 2 200 µF.",
+      p: { U2: 12, R: 100, C: 1000, real: true, fault: false } },
+    { q: "On passe de R = 470 Ω à R = 47 Ω : l'appareil consomme plus de courant. L'ondulation…",
+      o: ["augmente", "diminue", "ne change pas"], a: 0,
+      e: "Plus de courant → C se vide plus vite entre deux bosses → ΔU augmente. C'est pour cela que les alimentations de forte puissance ont de gros condensateurs.",
+      p: { U2: 12, R: 47, C: 1000, real: true, fault: false } },
+    { q: "Maintenance : l'oscillo montre une bosse sur deux, et le fréquencemètre affiche 50 Hz. Quel est le diagnostic le plus probable ?",
+      o: ["Condensateur trop gros", "Une diode du pont est coupée", "Transformateur en court-circuit"], a: 1,
+      e: "Une diode ouverte supprime une alternance sur deux : on obtient un redressement <b>simple</b> alternance, à 50 Hz. On contrôle les diodes au multimètre, position test diode, <b>hors tension</b>.",
+      p: { U2: 12, R: 100, C: 0, real: true, fault: true } },
+    { q: "Situation pro : alimentation avec U₂ = 12 V et R = 100 Ω. Le cahier des charges impose ΔU ≤ 1 V. Quel condensateur choisis-tu (valeur normalisée) ?",
+      o: ["470 µF", "1 000 µF", "2 200 µF", "4 700 µF"], a: 2,
+      e: "U<sub>max</sub> ≈ 15,6 V ; I ≈ 0,156 A ; C ≥ I / (100 × ΔU) = 0,156 / 100 ≈ 0,00156 F = 1 560 µF. La valeur normalisée au-dessus est <b>2 200 µF</b>. 4 700 µF fonctionne aussi, mais coûte plus cher, prend plus de place et provoque un courant d'appel plus fort.",
+      p: { U2: 12, R: 100, C: 2200, real: true, fault: false } },
+  ];
+  const answered = {};
+  function renderQuiz() {
+    $("#quiz").innerHTML = QUIZ.map((x, i) => `
+      <div class="q" data-q="${i}">
+        <div><span class="pill g">Défi ${i + 1}</span> ${x.q}</div>
+        <div class="opts">${x.o.map((o, j) => `<button data-j="${j}">${o}</button>`).join("")}</div>
+        <div class="fb hidden"></div>
+      </div>`).join("");
+    updScore();
+  }
+  $("#quiz").onclick = e => {
+    const b = e.target.closest("button"); if (!b) return;
+    const box = b.closest(".q"), i = +box.dataset.q, x = QUIZ[i];
+    if (b.dataset.check) { Object.assign(state, x.p); update(); $("#sim").scrollIntoView({ behavior: "smooth" }); return; }
+    if (answered[i] !== undefined) return;
+    const j = +b.dataset.j; answered[i] = j === x.a;
+    box.querySelectorAll(".opts button").forEach((bt, k) => {
+      if (k === x.a) bt.classList.add("ok"); else if (k === j) bt.classList.add("ko");
+    });
+    const fb = box.querySelector(".fb"); fb.classList.remove("hidden");
+    fb.innerHTML = (j === x.a ? "<b>✓ Bien vu.</b> " : "<b>✗ Pas tout à fait.</b> ") + x.e +
+      ` <div style="margin-top:6px"><button class="btn" data-check="1">Vérifier sur le simulateur →</button></div>`;
+    updScore();
+  };
+  function updScore() {
+    const n = Object.keys(answered).length, ok = Object.values(answered).filter(Boolean).length;
+    $("#score").textContent = n ? `· ${ok}/${n}` : "";
+  }
+
+  /* ---------- Onglets ---------- */
+  function setTab(tab) {
+    state.tab = tab;
+    $$("nav.tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
+    $$("[data-panel]").forEach(p => p.classList.toggle("hidden", p.dataset.panel !== tab));
+    $("#sim").classList.toggle("hidden", !["construire", "explorer", "defis"].includes(tab));
+    if (tab === "construire") syncStage();
+    if (tab === "explorer" || tab === "defis") { if (state.stage < 2) { state.stage = 2; state.C = 1000; } syncControls(); applyStage(); recompute(); }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  $$("nav.tabs button").forEach(b => b.onclick = () => setTab(b.dataset.tab));
+  $$("[data-goto]").forEach(b => b.onclick = () => setTab(b.dataset.goto));
+  $$("[data-preset]").forEach(b => b.onclick = () => {
+    const [u, r, c] = b.dataset.preset.split(",").map(Number);
+    setTab("explorer"); Object.assign(state, { U2: u, R: r, C: c, real: true, fault: false }); update();
+  });
+
+  /* ---------- Mode prof / thème ---------- */
+  $("#btnProf").onclick = () => {
+    const on = document.body.classList.toggle("prof");
+    $("#btnProf").setAttribute("aria-pressed", on); $("#btnProf").classList.toggle("on", on);
+    $("#profPanel").classList.toggle("hidden", !on);
+  };
+  $("#btnTheme").onclick = () => {
+    const root = document.documentElement;
+    const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = dark ? "light" : "dark";
+    try { localStorage.setItem("graetz-theme", root.dataset.theme); } catch (e) {}
+  };
+  try { const t = localStorage.getItem("graetz-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+
+  renderQuiz(); renderSteps(); applyStage(); recompute(); syncControls();
+  requestAnimationFrame(frame);
+  window.__graetz = { simulate, state }; // pour les tests
+})();
+</script>
+</body>
+</html>
