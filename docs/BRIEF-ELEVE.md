@@ -41,10 +41,25 @@ C'est un repère de travail, pas un ordre officiel.
 10. **Mode pseudonymes** et **export SAFE** (noms → Élève-NN, notes masquées).
 11. **Registre daté** : alerte si la vérification a plus de 120 jours ; fiabilité (%) par référentiel ; domaines marqués `indicatif` / `banque`.
 
+## V3 — de l'outil de suivi à l'outil de séance
+| Fonction | Usage |
+|---|---|
+| **Plan de séance minuté** | Calé sur la durée (45/60/90/120) et l'heure de la prochaine séance : flash prérequis → rappel espacé → devoir à J-3 → 1 ou 2 priorités → ticket de sortie. Chaque priorité reçoit une consigne selon son état : *situer* (3 questions graduées), *sécurisation*, *maîtrise*, *transfert*. |
+| **Clôture en 30 s** | Un écran : domaines travaillés, score du ticket de sortie (0-3/3), blocages résolus, durée, règlement, note, prochaine séance. Complète la séance déjà saisie par la barre au lieu de la dupliquer. |
+| **Agenda** | `Lucas, prochaine mardi 17h30` ou champs date/heure. Tableau du jour : séances des 7 jours, séances passées non clôturées. |
+| **Évolution** | Notions maîtrisées avant → après chaque séance, courbe, notions gagnées par heure, temps investi par domaine. Le message aux parents cite ce progrès factuel. |
+| **Fiches réflexes** | JE VOIS → JE PENSE → JE FAIS → JE VÉRIFIE pour chaque prérequis lié à un blocage, avec la question flash ; impression seule pour l'élève. |
+| **Récap du mois / CSV** | Texte prêt à envoyer (séances, heures, montant, reste dû) ; export CSV des séances du mois (Excel, séparateur `;`). |
+| **Rappel de sauvegarde** | Bandeau après 7 jours de modifications non exportées. |
+| **Fusion sûre à l'import** | Pour chaque élève, la version la plus récente gagne ; le bilan est affiché. |
+
+Corrections : date du jour calculée en heure locale (et non UTC, faux entre minuit et 1-2 h) ; double point final dans le message aux parents.
+
 ## Mettre à jour le registre
 1. Vérifier les textes (BO, Éduscol).
 2. Modifier `brief-eleve-referentiels.js` : `from`/`until` ou `fromByLevel`/`untilByLevel`, `domains`, `certainty`.
 3. Changer `VERIFIED`.
+4. `node scripts/check-registry.mjs` : doit afficher 0 erreur (exécuté aussi en CI). Chaque prérequis doit avoir une question flash **et** une fiche réflexe.
 
 Points à confirmer en priorité : domaines des nouveaux programmes 2026 (actuellement indicatifs), calendrier 6e, modules maths du BTS Électrotechnique.
 

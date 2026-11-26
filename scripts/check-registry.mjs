@@ -9,7 +9,7 @@ import vm from 'node:vm';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const ctx = { window: {} };
 vm.runInNewContext(readFileSync(join(root, 'brief-eleve-referentiels.js'), 'utf8'), ctx);
-const { REFS, PREREQ, FLASH, VERIFIED, REVIEW_AFTER_DAYS } = ctx.window.BRIEF_REGISTRY;
+const { REFS, PREREQ, FLASH, REFLEX = {}, VERIFIED, REVIEW_AFTER_DAYS } = ctx.window.BRIEF_REGISTRY;
 const curriculum = JSON.parse(readFileSync(join(root, 'curriculum.json'), 'utf8'));
 
 const err = [], warn = [];
@@ -57,6 +57,13 @@ for (const [k, list] of Object.entries(groups)) for (let y = 2025; y <= 2029; y+
 // 3. Prérequis : chaque prérequis proposé doit avoir sa question flash
 for (const [rx, list] of PREREQ) for (const p of list) if (!FLASH[p]) err.push(`prérequis « ${p} » (motif ${rx}) sans question flash`);
 for (const [p, qa] of Object.entries(FLASH)) if (!Array.isArray(qa) || qa.length !== 2 || !qa[0] || !qa[1]) err.push(`flash « ${p} » : question ou réponse manquante`);
+
+for (const p of Object.keys(FLASH)) {
+  const r = REFLEX[p];
+  if (!r) err.push(`prérequis « ${p} » sans fiche réflexe JE VOIS → JE VÉRIFIE`);
+  else if (r.length !== 4 || r.some(x => !x || !x.trim())) err.push(`fiche réflexe « ${p} » incomplète (4 étapes attendues)`);
+}
+for (const p of Object.keys(REFLEX)) if (!FLASH[p]) warn.push(`fiche réflexe « ${p} » sans question flash`);
 
 // 4. Cohérence avec curriculum.json (même banque MELEC, une seule vérité)
 const melec = curriculum.tracks?.melec?.levels?.TMELEC || {};

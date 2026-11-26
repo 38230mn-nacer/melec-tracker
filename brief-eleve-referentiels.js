@@ -141,6 +141,21 @@
     'Racine carrée': ['√49 = ?   et   √(9 + 16) = ?', '7 ; 5 (pas 3 + 4 par hasard : vérifier la méthode)']
   };
 
-  window.BRIEF_REGISTRY = { VERIFIED: '2026-11-26', REVIEW_AFTER_DAYS: 120, REFS: R, PREREQ, FLASH,
+  // Fiches réflexes élève : [JE VOIS, JE PENSE, JE FAIS, JE VÉRIFIE] — une par prérequis (même clés que FLASH).
+  const REFLEX = {
+    'Priorités opératoires': ['Un calcul qui mélange + − et × ÷', 'Parenthèses d\'abord, puis × et ÷, puis + et − de gauche à droite', 'Je souligne le × ou le ÷, je le calcule, je réécris la ligne', 'La calculatrice respecte les priorités : même résultat ?'],
+    'Nombres relatifs': ['Des signes − devant des nombres', 'Somme : même signe → j\'ajoute ; signes contraires → je soustrais et je garde le signe du plus grand. Produit : signes identiques → +, différents → −', 'Je trouve d\'abord le signe, ensuite le nombre', 'Droite graduée : −3 − 5, je descends encore, donc plus négatif (−8)'],
+    'Calcul littéral': ['k(a + b) ou (a + b)(c + d)', 'Distributivité : chaque terme de la parenthèse est multiplié', 'Je trace les flèches, je garde le signe devant chaque terme', 'Je remplace x par 2 au départ et à l\'arrivée : même valeur ?'],
+    'Fractions': ['a/b + c/d', 'Addition → même dénominateur d\'abord (pas pour la multiplication)', 'Je mets au même dénominateur, j\'additionne seulement les numérateurs', 'Valeur approchée : 0,5 + 0,33 ≈ 0,83'],
+    'Multiples et diviseurs': ['Une fraction à simplifier', 'Je cherche un diviseur commun (critères de 2, 3, 5)', 'Je divise le haut et le bas par le même nombre, et je recommence', 'Plus aucun diviseur commun, même valeur décimale'],
+    'Puissances de 10': ['10ⁿ × 10ᵖ ou 10ⁿ ÷ 10ᵖ', 'Produit → j\'additionne les exposants ; quotient → je les soustrais', 'J\'écris les exposants avec leurs signes, puis je calcule', 'Ordre de grandeur : 1000 × 0,00001 = 0,01 = 10⁻²'],
+    'Pourcentages et coefficient multiplicateur': ['Augmenter ou diminuer de t %', 'Coefficient : 1 + t/100 (hausse), 1 − t/100 (baisse)', 'Valeur finale = valeur initiale × coefficient', 'Hausse → résultat plus grand ; baisse → plus petit'],
+    'Proportionnalité': ['Deux grandeurs qui varient ensemble (prix et longueur, temps et énergie)', 'Tableau de proportionnalité, produit en croix', 'Inconnue = produit des deux nombres en diagonale ÷ le troisième', 'Le coefficient est constant : 12 ÷ 3 = 4 et 20 ÷ 5 = 4'],
+    'Lecture graphique': ['f(a) ou « antécédent de b »', 'Image : je pars de l\'axe des abscisses. Antécédent : je pars de l\'axe des ordonnées', 'Trait jusqu\'à la courbe, puis vers l\'autre axe', 'Le point (a ; f(a)) est bien sur la courbe ; j\'ai lu les unités des axes'],
+    'Coefficient directeur': ['Deux points A et B d\'une droite', 'm = (yB − yA) ÷ (xB − xA) : variation des y sur variation des x', 'Même ordre en haut et en bas (B puis A)', 'Droite qui monte → m > 0 ; qui descend → m < 0'],
+    'Racine carrée': ['Le symbole √', '√a est le nombre positif dont le carré vaut a ; √(a + b) ≠ √a + √b', 'Je calcule d\'abord ce qu\'il y a sous la racine', 'J\'élève mon résultat au carré : je retrouve le nombre de départ ?']
+  };
+
+  window.BRIEF_REGISTRY = { VERIFIED: '2026-11-26', REVIEW_AFTER_DAYS: 120, REFS: R, PREREQ, FLASH, REFLEX,
     SOURCES: { calendrier: EDUSCOL_CAL, mathsGT: EDUSCOL_MATHS_GT, maths: EDUSCOL_MATHS } };
 })();
