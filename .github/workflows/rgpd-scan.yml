@@ -9,3 +9,5 @@ jobs:
         with:
           python-version: '3.12'
       - run: python scripts/safe_push.py
+      - name: Registre des référentiels (tests déterministes)
+        run: node scripts/check-registry.mjs

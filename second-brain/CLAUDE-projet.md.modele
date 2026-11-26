@@ -1,0 +1,10 @@
+## Second cerveau (coffre Obsidian)
+Chemin : ~/CHEMIN/VERS/COFFRE
+
+Quand une information manque dans ce projet :
+1. Lire `_AI/hot.md` (contexte récent).
+2. Si insuffisant : `wiki/index.md`, puis seulement les pages utiles.
+3. Citer les pages utilisées.
+
+NE PAS lire le coffre pour une question générale de code ou une tâche autonome.
+Toute écriture dans le coffre passe par `_AI/20_A_VALIDER/` (PREPARE), jamais directement dans le canonique.

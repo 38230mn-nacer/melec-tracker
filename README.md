@@ -30,3 +30,11 @@ La chaîne V4.7.8 validée est conservée pour le sujet/corrigé Word avec équa
 - `docs/STANDARD-DOCUMENT-AUGMENTE.md` : standard de conception papier + QR (familles, quotas, règle de parité papier, specs d'impression) ;
 - `qr-registry.json` : registre des adresses permanentes — un slug imprimé n'est jamais supprimé ni réattribué ;
 - `v/index.html` : résolveur `/v/?r=<slug>` (redirection, aide graduée en 3 paliers, page « en préparation »), sans aucune collecte de données.
+
+## Brief élève
+- `brief-eleve.html` : profils, référentiels 2026-2027 par niveau/voie/année, progression par domaines, brief de séance, message parents, export Obsidian — voir `docs/BRIEF-ELEVE.md` ;
+- `brief-eleve-referentiels.js` : registre daté (source de vérité, mise à jour manuelle).
+
+## Second cerveau
+- `second-brain/` : kit de vérification déterministe du coffre Obsidian (lint, citations, hooks Claude Code) — voir `second-brain/README.md` ;
+- `scripts/check-registry.mjs` : tests du registre Brief élève, exécutés en CI.

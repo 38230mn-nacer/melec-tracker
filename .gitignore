@@ -29,3 +29,7 @@ Eval_*_Corrige_*.docx
 *.temp
 Thumbs.db
 .DS_Store
+
+# Plannings exportés (NetYpareo, iCal) : données professionnelles, jamais dans Git
+*.ics
+*.ical

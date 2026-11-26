@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Brief élève — profils, référentiels 2026-2027, progression par domaines, brief de séance. Données locales.">
+<meta name="theme-color" content="#1a4b8c">
+<title>Brief élève</title>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--ink:#1a1a2e;--mute:#5b6478;--line:#dde2ec;--blue:#1a4b8c;--green:#1f8a4c;--orange:#e07a1f;--red:#c0392b;--soft:#eef2f8;--chip:#e8eef8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11151d;--card:#1a202b;--ink:#e8ecf3;--mute:#9aa4b8;--line:#2c3444;--blue:#5b9bf0;--green:#3fbf72;--orange:#f29a4a;--red:#ef6b5b;--soft:#222a37;--chip:#263042}}
+:root[data-theme="dark"]{--bg:#11151d;--card:#1a202b;--ink:#e8ecf3;--mute:#9aa4b8;--line:#2c3444;--blue:#5b9bf0;--green:#3fbf72;--orange:#f29a4a;--red:#ef6b5b;--soft:#222a37;--chip:#263042}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.45 system-ui,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);padding:0 0 90px}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0 8px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700}
+.cube{width:22px;height:22px;border-radius:5px;background:conic-gradient(var(--green) 0 33%,var(--blue) 0 66%,var(--orange) 0)}
+.brand small{font-weight:400;color:var(--mute);margin-left:auto}
+#cmd{width:100%;margin-top:8px;padding:12px 14px;border:2px solid var(--blue);border-radius:12px;font-size:16px;background:var(--card);color:var(--ink)}
+#preview{margin-top:6px;font-size:13px}
+nav{display:flex;gap:6px;margin-top:8px;overflow-x:auto}
+nav button{flex:1 1 auto;white-space:nowrap;padding:7px 8px;font-size:14px}
+code{word-break:break-all}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:9px;padding:7px 11px}
+button.on,button.pri{background:var(--blue);color:#fff;border-color:var(--blue)}
+button.ok{background:var(--green);color:#fff;border-color:var(--green)}
+button.warn{background:var(--orange);color:#fff;border-color:var(--orange)}
+button.ghost{background:transparent}
+button.sm{padding:3px 8px;font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
+.card h2{font-size:16px;margin:0 0 8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card h2 .r{margin-left:auto;display:flex;gap:6px}
+.mute{color:var(--mute)}.small{font-size:13px}
+.chip{display:inline-block;background:var(--chip);border-radius:999px;padding:2px 9px;font-size:12px;margin:2px 3px 2px 0}
+.chip.g{background:color-mix(in srgb,var(--green) 18%,transparent)}.chip.o{background:color-mix(in srgb,var(--orange) 22%,transparent)}.chip.r{background:color-mix(in srgb,var(--red) 20%,transparent)}.chip.b{background:color-mix(in srgb,var(--blue) 20%,transparent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.stat{background:var(--soft);border-radius:10px;padding:10px}.stat b{font-size:22px;display:block}
+ul.list{list-style:none;margin:0;padding:0}ul.list li{padding:7px 0;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+ul.list li:last-child{border:0}.grow{flex:1;min-width:140px}
+.dom{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--line)}
+.st{min-width:96px;font-size:12px;padding:4px 8px;border-radius:999px;border:0;color:#fff}
+.s-situer{background:#7c8799}.s-cours{background:var(--blue)}.s-revoir{background:var(--orange)}.s-ok{background:var(--green)}.s-verifier{background:repeating-linear-gradient(45deg,var(--green),var(--green) 6px,var(--orange) 6px,var(--orange) 12px)}
+.bar{height:8px;border-radius:9px;background:var(--soft);display:flex;overflow:hidden;margin:6px 0}
+.bar i{display:block;height:100%}
+.brief{background:var(--soft);border-left:4px solid var(--orange);border-radius:10px;padding:10px 12px;white-space:pre-wrap;font-size:14px}
+input,select,textarea{font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);max-width:100%}
+textarea{width:100%;min-height:70px}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:6px;text-align:left;vertical-align:top}
+.scroll{overflow-x:auto}
+.alert{border-left:4px solid var(--orange);background:color-mix(in srgb,var(--orange) 12%,transparent);padding:8px 10px;border-radius:8px;font-size:13px;margin:8px 0}
+#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:12px;display:none;gap:10px;align-items:center;z-index:9;max-width:92vw}
+#toast button{background:transparent;color:var(--bg);border-color:var(--bg)}
+.hidden{display:none!important}
+.rx{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;margin:6px 0 12px;font-size:14px}
+.rx b{font-size:12px;padding:2px 8px;border-radius:6px;color:#fff;align-self:start;white-space:nowrap;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.rx .v{background:var(--green)}.rx .p{background:var(--blue)}.rx .f{background:var(--orange)}.rx .c{background:#7c8799}
+.plan li{align-items:flex-start}.plan .h{font-variant-numeric:tabular-nums;min-width:92px;font-weight:600}
+.today{border-color:var(--orange);box-shadow:0 0 0 2px color-mix(in srgb,var(--orange) 35%,transparent)}
+.seg label{border:1px solid var(--line);border-radius:7px;padding:2px 7px;font-size:13px;cursor:pointer}
+.seg input{display:none}.seg input:checked+span{font-weight:700;color:var(--blue)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+details summary{cursor:pointer;font-weight:600}
+body.pr .card:not(.reflex),body.pr .alert,body.pr .grid{display:none!important}
+@media print{header,nav,#toast,.noprint,button{display:none!important}body{background:#fff;color:#000}.card{border:0;page-break-inside:avoid}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="brand"><span class="cube" aria-hidden="true"></span>Brief élève <small id="yearLbl"></small></div>
+  <input id="cmd" autocomplete="off" placeholder="« Lucas, première, spé maths » · « Lucas, blocage : dérivation » · « Lucas, 2/3 suites » · « Lucas, DS le 12/12 »   ( / pour revenir ici )" aria-label="Saisie rapide">
+  <div id="preview" class="mute"></div>
+  <nav id="tabs">
+    <button data-v="today" class="on">Aujourd'hui</button><button data-v="student">Élève</button><button data-v="sections">Sections</button><button data-v="registry">Registre</button><button data-v="data">Données</button>
+  </nav>
+</div></header>
+<main class="wrap" id="main"></main>
+<div id="toast"><span id="toastMsg"></span><button id="undoBtn" class="sm">Annuler</button></div>
+
+<script src="brief-eleve-referentiels.js"></script>
+<script>
+'use strict';
+const REG = window.BRIEF_REGISTRY;
+const KEY = 'brief_eleve_v2';
+const iso = d => new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); // date LOCALE
+const TODAY = () => iso(new Date());
+const uid = () => Math.random().toString(36).slice(2, 10);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’']/g, ' ');
+const days = (a, b = TODAY()) => Math.round((new Date(a) - new Date(b)) / 864e5);
+const fmtD = d => d ? new Date(d + 'T12:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
+const STATES = { situer: 'À situer', cours: 'En cours', revoir: 'À revoir', ok: 'Maîtrisé', verifier: 'À vérifier' };
+const VO = { college: 'collège', generale: 'générale', techno: 'technologique', gt: 'GT', pro: 'pro', bts: 'BTS' };
+const SPL = { 'spe-maths': 'spé maths', 'spe-pc': 'spé PC', 'spe-svt': 'spé SVT', 'maths-expertes': 'maths expertes', 'maths-comp': 'maths complémentaires', 'spe-nsi': 'NSI', 'spe-si': 'SI' };
+const profil = st => `${st.level || 'niveau ?'}${st.voie ? ' ' + VO[st.voie] : ''}${st.specs.length ? ' · ' + st.specs.map(x => SPL[x] || x).join(', ') : ''}`;
+const CYCLE = ['situer', 'cours', 'revoir', 'ok'];
+const INTERVALS = [7, 21, 60, 120]; // jours avant re-vérification d'un domaine maîtrisé (répétition espacée)
+
+// ---------------- Stockage ----------------
+function defaultYear() { const d = new Date(); const y = d.getMonth() >= 7 ? d.getFullYear() : d.getFullYear() - 1; return `${y}-${y + 1}`; }
+function blank() { return { schema: 3, students: [], settings: { year: defaultYear(), rate: 30, pseudo: false, lastExport: null, dirtySince: null } }; }
+function load() {
+  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.students) return migrate(s); } catch (e) {}
+  try { const old = JSON.parse(localStorage.getItem('brief_eleve')); if (old && Array.isArray(old.students)) return migrate({ ...blank(), students: old.students }); } catch (e) {}
+  return blank();
+}
+function migrate(s) {
+  s.schema = 3; s.settings = { ...blank().settings, ...(s.settings || {}) };
+  s.students = s.students.map(st => ({ id: st.id || uid(), name: st.name || 'Sans nom', alias: st.alias || '', level: st.level || '', voie: st.voie || '', specs: st.specs || [],
+    refs: st.refs || { confirmed: [], ignored: [] }, domains: st.domains || {}, sessions: st.sessions || [], blocages: st.blocages || [], devoirs: st.devoirs || [],
+    echeances: st.echeances || [], notes: st.notes || [], chapter: st.chapter || '', parent: st.parent || '', created: st.created || TODAY(),
+    next: st.next || null, updated: st.updated || 0 }));
+  s.students.forEach((st, i) => { if (!st.alias) st.alias = 'Élève-' + String(i + 1).padStart(2, '0'); });
+  return s;
+}
+let S = load(), undoStack = [], view = 'today', cur = null, pending = null, planDur = null, debrief = false;
+function save(msg, snapshot) {
+  if (snapshot) {
+    undoStack.push(snapshot); if (undoStack.length > 15) undoStack.shift();
+    const c = getSt(cur); if (c) c.updated = Date.now();
+    if (!S.settings.dirtySince) S.settings.dirtySince = TODAY();
+  }
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { toast('⚠ Stockage local indisponible : exporte tes données.'); }
+  if (msg) toast(msg, !!snapshot);
+  render();
+}
+const snap = () => JSON.stringify(S);
+function toast(m, undo) {
+  const t = document.getElementById('toast'); document.getElementById('toastMsg').textContent = m;
+  document.getElementById('undoBtn').classList.toggle('hidden', !undo); t.style.display = 'flex';
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.style.display = 'none', 5000);
+}
+document.getElementById('undoBtn').onclick = () => { const p = undoStack.pop(); if (p) { S = JSON.parse(p); save('Action annulée.'); } };
+const disp = st => S.settings.pseudo ? st.alias : st.name;
+const getSt = id => S.students.find(s => s.id === id);
+
+// ---------------- Référentiels ----------------
+const yStart = y => y ? parseInt(y, 10) : null;
+function voieOk(ref, voie) {
+  if (ref.voie === voie) return true;
+  if (ref.voie === 'gt') return voie === 'generale' || voie === 'techno' || voie === 'gt';
+  return false;
+}
+function refStatus(ref, level, year) {
+  const from = yStart(ref.fromByLevel?.[level] ?? ref.from), until = yStart(ref.untilByLevel?.[level] ?? ref.until), y = yStart(year);
+  if (from && y < from) return 'futur';
+  if (until && y > until) return 'ancien';
+  return 'actif';
+}
+function refsFor(st, year = S.settings.year) {
+  const out = { confirmed: [], suggested: [], upcoming: [] };
+  if (!st.level) return out;
+  for (const r of REG.REFS) {
+    if (!r.levels.includes(st.level) || !voieOk(r, st.voie)) continue;
+    const status = refStatus(r, st.level, year);
+    if (status === 'futur') { out.upcoming.push(r); continue; }
+    if (status === 'ancien') continue;
+    if (st.refs.ignored.includes(r.id)) continue;
+    if (!r.requires || st.specs.includes(r.requires) || st.refs.confirmed.includes(r.id)) out.confirmed.push(r);
+    else out.suggested.push(r);
+  }
+  return out;
+}
+
+// ---------------- Progression ----------------
+const dk = (rid, d) => rid + '::' + d;
+function dom(st, rid, d) { return st.domains[dk(rid, d)] || { state: 'situer', streak: 0, hist: [] }; }
+function effState(rec) {
+  if (rec.state !== 'ok' || !rec.okDate) return rec.state;
+  return days(TODAY(), rec.okDate) >= INTERVALS[Math.min(rec.streak - 1, 3)] ? 'verifier' : 'ok';
+}
+function setState(st, rid, d, state, extra = {}) {
+  const k = dk(rid, d), rec = { ...dom(st, rid, d), ...extra };
+  if (state === 'ok') { rec.streak = Math.min((rec.state === 'ok' ? rec.streak : 0) + 1, 4); rec.okDate = TODAY(); }
+  else if (state === 'revoir') rec.streak = 0;
+  rec.state = state; rec.last = TODAY(); st.domains[k] = rec;
+}
+function addScore(st, rid, d, s, m) {
+  const ratio = s / m, rec = dom(st, rid, d);
+  rec.hist = [...(rec.hist || []), { d: TODAY(), s, m }].slice(-12); st.domains[dk(rid, d)] = rec;
+  setState(st, rid, d, ratio >= 0.8 ? 'ok' : ratio >= 0.5 ? 'cours' : 'revoir');
+}
+function allDomains(st) { const r = refsFor(st).confirmed; return r.flatMap(ref => ref.domains.map(d => ({ ref, d, rec: dom(st, ref.id, d) }))); }
+function matchDomain(st, q) {
+  const toks = norm(q).split(/[^a-z0-9]+/).filter(t => t.length >= 3); if (!toks.length) return null;
+  let best = null, bs = 0;
+  for (const x of allDomains(st)) { const n = norm(x.d); const sc = toks.reduce((a, t) => a + (n.includes(t) ? 1 : n.includes(t.slice(0, 5)) ? 0.6 : 0), 0); if (sc > bs) { bs = sc; best = x; } }
+  return bs >= 0.6 ? best : null;
+}
+function prereqsFor(text) { const out = new Set(); for (const [rx, list] of REG.PREREQ) if (rx.test(text)) list.forEach(x => out.add(x)); return [...out]; }
+function priorities(st) {
+  const openB = st.blocages.filter(b => !b.done), chap = norm(st.chapter), soon = st.echeances.filter(e => e.date && days(e.date) >= 0 && days(e.date) <= 21);
+  const preNeeded = new Set(openB.flatMap(b => prereqsFor(b.text + ' ' + (b.domain || ''))).map(norm));
+  return allDomains(st).map(x => {
+    const es = effState(x.rec), why = []; let sc = { situer: 2, cours: 3, revoir: 4, ok: 0, verifier: 3 }[es];
+    why.push(STATES[es]);
+    const nd = norm(x.d), toks = nd.split(/[^a-z0-9]+/).filter(t => t.length >= 4);
+    if (chap && toks.some(t => chap.includes(t))) { sc += 3; why.push('vu en classe'); }
+    const nb = openB.filter(b => norm(b.domain || b.text).split(/[^a-z0-9]+/).some(t => t.length >= 4 && nd.includes(t))).length;
+    if (nb) { sc += 2 * nb; why.push(nb + ' blocage' + (nb > 1 ? 's' : '')); }
+    if ([...preNeeded].some(p => p.split(' ').some(t => t.length >= 5 && nd.includes(t)))) { sc += 1.5; why.push('prérequis d\'un blocage'); }
+    const ev = soon.find(e => toks.some(t => norm(e.label).includes(t)));
+    if (ev) { sc += 3; why.push(`${ev.label} dans ${days(ev.date)} j`); }
+    if (x.rec.conf >= 3 && (es === 'revoir' || es === 'cours')) { sc += 1; why.push('surconfiance'); }
+    if (es === 'verifier') why.push('rappel espacé dû');
+    return { ...x, es, sc, why };
+  }).filter(x => x.sc > 0).sort((a, b) => b.sc - a.sc)
+    .filter((x, i, arr) => arr.findIndex(y => norm(y.d) === norm(x.d)) === i); // même domaine dans 2 référentiels : une seule ligne
+}
+function calib(rec, es) {
+  if (!rec.conf) return '';
+  if (rec.conf >= 3 && (es === 'revoir' || es === 'cours')) return '<span class="chip o" title="L\'élève se sent à l\'aise mais les preuves disent le contraire">surconfiance</span>';
+  if (rec.conf <= 1 && es === 'ok') return '<span class="chip b" title="Maîtrisé mais l\'élève ne s\'y sent pas en confiance : le lui montrer">sous-confiance</span>';
+  return '';
+}
+
+// ---------------- Séance : plan minuté, évolution, récap ----------------
+function masteredCount(st) { return new Set(allDomains(st).filter(x => x.rec.state === 'ok').map(x => norm(x.d))).size; }
+const hm = m => String(Math.floor(m / 60) % 24).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+const GUIDE = { situer: 'Situer : 3 questions graduées (application → choix de méthode → transfert), arrêt au premier échec',
+  revoir: 'Sécurisation : méthode JE VOIS → JE VÉRIFIE, un exemple guidé, 2 applications directes',
+  cours: 'Maîtrise : l\'élève choisit seul la méthode, puis 1 exercice de transfert', verifier: '3 questions sans aide', ok: 'Transfert : situation nouvelle ou professionnelle' };
+function defaultDur(st) { return planDur || st.sessions[0]?.dur || 60; }
+function sessionPlan(st, dur) {
+  const B = [], ob = st.blocages.filter(b => !b.done), pr = priorities(st);
+  const pre = [...new Set(ob.flatMap(b => prereqsFor(b.text + ' ' + b.domain)))].slice(0, 2);
+  const rappels = pr.filter(x => x.es === 'verifier').slice(0, 2), main = pr.filter(x => x.es !== 'verifier').slice(0, 2);
+  const dv = st.devoirs.filter(d => !d.done && d.due && days(d.due) >= 0 && days(d.due) <= 3).sort((a, b) => a.due > b.due ? 1 : -1)[0];
+  if (pre.length) B.push({ min: 5, t: '🔎 Flash prérequis', what: pre.map(p => REG.FLASH[p]?.[0] || p).join('  |  '), doms: [] });
+  if (rappels.length) B.push({ min: 5, t: '🔁 Rappel espacé', what: '3 questions sans aide : ' + rappels.map(x => x.d).join(', '), doms: rappels });
+  if (dv) B.push({ min: dur <= 60 ? 10 : 15, t: '📝 Devoir', what: dv.text + ' (pour ' + fmtD(dv.due) + ')', doms: [] });
+  const exit = 5, rest = Math.max(dur - B.reduce((a, b) => a + b.min, 0) - exit, 10);
+  const blk = (x, min) => ({ min, t: '🎯 ' + x.d, what: GUIDE[x.es] + (x.why.length > 1 ? ' — ' + x.why.slice(1).join(', ') : ''), doms: [x] });
+  if (main.length > 1 && rest >= 35) { const a = Math.round(rest * 0.6 / 5) * 5; B.push(blk(main[0], a), blk(main[1], rest - a)); }
+  else if (main.length) B.push(blk(main[0], rest));
+  B.push({ min: exit, t: '🎫 Ticket de sortie', what: '3 questions sur ' + (main[0]?.d || 'la notion du jour') + ' → score à noter à la clôture', doms: [] });
+  return B;
+}
+function planStart(st) {
+  if (st.next?.date === TODAY() && st.next.time) { const [h, m] = st.next.time.split(':'); return +h * 60 + +m; }
+  const d = new Date(); return Math.ceil((d.getHours() * 60 + d.getMinutes()) / 5) * 5;
+}
+function planText(st) {
+  let t = planStart(st); const dur = defaultDur(st);
+  return `Plan ${dur} min — ${disp(st)}\n` + sessionPlan(st, dur).map(b => { const l = `${hm(t)}–${hm(t + b.min)}  ${b.t}\n      ${b.what}`; t += b.min; return l; }).join('\n');
+}
+function evolution(st) {
+  const ses = st.sessions.filter(s => typeof s.mastered === 'number').slice().reverse(); if (!ses.length) return null;
+  const now = masteredCount(st), first = ses[0], hours = st.sessions.reduce((a, s) => a + s.dur, 0) / 60;
+  const time = {}; st.sessions.forEach(s => (s.domains || []).forEach(d => { time[d.d] = (time[d.d] || 0) + s.dur / s.domains.length; }));
+  const start = first.before ?? first.mastered, series = [start, ...ses.map(s => s.mastered)];
+  if (series.at(-1) !== now) series.push(now);
+  return { from: first.date, start, now, hours, n: st.sessions.length, series,
+    time: Object.entries(time).sort((a, b) => b[1] - a[1]).slice(0, 5) };
+}
+const eur = v => v.toFixed(2).replace('.', ',') + ' €';
+function monthRecap(st, ym = TODAY().slice(0, 7)) {
+  const L = st.sessions.filter(s => s.date.startsWith(ym)).slice().reverse(); if (!L.length) return `Aucune séance en ${ym}.`;
+  const amt = s => s.dur / 60 * (s.rate || 0), tot = L.reduce((a, s) => a + amt(s), 0), du = L.filter(s => !s.paid).reduce((a, s) => a + amt(s), 0);
+  return `Récapitulatif ${ym} — ${disp(st)}\n` + L.map(s => `• ${fmtD(s.date)} : ${s.dur} min — ${eur(amt(s))}${s.paid ? ' (réglée)' : ''}`).join('\n')
+    + `\nTotal : ${(L.reduce((a, s) => a + s.dur, 0) / 60).toFixed(1).replace('.', ',')} h — ${eur(tot)}` + (du ? `\nReste à régler : ${eur(du)}` : '\nTout est réglé, merci !');
+}
+function sparkLine(v) {
+  if (v.length < 2) return ''; const W = 160, H = 36, mx = Math.max(...v, 1);
+  const pts = v.map((y, i) => `${(i / (v.length - 1) * (W - 6) + 3).toFixed(1)},${(H - 3 - y / mx * (H - 6)).toFixed(1)}`).join(' ');
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Évolution des notions maîtrisées"><polyline points="${pts}" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linejoin="round"/></svg>`;
+}
+function reflexCard(p) { const r = REG.REFLEX[p], f = REG.FLASH[p]; if (!r) return ''; return `<h3 style="margin:10px 0 2px;font-size:15px">${esc(p)}</h3>${f ? `<div class="small noprint" style="margin-bottom:4px">⚡ Flash : ${esc(f[0])} <details style="display:inline"><summary class="mute">réponse</summary>${esc(f[1])}</details></div>` : ''}<div class="rx"><b class="v">JE VOIS</b><span>${esc(r[0])}</span><b class="p">JE PENSE</b><span>${esc(r[1])}</span><b class="f">JE FAIS</b><span>${esc(r[2])}</span><b class="c">JE VÉRIFIE</b><span>${esc(r[3])}</span></div>`; }
+function backupAlert() {
+  const d = S.settings.dirtySince; if (!S.students.length || !d || days(TODAY(), d) < 7) return '';
+  return `<div class="alert">💾 Modifications non sauvegardées depuis ${days(TODAY(), d)} jours${S.settings.lastExport ? ' (dernier export : ' + fmtD(S.settings.lastExport) + ')' : ''}. Les données ne vivent que dans ce navigateur. <button class="sm pri" data-a="export">Exporter maintenant</button></div>`;
+}
+
+// ---------------- Analyse de la saisie rapide ----------------
+const LEVELS = [
+  [/\bbts ?1\b|bts premiere/, 'BTS1', 'bts'], [/\bbts ?2\b|bts deuxieme|bts seconde/, 'BTS2', 'bts'], [/\bbts\b/, 'BTS1', 'bts'],
+  [/\b6e?me\b|\b6e\b|sixieme/, '6e', 'college'], [/\b5e?me\b|\b5e\b|cinquieme/, '5e', 'college'], [/\b4e?me\b|\b4e\b|quatrieme/, '4e', 'college'], [/\b3e?me\b|\b3e\b|troisieme/, '3e', 'college'],
+  [/\b(2de|2nde|seconde)\b/, '2de', 'gt'], [/\b(1re|1ere|premiere)\b/, '1re', null], [/\b(tle|terminale|term)\b/, 'Tle', null]
+];
+const SPECS = [[/spe(cialite)? ?maths?|\bmaths? spe/, 'spe-maths'], [/spe(cialite)? ?(pc|physique)/, 'spe-pc'], [/spe(cialite)? ?svt/, 'spe-svt'], [/maths? expertes?/, 'maths-expertes'], [/maths? complementaires?/, 'maths-comp'], [/\bnsi\b/, 'spe-nsi'], [/\bspe ?si\b|sciences de l.ingenieur/, 'spe-si']];
+const WD = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+function parseDate(t) {
+  const n = norm(t), d = new Date(); d.setHours(12);
+  let m;
+  if ((m = n.match(/(\d{4})-(\d{2})-(\d{2})/))) return m[0];
+  if ((m = n.match(/\b(\d{1,2})[\/.](\d{1,2})\b/))) { const y = d.getFullYear(); let c = new Date(y, m[2] - 1, m[1], 12); if (days(iso(c)) < -30) c = new Date(y + 1, m[2] - 1, m[1], 12); return iso(c); }
+  if (/aujourd/.test(n)) return TODAY();
+  if (/apres.demain/.test(n)) { d.setDate(d.getDate() + 2); return iso(d); }
+  if (/demain/.test(n)) { d.setDate(d.getDate() + 1); return iso(d); }
+  if ((m = n.match(/dans (\d+) (jour|semaine)/))) { d.setDate(d.getDate() + m[1] * (m[2] === 'jour' ? 1 : 7)); return iso(d); }
+  for (let i = 0; i < 7; i++) if (new RegExp('\\b' + WD[i] + '\\b').test(n)) { let k = (i - d.getDay() + 7) % 7 || 7; d.setDate(d.getDate() + k); return iso(d); }
+  return null;
+}
+const stripDate = t => t.replace(/\b(pour|le|avant|d.ici)?\s*(\d{4}-\d{2}-\d{2}|\d{1,2}[\/.]\d{1,2}|apr[eè]s-?demain|demain|dans \d+ (jours?|semaines?)|(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche))\b/gi, '').replace(/\s+/g, ' ').trim();
+const parseTime = t => { const m = norm(t).match(/\b(\d{1,2})\s*h\s*(\d{2})?\b/); return m && +m[1] < 24 ? String(m[1]).padStart(2, '0') + ':' + (m[2] || '00') : ''; };
+const CMDRX = /^(prochaine?|rdv|rendez|blocage|bloqu|devoirs?|dm|exos?|exercices?|ds|contr|interro|[ée]valuation|bac|brevet|examen|eam|ccf|s[ée]ance|cours|chapitre|en classe|\d+\s*\/|ok|acquis|ma[iî]tris|à revoir|a revoir|revoir|en cours|confiance|se sent|parent|contact)/i;
+function parseCmd(raw) {
+  const parts = raw.split(/[,;]/).map(s => s.trim()).filter(Boolean); if (!parts.length) return null;
+  let name = parts.shift(), st = S.students.find(s => norm(s.name) === norm(name) || norm(s.alias) === norm(name));
+  const ops = []; const prof = { level: null, voie: null, specs: [] };
+  if (!st && parts.length === 0 && cur && CMDRX.test(name)) { parts.push(name); st = getSt(cur); name = st.name; } // saisie sans nom = élève ouvert
+  for (const p of parts) {
+    const n = norm(p); let m, used = false;
+    for (const [rx, lv, v] of LEVELS) if (rx.test(n)) { prof.level = lv; if (v) prof.voie = v; used = true; break; }
+    if (/\b(generale?|gen)\b/.test(n)) { prof.voie = 'generale'; used = true; }
+    if (/\b(techno|sti2d|stmg|st2s|stl)\b/.test(n)) { prof.voie = 'techno'; used = true; }
+    if (/\b(bac ?pro|pro|melec|cap)\b/.test(n)) { prof.voie = 'pro'; used = true; }
+    for (const [rx, sp] of SPECS) if (rx.test(n)) { prof.specs.push(sp); used = true; }
+    if (used) continue;
+    if ((m = p.match(/^(blocage|bloque|bloqué)\s*(sur)?\s*:?\s*(.+)/i))) ops.push({ t: 'blocage', text: m[3] });
+    else if ((m = p.match(/^(devoirs?|dm|exos?|exercices?)\s*:?\s*(.+)/i))) ops.push({ t: 'devoir', text: stripDate(m[2]) || m[2], due: parseDate(m[2]) });
+    else if ((m = p.match(/^(ds|contr[oô]le|interro|[ée]valuation|bac|brevet|examen|eam|ccf|bac blanc|brevet blanc)\b\s*:?\s*(.*)/i))) ops.push({ t: 'echeance', label: (m[1] + ' ' + stripDate(m[2])).trim(), date: parseDate(m[2]) });
+    else if ((m = p.match(/^(prochaine?|rdv|rendez-vous)\s*(s[ée]ance|cours)?\s*:?\s*(.*)/i))) ops.push({ t: 'next', date: parseDate(m[3]), time: parseTime(m[3].replace(/\d{1,2}[\/.]\d{1,2}/, '')) });
+    else if ((m = p.match(/^(s[ée]ance|cours)\b\s*:?\s*(.*)/i))) { const dm = m[2].match(/(\d+)\s*h\s*(\d+)?|(\d+)\s*min/i); const dur = dm ? (dm[3] ? +dm[3] : +dm[1] * 60 + (+dm[2] || 0)) : 60; ops.push({ t: 'seance', dur, paid: /pay[ée]/i.test(m[2]), note: m[2].replace(/(\d+)\s*h\s*(\d+)?|(\d+)\s*min|pay[ée]e?/gi, '').trim() }); }
+    else if ((m = p.match(/^(chapitre|en classe|classe)\s*:?\s*(.+)/i))) ops.push({ t: 'chapitre', text: m[2] });
+    else if ((m = p.match(/^(\d+)\s*\/\s*(\d+)\s+(.+)/))) ops.push({ t: 'score', s: +m[1], m: +m[2], q: m[3] });
+    else if ((m = p.match(/^(ok|acquis|ma[iî]tris[ée]e?|à revoir|a revoir|revoir|en cours)\s*:?\s*(.+)/i))) ops.push({ t: 'etat', state: /ok|acquis|ma/i.test(m[1]) ? 'ok' : /revoir/i.test(m[1]) ? 'revoir' : 'cours', q: m[2] });
+    else if ((m = p.match(/^(confiance|se sent)\s*:?\s*([1-4])\s*(.+)/i))) ops.push({ t: 'conf', v: +m[2], q: m[3] });
+    else if ((m = p.match(/^(parent|contact)\s*:?\s*(.+)/i))) ops.push({ t: 'parent', text: m[2] });
+    else ops.push({ t: 'note', text: p });
+  }
+  return { name, st, prof, ops };
+}
+function describe(pl) {
+  if (!pl) return '';
+  const tgt = pl.st ? esc(disp(pl.st)) : `<b>nouvel élève</b> « ${esc(pl.name)} »`;
+  const bits = [];
+  if (pl.prof.level) bits.push('niveau ' + pl.prof.level); if (pl.prof.voie) bits.push('voie ' + VO[pl.prof.voie]); if (pl.prof.specs.length) bits.push(pl.prof.specs.map(x => SPL[x]).join(', '));
+  const lbl = { blocage: o => '🧱 blocage « ' + o.text + ' »', devoir: o => '📝 devoir « ' + o.text + ' »' + (o.due ? ' → ' + fmtD(o.due) : ' (sans date)'), echeance: o => '📅 ' + o.label + (o.date ? ' ' + fmtD(o.date) : ' (date ?)'),
+    seance: o => '⏱ séance ' + o.dur + ' min' + (o.paid ? ' payée' : ''), chapitre: o => '📖 en classe : ' + o.text, score: o => '🎯 ' + o.s + '/' + o.m + ' sur « ' + o.q + ' »', etat: o => '✔ ' + STATES[o.state] + ' : ' + o.q,
+    conf: o => '💬 confiance ' + o.v + '/4 : ' + o.q, next: o => '📆 prochaine séance ' + (o.date ? fmtD(o.date) : '(date ?)') + (o.time ? ' à ' + o.time : ''), parent: o => '👪 contact : ' + o.text, note: o => '🗒 note « ' + o.text + ' »' };
+  pl.ops.forEach(o => bits.push(lbl[o.t](o)));
+  return `Je comprends : ${tgt}${bits.length ? ' — ' + bits.map(esc).join(' · ') : ''} <button class="sm pri" id="apply">Valider ↵</button> <button class="sm ghost" id="cancel">Échap</button>`;
+}
+function apply(pl) {
+  const s0 = snap(); let st = pl.st; const warn = [];
+  if (!st) { st = migrate({ students: [{ name: pl.name }] }).students[0]; st.alias = 'Élève-' + String(S.students.length + 1).padStart(2, '0'); S.students.push(st); }
+  if (pl.prof.level) { st.level = pl.prof.level; if (!pl.prof.voie && ['1re', 'Tle'].includes(st.level) && !st.voie) st.voie = 'generale'; }
+  if (pl.prof.voie) st.voie = pl.prof.voie;
+  if (st.voie === 'pro' && st.level === 'Tle') st.level = 'TMELEC';
+  pl.prof.specs.forEach(sp => { if (!st.specs.includes(sp)) st.specs.push(sp); });
+  for (const o of pl.ops) {
+    if (o.t === 'blocage') st.blocages.unshift({ id: uid(), date: TODAY(), text: o.text, domain: matchDomain(st, o.text)?.d || '', done: false });
+    if (o.t === 'devoir') st.devoirs.unshift({ id: uid(), date: TODAY(), text: o.text, due: o.due, done: false });
+    if (o.t === 'echeance') st.echeances.push({ id: uid(), label: o.label, date: o.date });
+    if (o.t === 'seance') st.sessions.unshift({ id: uid(), date: TODAY(), dur: o.dur, rate: S.settings.rate, paid: o.paid, note: o.note, domains: [], before: masteredCount(st), mastered: masteredCount(st) });
+    if (o.t === 'next') st.next = o.date ? { date: o.date, time: o.time || (st.next && st.next.time) || '' } : st.next;
+    if (o.t === 'chapitre') st.chapter = o.text;
+    if (o.t === 'parent') st.parent = o.text;
+    if (o.t === 'note') st.notes.unshift({ id: uid(), date: TODAY(), text: o.text });
+    if (o.t === 'score' || o.t === 'etat' || o.t === 'conf') {
+      const x = matchDomain(st, o.q); if (!x) { warn.push('domaine introuvable : « ' + o.q + ' »'); st.notes.unshift({ id: uid(), date: TODAY(), text: (o.t === 'score' ? o.s + '/' + o.m + ' ' : '') + o.q }); continue; }
+      if (o.t === 'score') addScore(st, x.ref.id, x.d, o.s, o.m);
+      if (o.t === 'etat') setState(st, x.ref.id, x.d, o.state);
+      if (o.t === 'conf') { const r = dom(st, x.ref.id, x.d); r.conf = o.v; st.domains[dk(x.ref.id, x.d)] = r; }
+    }
+  }
+  cur = st.id; view = 'student'; save(warn.length ? 'Enregistré — ' + warn.join(' ; ') : 'Enregistré pour ' + disp(st) + '.', s0);
+}
+const cmd = document.getElementById('cmd'), prev = document.getElementById('preview');
+cmd.addEventListener('input', () => { pending = parseCmd(cmd.value); prev.innerHTML = cmd.value.trim() ? describe(pending) : ''; bindPrev(); });
+cmd.addEventListener('keydown', e => { if (e.key === 'Enter' && pending) { apply(pending); cmd.value = ''; prev.innerHTML = ''; pending = null; } if (e.key === 'Escape') { cmd.value = ''; prev.innerHTML = ''; pending = null; } });
+function bindPrev() { const a = document.getElementById('apply'), c = document.getElementById('cancel'); if (a) a.onclick = () => { apply(pending); cmd.value = ''; prev.innerHTML = ''; pending = null; }; if (c) c.onclick = () => { cmd.value = ''; prev.innerHTML = ''; }; }
+document.addEventListener('keydown', e => { if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') { e.preventDefault(); cmd.focus(); } });
+document.getElementById('tabs').onclick = e => { const v = e.target.dataset.v; if (v) { view = v; render(); } };
+
+// ---------------- Générateurs de texte ----------------
+function lastSession(st) { return st.sessions[0]; }
+function briefText(st) {
+  const p = priorities(st).slice(0, 3), ls = lastSession(st), ob = st.blocages.filter(b => !b.done), dv = st.devoirs.filter(d => !d.done).sort((a, b) => (a.due || '9') > (b.due || '9') ? 1 : -1);
+  const ev = st.echeances.filter(e => e.date && days(e.date) >= 0).sort((a, b) => a.date > b.date ? 1 : -1)[0];
+  const pre = [...new Set(ob.flatMap(b => prereqsFor(b.text + ' ' + b.domain)))].slice(0, 2);
+  const L = [];
+  L.push(`${disp(st)} · ${profil(st)}`);
+  if (st.next?.date) L.push(`Prochaine séance : ${fmtD(st.next.date)}${st.next.time ? ' à ' + st.next.time : ''}`);
+  L.push(`Dernière séance : ${ls ? fmtD(ls.date) + ' (' + days(TODAY(), ls.date) + ' j)' + (ls.note ? ' — ' + ls.note : '') : 'aucune'}`);
+  if (st.chapter) L.push(`En classe : ${st.chapter}`);
+  if (ev) L.push(`⏳ ${ev.label} : ${fmtD(ev.date)} (J-${days(ev.date)})`);
+  if (dv.length) L.push(`Devoirs : ${dv.slice(0, 3).map(d => d.text + (d.due ? ' (' + fmtD(d.due) + ')' : '')).join(' ; ')}`);
+  if (ob.length) L.push(`Blocages ouverts : ${ob.slice(0, 3).map(b => b.text).join(' ; ')}`);
+  if (p.length) L.push(`Priorités : ${p.map((x, i) => (i + 1) + '. ' + x.d).join('  ')}`);
+  if (pre.length) L.push(`Ouvrir par le flash : ${pre.map(x => REG.FLASH[x]?.[0] || x).join('  |  ')}`);
+  if (p.length) L.push(`Plan ${defaultDur(st)} min : ${sessionPlan(st, defaultDur(st)).map(b => b.min + '\' ' + b.t.replace(/^\S+ /, '')).join(' · ')}`);
+  return L.join('\n');
+}
+function parentText(st) {
+  const ok = allDomains(st).filter(x => effState(x.rec) === 'ok' && x.rec.okDate && days(TODAY(), x.rec.okDate) <= 30).map(x => x.d);
+  const p = priorities(st).slice(0, 2).map(x => x.d), ls = lastSession(st), dv = st.devoirs.filter(d => !d.done && d.due);
+  const prenom = disp(st);
+  let t = `Bonjour,\n\nPetit point sur le travail de ${prenom}${ls ? ' (séance du ' + fmtD(ls.date) + ')' : ''}.\n`;
+  const ev = evolution(st);
+  if (ev && ev.now > ev.start) t += `📈 Depuis le ${fmtD(ev.from)} : ${ev.start} → ${ev.now} notions maîtrisées (${ev.n} séance${ev.n > 1 ? 's' : ''}).\n`;
+  t += ok.length ? `✅ Progrès : ${ok.slice(0, 3).join(', ')}.\n` : `✅ ${prenom} s'implique et avance pas à pas.\n`;
+  if (p.length) t += `🎯 Prochaines étapes : ${p.join(', ')}.\n`;
+  if (dv.length) t += `📝 À préparer : ${dv.slice(0, 2).map(d => d.text + ' pour ' + fmtD(d.due)).join(' ; ')}`.replace(/\.?$/, '.\n');
+  t += `\nBonne journée,\nNacer — Maths au Cube`;
+  return t;
+}
+function obsidianMd(st) {
+  const r = refsFor(st), L = ['---', `title: ${S.settings.pseudo ? st.alias : st.name}`, `sources: brief-eleve (export du ${TODAY()})`, `updated: ${TODAY()}`, `type: eleve`, `alias: ${st.alias}`, `niveau: ${st.level}`, `voie: ${st.voie}`, `specialites: [${st.specs.join(', ')}]`, `annee: ${S.settings.year}`, `tags: [eleve, cours-particulier, maths-au-cube]`, '---', '', `# ${S.settings.pseudo ? st.alias : st.name}`, '', '## Brief', '```', briefText(st), '```', '', '## Référentiels'];
+  r.confirmed.forEach(x => L.push(`- ${x.label} — ${x.text} — [texte](${x.url})`)); r.suggested.forEach(x => L.push(`- (à confirmer) ${x.label}`));
+  L.push('', '## Progression');
+  r.confirmed.forEach(ref => { L.push(`### ${ref.label}`); ref.domains.forEach(d => { const rec = dom(st, ref.id, d); L.push(`- [${effState(rec) === 'ok' ? 'x' : ' '}] ${d} — ${STATES[effState(rec)]}${rec.hist?.length ? ' — dernier test ' + rec.hist.at(-1).s + '/' + rec.hist.at(-1).m : ''}`); }); });
+  L.push('', '## Blocages'); st.blocages.forEach(b => L.push(`- [${b.done ? 'x' : ' '}] ${b.date} ${b.text}`));
+  L.push('', '## Séances'); st.sessions.forEach(s => L.push(`- ${s.date} · ${s.dur} min${(s.domains || []).length ? ' · ' + s.domains.map(d => d.d + (d.s != null ? ' ' + d.s + '/3' : '')).join(', ') : ''}${s.note ? ' · ' + s.note : ''}`));
+  L.push('', '## Notes'); st.notes.forEach(n => L.push(`- ${n.date} ${n.text}`));
+  return L.join('\n');
+}
+function download(name, text, type = 'application/json') { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
+async function copy(t) { try { await navigator.clipboard.writeText(t); toast('Copié.'); } catch (e) { prompt('Copie manuelle :', t); } }
+
+// ---------------- Planning professionnel : import ICS / CSV (fichier exporté par l'utilisateur), lecture seule, local ----------------
+const DEFAULT_RULES = [
+  { id: 'r1', match: 'tmelec|t melec|tle melec|term melec|terminale melec', section: 'TMELEC', level: 'TMELEC' },
+  { id: 'r2', match: '1melec|1 melec|1re melec|premiere melec', section: '1MELEC', level: '1MELEC' },
+  { id: 'r3', match: 'bts1|bts 1|elt1|elt 1|bts elt 1', section: 'BTS1', level: 'BTS1' },
+  { id: 'r4', match: 'bts2|bts 2|elt2|elt 2|bts elt 2', section: 'BTS2', level: 'BTS2' }
+];
+const SUBJ = { maths: /\b(maths?|mathematiques?)\b/, pc: /\b(physique|chimie|sciences|spc|pc)\b/ };
+const SUBJ_L = { maths: 'Mathématiques', pc: 'Physique-chimie' };
+const EVAL_RX = /\b(ccf|evaluation|examen|bac blanc|controle|ds)\b/;
+function planning() { return S.planning ||= { events: [], rules: DEFAULT_RULES.map(r => ({ ...r })), imports: [], reserve: 10, units: {} }; }
+const hash = s => { let h = 5381; for (const c of s) h = (h * 33 ^ c.charCodeAt(0)) >>> 0; return h.toString(36); };
+const two = n => String(n).padStart(2, '0');
+const nowLocal = () => { const d = new Date(); return TODAY() + 'T' + two(d.getHours()) + ':' + two(d.getMinutes()); };
+const hrs = e => Math.max(0, (new Date(e.end) - new Date(e.start)) / 36e5);
+const fh = h => (Math.round(h * 2) / 2).toString().replace('.', ',') + ' h';
+
+function icsDate(v) {
+  if (/^\d{8}$/.test(v)) return `${v.slice(0, 4)}-${v.slice(4, 6)}-${v.slice(6, 8)}T00:00`;
+  const m = v.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})?(Z?)$/); if (!m) return null;
+  if (m[7]) { const d = new Date(Date.UTC(+m[1], m[2] - 1, +m[3], +m[4], +m[5])); return iso(d) + 'T' + two(d.getHours()) + ':' + two(d.getMinutes()); }
+  return `${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}`; // heure locale (fuseau de l'appareil)
+}
+function parseICS(text) {
+  const lines = text.replace(/\r\n?/g, '\n').replace(/\n[ \t]/g, '').split('\n'), out = [];
+  const un = v => v.replace(/\\n/gi, '\n').replace(/\\([,;\\])/g, '$1');
+  let ev = null;
+  for (const l of lines) {
+    if (l === 'BEGIN:VEVENT') ev = {};
+    else if (l === 'END:VEVENT') { if (ev && ev.start) out.push(ev); ev = null; }
+    else if (ev) {
+      const i = l.indexOf(':'); if (i < 0) continue;
+      const k = l.slice(0, i).split(';')[0].toUpperCase(), v = l.slice(i + 1);
+      if (k === 'DTSTART') ev.start = icsDate(v); else if (k === 'DTEND') ev.end = icsDate(v);
+      else if (k === 'SUMMARY') ev.summary = un(v); else if (k === 'LOCATION') ev.location = un(v);
+      else if (k === 'DESCRIPTION') ev.desc = un(v); else if (k === 'UID') ev.uid = v; else if (k === 'STATUS') ev.cancelled = /CANCELLED/i.test(v);
+    }
+  }
+  return out;
+}
+function parseCSV(text) {
+  const sep = [';', '\t', ','].sort((a, b) => text.split(b).length - text.split(a).length)[0];
+  const rows = text.replace(/\r/g, '').split('\n').filter(x => x.trim()).map(line => { const r = []; let c = '', q = false; for (const ch of line) { if (ch === '"') q = !q; else if (ch === sep && !q) { r.push(c); c = ''; } else c += ch; } r.push(c); return r.map(x => x.trim()); });
+  const h = rows.shift().map(norm), col = rx => h.findIndex(x => rx.test(x));
+  const cD = col(/date|jour/), cS = col(/debut|heure/), cE = col(/fin/), cT = col(/matiere|intitule|cours|module|libelle|activite/), cG = col(/groupe|section|classe|formation/), cL = col(/salle|lieu/);
+  if (cD < 0 || cS < 0) throw new Error('colonnes « date » et « début » introuvables');
+  const dt = (d, t) => { let m = (d || '').match(/(\d{4})-(\d{2})-(\d{2})/); const ymd = m ? m.slice(1) : (m = (d || '').match(/(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})/)) ? [m[3].length === 2 ? '20' + m[3] : m[3], two(m[2]), two(m[1])] : null; const tm = (t || '').match(/(\d{1,2})\s*[h:]\s*(\d{2})?/); return ymd && tm ? `${ymd[0]}-${ymd[1]}-${ymd[2]}T${two(tm[1])}:${tm[2] || '00'}` : null; };
+  return rows.map(r => ({ start: dt(r[cD], r[cS]), end: cE >= 0 ? dt(r[cD], r[cE]) : null, summary: [r[cT], r[cG]].filter(Boolean).join(' - '), location: cL >= 0 ? r[cL] : '' })).filter(e => e.start);
+}
+function classify(e) {
+  const P = planning(), t = norm([e.summary, e.desc, e.location].join(' '));
+  const r = P.rules.find(r => r.match.split('|').map(k => norm(k).trim()).filter(Boolean).some(k => t.includes(k)));
+  return { section: r?.section || '', level: r?.level || '', subject: SUBJ.maths.test(t) ? 'maths' : SUBJ.pc.test(t) ? 'pc' : '', isEval: EVAL_RX.test(t) };
+}
+function importEvents(list, source, origin) {
+  const P = planning(), s0 = snap(), first = !P.events.length;
+  const evs = list.filter(e => e.start).map(e => ({ uid: e.uid || 'h' + hash(e.start + '|' + (e.summary || '')), start: e.start, end: e.end && e.end > e.start ? e.end : e.start,
+    summary: (e.summary || '').trim(), location: (e.location || '').trim(), desc: (e.desc || '').slice(0, 300), cancelled: !!e.cancelled, origin }));
+  if (!evs.length) return toast('Aucun créneau trouvé dans ce fichier.');
+  const min = evs.reduce((a, e) => e.start < a ? e.start : a, '9'), max = evs.reduce((a, e) => e.start > a ? e.start : a, '0');
+  const old = new Map(P.events.map(e => [e.uid, e])), seen = new Set(); let added = 0, moved = 0, removed = 0;
+  for (const e of evs) {
+    seen.add(e.uid); const o = old.get(e.uid), st = e.cancelled ? 'annule' : null;
+    if (!o) { if (!first) added++; P.events.push({ ...e, status: st || (first ? 'ok' : 'nouveau') }); }
+    else if (o.start !== e.start || o.end !== e.end) { moved++; Object.assign(o, e, { prev: o.start, status: st || 'deplace' }); }
+    else Object.assign(o, e, { status: st || 'ok' });
+  }
+  // « disparu » seulement si le créneau vient du même type d'export, couvre la même période ET une section présente dans ce fichier :
+  // un export partiel (une seule section, une seule semaine) n'annule jamais le reste du planning.
+  const secs = new Set(evs.map(e => classify(e).section || '?'));
+  for (const o of P.events) if (!seen.has(o.uid) && (o.origin || origin) === origin && o.start >= min && o.start <= max && secs.has(classify(o).section || '?') && o.status !== 'annule') { o.status = 'annule'; removed++; }
+  P.events.sort((a, b) => a.start > b.start ? 1 : -1);
+  P.imports.unshift({ date: TODAY(), source, count: evs.length, added, moved, removed, range: [min.slice(0, 10), max.slice(0, 10)] }); P.imports = P.imports.slice(0, 20);
+  view = 'sections'; save(`Planning importé : ${evs.length} créneaux` + (first ? '.' : ` — ${added} nouveau(x), ${moved} déplacé(s), ${removed} disparu(s).`), s0);
+}
+function units() {
+  const U = {};
+  for (const e of planning().events) {
+    if (e.status === 'annule') continue; const c = classify(e); if (!c.section || !c.subject) continue;
+    const k = c.section + '|' + c.subject; (U[k] ||= { key: k, section: c.section, level: c.level, subject: c.subject, events: [] }).events.push({ ...e, isEval: c.isEval });
+  }
+  return Object.values(U).sort((a, b) => a.key > b.key ? 1 : -1);
+}
+function unitRef(u) {
+  const voie = /MELEC/.test(u.level) ? 'pro' : /BTS/.test(u.level) ? 'bts' : '';
+  return REG.REFS.find(r => r.levels.includes(u.level) && voieOk(r, voie) && r.discipline === u.subject && refStatus(r, u.level, S.settings.year) === 'actif' && r.domains.length);
+}
+function progression(u) {
+  const P = planning(), cfg = P.units[u.key] ||= { weights: {}, done: {} }, ref = unitRef(u), doms = ref ? ref.domains : [];
+  const lessons = u.events.filter(e => !e.isEval), total = lessons.reduce((a, e) => a + hrs(e), 0);
+  const w = d => cfg.weights[d] ?? 1, W = doms.reduce((a, d) => a + w(d), 0) || 1, budget = doms.length ? total * (1 - P.reserve / 100) : 0;
+  const plan = doms.map(d => ({ d, h: budget * w(d) / W, sessions: [] })), extra = { d: 'Réserve : révisions, remédiation, rattrapage', h: total - budget, sessions: [], extra: true };
+  const bounds = []; let c = 0; plan.forEach(p => bounds.push(c += p.h));
+  let acc = 0, i = 0; for (const e of lessons) { const mid = acc + hrs(e) / 2; acc += hrs(e); while (i < plan.length && mid > bounds[i]) i++; (plan[i] || extra).sessions.push(e); }
+  const nowS = nowLocal(), rows = [...plan, extra].map(p => ({ ...p, from: p.sessions[0]?.start, to: p.sessions.at(-1)?.end, done: p.extra ? null : cfg.done[p.d] || null }));
+  rows.forEach(p => p.status = p.extra ? 'reserve' : p.done ? 'fait' : !p.sessions.length ? 'vide' : p.to <= nowS ? 'retard' : p.from <= nowS ? 'encours' : 'avenir');
+  const pastH = lessons.filter(e => e.end <= nowS).reduce((a, e) => a + hrs(e), 0);
+  const doneH = rows.filter(p => p.status === 'fait').reduce((a, p) => a + p.h, 0), lateH = rows.filter(p => p.status === 'retard').reduce((a, p) => a + p.h, 0);
+  return { ref, total, budget, pastH, doneH, lateH, rows, evals: u.events.filter(e => e.isEval), cfg };
+}
+function topicMap() { const m = {}; for (const u of units()) { const pg = progression(u); pg.rows.forEach(r => r.sessions.forEach(e => m[e.uid] = { u, d: r.d })); pg.evals.forEach(e => m[e.uid] = { u, d: '🎓 ' + e.summary }); } return m; }
+const PST = { fait: ['g', 'traité'], retard: ['r', 'en retard'], encours: ['b', 'en cours'], avenir: ['', 'à venir'], vide: ['o', 'sans créneau'], reserve: ['', 'réserve'] };
+function progCSV(u) { const pg = progression(u); return '﻿' + [['domaine', 'debut', 'fin', 'heures', 'seances', 'statut'], ...pg.rows.map(r => [r.d, (r.from || '').replace('T', ' '), (r.to || '').replace('T', ' '), r.h.toFixed(1), r.sessions.length, PST[r.status][1]])].map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(';')).join('\n'); }
+function progMd(u) {
+  const pg = progression(u), t = `Progression ${u.section} — ${SUBJ_L[u.subject]} ${S.settings.year}`;
+  return ['---', `title: ${t}`, `sources: planning NetYpareo (export du ${planning().imports[0]?.date || TODAY()}) + ${pg.ref ? pg.ref.id : 'sans référentiel'}`, `updated: ${TODAY()}`, `tags: [progression, ${u.section.toLowerCase()}, ${u.subject}]`, '---', '', `# ${t}`, '',
+    `- Heures planifiées : ${fh(pg.total)} (réserve ${planning().reserve} %) · écoulées : ${fh(pg.pastH)} · traité : ${fh(pg.doneH)} · retard : ${fh(pg.lateH)}`, '',
+    '| Domaine | Du | Au | Heures | Séances | Statut |', '|---|---|---|---|---|---|', ...pg.rows.map(r => `| ${r.d} | ${(r.from || '').slice(0, 10)} | ${(r.to || '').slice(0, 10)} | ${r.h.toFixed(1)} | ${r.sessions.length} | ${PST[r.status][1]} |`),
+    '', '## Évaluations', ...(pg.evals.length ? pg.evals.map(e => `- ${e.start.replace('T', ' ')} ${e.summary}`) : ['- aucune repérée'])].join('\n');
+}
+
+// ---------------- Vues ----------------
+function render() {
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === view));
+  document.getElementById('yearLbl').textContent = 'année ' + S.settings.year + (S.settings.pseudo ? ' · pseudonymes' : '');
+  const m = document.getElementById('main');
+  m.innerHTML = backupAlert() + ({ today: vToday, student: vStudent, sections: vSections, registry: vRegistry, data: vData })[view]();
+  bind(m);
+}
+function regAlert() {
+  const age = days(TODAY(), REG.VERIFIED);
+  return age > REG.REVIEW_AFTER_DAYS ? `<div class="alert">Registre vérifié le ${REG.VERIFIED} (il y a ${age} j) : revérifie les textes officiels (BO, Éduscol) puis mets à jour <code>brief-eleve-referentiels.js</code>.</div>` : '';
+}
+function vToday() {
+  const tday = planning().events.filter(e => e.start.slice(0, 10) === TODAY() && e.status !== 'annule'), tm = tday.length ? topicMap() : {};
+  const coursDuJour = tday.length ? `<div class="card"><h2>🏫 Mes cours aujourd'hui</h2><ul class="list">${tday.map(e => { const x = tm[e.uid]; return `<li><b class="h" style="min-width:96px">${e.start.slice(11)}–${e.end.slice(11)}</b><span class="grow">${x ? `<b>${esc(x.u.section)} · ${SUBJ_L[x.u.subject]}</b><br><span class="small">→ ${esc(x.d)}</span>` : esc(e.summary)}</span><span class="small mute">${esc(e.location)}</span></li>`; }).join('')}</ul></div>` : '';
+  if (!S.students.length) return coursDuJour + `<div class="card"><h2>Démarrer en 10 secondes</h2><p>Tape dans la barre du haut : <b>Lucas, première, spé maths</b>, puis Entrée.</p>
+  <p class="small mute">Ensuite, sur la même ligne, ajoute ce que tu veux, séparé par des virgules : <code>blocage : dérivée</code> · <code>devoir : ex 12 p 54 pour vendredi</code> · <code>DS dérivation le 12/12</code> · <code>2/3 suites</code> · <code>séance 1h30 payée</code> · <code>chapitre : produit scalaire</code> · <code>confiance 4 suites</code></p>
+  <button class="pri" data-a="demo">Charger un élève de démonstration</button></div>${regAlert()}`;
+  const items = [];
+  for (const st of S.students) {
+    st.devoirs.filter(d => !d.done && d.due && days(d.due) <= 3).forEach(d => items.push([days(d.due), st, `📝 ${d.text}`, days(d.due) < 0 ? 'r' : 'o', days(d.due) < 0 ? 'en retard' : 'J-' + days(d.due)]));
+    st.echeances.filter(e => e.date && days(e.date) >= 0 && days(e.date) <= 21).forEach(e => items.push([days(e.date), st, `📅 ${e.label}`, 'b', 'J-' + days(e.date)]));
+    const due = allDomains(st).filter(x => effState(x.rec) === 'verifier');
+    if (due.length) items.push([5, st, `🔁 ${due.length} domaine(s) à re-vérifier : ${due.slice(0, 2).map(x => x.d).join(', ')}`, 'o', 'rappel']);
+    const ls = lastSession(st); if (ls && days(TODAY(), ls.date) > 14) items.push([10, st, `👋 pas vu depuis ${days(TODAY(), ls.date)} j`, '', 'relance']);
+    if (st.next?.date && days(st.next.date) < 0 && !(ls && ls.date >= st.next.date)) items.push([-1, st, `⏱ séance du ${fmtD(st.next.date)} non clôturée`, 'r', 'à clôturer']);
+  }
+  const agenda = S.students.filter(st => st.next?.date && days(st.next.date) >= 0 && days(st.next.date) <= 7)
+    .sort((a, b) => (a.next.date + a.next.time) > (b.next.date + b.next.time) ? 1 : -1);
+  items.sort((a, b) => a[0] - b[0]);
+  const month = TODAY().slice(0, 7), ses = S.students.flatMap(st => st.sessions.map(s => ({ ...s, st })));
+  const mh = ses.filter(s => s.date.startsWith(month)).reduce((a, s) => a + s.dur, 0), unpaid = ses.filter(s => !s.paid);
+  const due = unpaid.reduce((a, s) => a + s.dur / 60 * (s.rate || 0), 0);
+  return `${regAlert()}${coursDuJour}
+  ${agenda.length ? `<div class="card"><h2>📆 Séances des 7 prochains jours</h2><ul class="list">${agenda.map(st => `<li class="${days(st.next.date) === 0 ? '' : ''}"><span class="chip ${days(st.next.date) === 0 ? 'o' : 'b'}">${days(st.next.date) === 0 ? 'aujourd\'hui' : fmtD(st.next.date)}</span><b>${esc(st.next.time || '—')}</b><span class="grow">${esc(disp(st))} <span class="small mute">${esc(profil(st))}</span></span><button class="sm pri" data-open="${st.id}">Plan</button></li>`).join('')}</ul></div>` : ''}
+  <div class="grid"><div class="stat"><b>${S.students.length}</b>élèves</div><div class="stat"><b>${(mh / 60).toFixed(1).replace('.', ',')} h</b>ce mois</div>
+  <div class="stat"><b>${S.students.reduce((a, s) => a + s.blocages.filter(b => !b.done).length, 0)}</b>blocages ouverts</div><div class="stat"><b>${due.toFixed(0)} €</b>non réglé (${unpaid.length} séance${unpaid.length > 1 ? 's' : ''})</div></div>
+  <div class="card"><h2>À faire maintenant</h2>${items.length ? '<ul class="list">' + items.map(i => `<li><span class="chip ${i[3]}">${i[4]}</span><span class="grow">${esc(i[2])}</span><button class="sm" data-open="${i[1].id}">${esc(disp(i[1]))}</button></li>`).join('') + '</ul>' : '<p class="mute">Rien d\'urgent. 👌</p>'}</div>
+  <div class="card"><h2>Élèves</h2><ul class="list">${S.students.map(st => { const ad = allDomains(st), ok = ad.filter(x => effState(x.rec) === 'ok').length; const ls = lastSession(st);
+    return `<li><b class="grow">${esc(disp(st))}</b><span class="chip">${esc(profil(st))}</span><span class="small mute">${ok}/${ad.length} maîtrisés · ${ls ? 'vu ' + fmtD(ls.date) : 'jamais vu'}${st.next?.date ? ' · prochaine ' + fmtD(st.next.date) : ''}</span><button class="sm pri" data-open="${st.id}">Brief</button></li>`; }).join('')}</ul></div>`;
+}
+function stateBar(list) {
+  const c = { ok: 0, verifier: 0, cours: 0, revoir: 0, situer: 0 }; list.forEach(x => c[effState(x.rec)]++); const n = list.length || 1;
+  const col = { ok: 'var(--green)', verifier: '#9bbf3f', cours: 'var(--blue)', revoir: 'var(--orange)', situer: '#7c8799' };
+  return `<div class="bar">${Object.keys(c).map(k => `<i style="width:${c[k] / n * 100}%;background:${col[k]}" title="${STATES[k]} : ${c[k]}"></i>`).join('')}</div><div class="small mute">${Object.keys(c).filter(k => c[k]).map(k => STATES[k] + ' ' + c[k]).join(' · ')}</div>`;
+}
+function spark(h) { if (!h?.length) return ''; return h.slice(-6).map(x => { const r = x.s / x.m; return `<span title="${x.d} : ${x.s}/${x.m}" style="display:inline-block;width:6px;height:${6 + r * 12}px;margin-right:2px;vertical-align:bottom;border-radius:2px;background:${r >= .8 ? 'var(--green)' : r >= .5 ? 'var(--blue)' : 'var(--orange)'}"></span>`; }).join(''); }
+function vStudent() {
+  if (!S.students.length) return vToday();
+  const st = getSt(cur) || S.students[0]; cur = st.id;
+  const r = refsFor(st), pr = priorities(st), ob = st.blocages.filter(b => !b.done);
+  const pre = [...new Set(ob.flatMap(b => prereqsFor(b.text + ' ' + b.domain)))];
+  const sel = `<select data-a="pick">${S.students.map(s => `<option value="${s.id}" ${s.id === st.id ? 'selected' : ''}>${esc(disp(s))}</option>`).join('')}</select>`;
+  const lv = ['6e', '5e', '4e', '3e', '2de', '1re', 'Tle', 'TMELEC', 'BTS1', 'BTS2'], vo = VO;
+  return `<div class="card"><h2>${sel}<span class="r noprint"><button class="sm" data-a="print">Imprimer</button><button class="sm" data-a="md">→ Obsidian</button></span></h2>
+  <div class="row small"><select data-a="level"><option value="">niveau ?</option>${lv.map(l => `<option ${l === st.level ? 'selected' : ''}>${l}</option>`).join('')}</select>
+  <select data-a="voie"><option value="">voie ?</option>${Object.entries(vo).map(([k, v]) => `<option value="${k}" ${k === st.voie ? 'selected' : ''}>${v}</option>`).join('')}</select>
+  ${Object.entries(SPL).map(([k, v]) => `<label><input type="checkbox" data-spec="${k}" ${st.specs.includes(k) ? 'checked' : ''}> ${v}</label>`).join(' ')}</div>
+  <div class="row small" style="margin-top:6px">En classe : <input data-a="chapter" value="${esc(st.chapter)}" placeholder="chapitre vu en classe" style="flex:1"></div>
+  <div class="row small" style="margin-top:6px">Prochaine séance : <input type="date" data-a="nextd" value="${esc(st.next?.date || '')}"> <input type="time" data-a="nextt" value="${esc(st.next?.time || '')}"></div></div>
+
+  <div class="card"><h2>⚡ Brief 30 secondes<span class="r noprint"><button class="sm" data-copy="brief">Copier</button></span></h2><div class="brief" id="briefTxt">${esc(briefText(st))}</div></div>
+
+  ${debrief ? vDebrief(st) : vPlan(st)}
+
+  <div class="card"><h2>🎯 Priorités proposées</h2><p class="small mute">Repère de travail calculé (état, chapitre en classe, blocages, échéances, rappels) — pas un ordre imposé par le programme.</p>
+  ${pr.length ? '<ul class="list">' + pr.slice(0, 5).map(x => `<li><b class="grow">${esc(x.d)}</b>${x.why.map(w => `<span class="chip">${esc(w)}</span>`).join('')}<span class="small mute">${x.sc.toFixed(1).replace('.', ',')}</span></li>`).join('') + '</ul>' : '<p class="mute">Indique le niveau pour associer les référentiels.</p>'}</div>
+
+
+  ${pre.length ? `<div class="card reflex"><h2>🔎 Prérequis à tester · fiches réflexes<span class="r noprint"><button class="sm" data-a="printrx">Imprimer pour l'élève</button></span></h2><p class="small mute noprint">Les blocages ouverts pointent vers ces prérequis. Question flash en début de séance ; si elle échoue, l'élève repart avec la fiche réflexe (à coller dans le cahier).</p>${pre.map(reflexCard).join('')}</div>` : ''}
+
+  ${vEvolution(st)}
+
+  <div class="card"><h2>📈 Progression par domaines</h2>
+  ${r.suggested.map(x => `<div class="alert">Complément à confirmer : <b>${esc(x.label)}</b> <button class="sm ok" data-conf="${x.id}">Il suit cet enseignement</button> <button class="sm" data-ign="${x.id}">Non</button></div>`).join('')}
+  ${r.upcoming.length ? `<p class="small mute">À venir : ${r.upcoming.map(x => esc(x.label) + ' (' + (x.fromByLevel?.[st.level] || x.from) + ')').join(' ; ')}</p>` : ''}
+  ${r.confirmed.map(ref => { const list = ref.domains.map(d => ({ d, rec: dom(st, ref.id, d) }));
+    return `<div style="margin-top:10px"><b>${esc(ref.label)}</b> <span class="chip ${ref.domainsStatus === 'officiel' ? 'g' : 'o'}">domaines ${ref.domainsStatus}</span></div>${stateBar(list)}<details><summary class="small">Détail des ${list.length} domaines</summary>
+    ${list.map(x => { const es = effState(x.rec); return `<div class="dom"><div>${esc(x.d)} ${spark(x.rec.hist)} ${calib(x.rec, es)}<div class="small mute">${x.rec.last ? 'maj ' + fmtD(x.rec.last) : ''}${es === 'ok' && x.rec.okDate ? ' · re-vérifier vers ' + fmtD(iso(new Date(new Date(x.rec.okDate + 'T12:00').getTime() + INTERVALS[Math.min(x.rec.streak - 1, 3)] * 864e5))) : ''}</div></div>
+      <div class="row"><select class="sm" data-cf="${esc(ref.id)}::${esc(x.d)}" title="Confiance déclarée par l'élève"><option value="">confiance</option>${[1, 2, 3, 4].map(v => `<option ${x.rec.conf === v ? 'selected' : ''} value="${v}">${['😟', '😐', '🙂', '💪'][v - 1]} ${v}</option>`).join('')}</select><button class="st s-${es}" data-cy="${esc(ref.id)}::${esc(x.d)}">${STATES[es]}</button></div></div>`; }).join('')}</details>`; }).join('') || '<p class="mute">Aucun référentiel actif pour ce profil.</p>'}
+  <p class="small mute">Clic sur l'état = cycle À situer → En cours → À revoir → Maîtrisé. Un domaine maîtrisé repasse « À vérifier » après 7, 21, 60 puis 120 jours (répétition espacée). Score rapide dans la barre : <code>2/3 suites</code>.</p></div>
+
+  <div class="card"><h2>🧱 Blocages</h2>${list(st, 'blocages', b => `${esc(b.text)}${b.domain ? ' <span class="chip">' + esc(b.domain) + '</span>' : ''}`, b => b.date)}</div>
+  <div class="card"><h2>📝 Devoirs reçus</h2>${list(st, 'devoirs', d => esc(d.text), d => d.due ? (days(d.due) < 0 && !d.done ? '<span class="chip r">retard</span> ' : '') + fmtD(d.due) : 'sans date')}</div>
+  <div class="card"><h2>📅 Échéances</h2>${st.echeances.length ? '<ul class="list">' + st.echeances.slice().sort((a, b) => (a.date || '') > (b.date || '') ? 1 : -1).map(e => `<li><span class="grow">${esc(e.label)}</span><span class="small">${e.date ? fmtD(e.date) + (days(e.date) >= 0 ? ' · J-' + days(e.date) : ' · passé') : 'date ?'}</span><button class="sm ghost" data-del="echeances:${e.id}">✕</button></li>`).join('') + '</ul>' : '<p class="small mute">Ex. : <code>DS suites le 12/12</code>, <code>bac blanc le 2027-02-03</code>.</p>'}</div>
+  <div class="card"><h2>⏱ Séances & règlements<span class="r noprint"><button class="sm" data-copy="recap">Récap du mois</button></span></h2>${st.sessions.length ? '<ul class="list">' + st.sessions.map(s => `<li><span>${fmtD(s.date)}</span><span class="grow small">${s.dur} min${(s.domains || []).length ? ' · ' + esc(s.domains.map(d => d.d + (d.s != null ? ' ' + d.s + '/3' : '')).join(', ')) : ''}${s.note ? ' · ' + esc(s.note) : ''}</span><span class="small">${(s.dur / 60 * (s.rate || 0)).toFixed(0)} €</span><button class="sm ${s.paid ? 'ok' : 'warn'}" data-paid="${s.id}">${s.paid ? 'réglée' : 'à régler'}</button><button class="sm ghost" data-del="sessions:${s.id}">✕</button></li>`).join('') + '</ul>' : '<p class="small mute"><code>séance 1h30 dérivées payée</code></p>'}</div>
+  <div class="card"><h2>👪 Message aux parents<span class="r noprint"><button class="sm" data-copy="parent">Copier</button></span></h2><div class="brief" id="parentTxt">${esc(parentText(st))}</div><p class="small mute">Formulé en positif, prêt pour SMS/WhatsApp. Relis avant envoi.</p></div>
+  <div class="card"><h2>🗒 Notes</h2>${st.notes.length ? '<ul class="list">' + st.notes.map(n => `<li><span class="small mute">${fmtD(n.date)}</span><span class="grow">${esc(n.text)}</span><button class="sm ghost" data-del="notes:${n.id}">✕</button></li>`).join('') + '</ul>' : '<p class="small mute">Tout texte non reconnu dans la barre devient une note.</p>'}
+  <div class="row noprint" style="margin-top:10px"><button class="sm" data-a="rename">Renommer</button><button class="sm ghost" data-a="delst" style="color:var(--red)">Supprimer l'élève</button></div></div>`;
+}
+function vPlan(st) {
+  const dur = defaultDur(st), plan = sessionPlan(st, dur); let t = planStart(st);
+  return `<div class="card plan"><h2>🗓 Plan de séance<span class="r noprint"><select data-a="dur" aria-label="Durée">${[45, 60, 90, 120].map(v => `<option value="${v}" ${v === dur ? 'selected' : ''}>${v} min</option>`).join('')}</select><button class="sm" data-copy="plan">Copier</button></span></h2>
+  <ul class="list">${plan.map(b => { const h = `${hm(t)}–${hm(t + b.min)}`; t += b.min; return `<li><span class="h">${h}</span><span class="grow"><b>${esc(b.t)}</b><br><span class="small mute">${esc(b.what)}</span></span><span class="chip">${b.min} min</span></li>`; }).join('')}</ul>
+  <div class="row noprint" style="margin-top:8px"><button class="ok" data-a="debrief">✅ Clôturer la séance (30 s)</button><span class="small mute">Scores, blocages résolus, prochaine séance : tout en un écran.</span></div></div>`;
+}
+function vDebrief(st) {
+  const seen = new Set(), cand = [];
+  const push = x => { const k = dk(x.ref.id, x.d); if (!seen.has(k)) { seen.add(k); cand.push(x); } };
+  sessionPlan(st, defaultDur(st)).flatMap(b => b.doms).forEach(push); priorities(st).slice(0, 6).forEach(push);
+  const planned = new Set(sessionPlan(st, defaultDur(st)).flatMap(b => b.doms).map(x => dk(x.ref.id, x.d)));
+  const ob = st.blocages.filter(b => !b.done);
+  return `<div class="card" id="debrief" style="border-color:var(--green)"><h2>✅ Clôture de séance</h2>
+  <p class="small mute">Coche ce qui a été travaillé et note le ticket de sortie (sur 3). Un score met à jour l'état du domaine et la répétition espacée.</p>
+  ${cand.map((x, i) => { const k = dk(x.ref.id, x.d); return `<div class="dom" data-cand="${esc(k)}"><label><input type="checkbox" ${planned.has(k) ? 'checked' : ''}> ${esc(x.d)} <span class="small mute">${STATES[effState(x.rec)]}</span></label>
+    <div class="row seg">${[0, 1, 2, 3].map(v => `<label><input type="radio" name="sc${i}" value="${v}"><span>${v}/3</span></label>`).join('')}</div></div>`; }).join('')}
+  ${ob.length ? `<p style="margin:10px 0 4px"><b>Blocages résolus aujourd'hui ?</b></p>${ob.map(b => `<label class="small" style="display:block"><input type="checkbox" data-bres="${b.id}"> ${esc(b.text)}</label>`).join('')}` : ''}
+  <div class="row" style="margin-top:10px"><label class="small">Durée <input type="number" min="15" step="15" name="dur" value="${defaultDur(st)}" style="width:72px"> min</label>
+  <label class="small"><input type="checkbox" name="paid"> réglée</label>
+  <label class="small">Prochaine <input type="date" name="nd" value="${esc(st.next?.date && st.next.date > TODAY() ? st.next.date : '')}"> <input type="time" name="nt" value="${esc(st.next?.time || '')}"></label></div>
+  <textarea name="note" placeholder="Note libre (ce qui a marché, ce qui coince, ce que l'élève a dit)" style="margin-top:8px"></textarea>
+  <div class="row" style="margin-top:8px"><button class="ok" data-a="close">Enregistrer la séance</button><button class="ghost" data-a="undebrief">Annuler</button></div></div>`;
+}
+function vEvolution(st) {
+  const ev = evolution(st); if (!ev) return '';
+  const gain = ev.now - ev.start;
+  return `<div class="card"><h2>📊 Évolution</h2><div class="row">${sparkLine(ev.series)}<div class="small">Depuis le ${fmtD(ev.from)} : <b>${ev.start} → ${ev.now}</b> notions maîtrisées<br>${ev.n} séance${ev.n > 1 ? 's' : ''} · ${ev.hours.toFixed(1).replace('.', ',')} h${ev.hours >= 1 ? ' · ' + (gain / ev.hours).toFixed(1).replace('.', ',') + ' notion(s) gagnée(s) par heure' : ''}</div></div>
+  ${ev.time.length ? `<p class="small mute" style="margin:8px 0 2px">Temps investi par domaine (séances clôturées)</p>${ev.time.map(([d, m]) => `<div class="small">${esc(d)} — ${Math.round(m)} min</div>`).join('')}` : ''}</div>`;
+}
+function list(st, key, label, meta) {
+  const L = st[key]; if (!L.length) return '<p class="small mute">Rien pour l\'instant.</p>';
+  return '<ul class="list">' + L.slice().sort((a, b) => a.done - b.done).map(x => `<li style="${x.done ? 'opacity:.55' : ''}"><input type="checkbox" data-done="${key}:${x.id}" ${x.done ? 'checked' : ''} aria-label="traité"><span class="grow">${label(x)}</span><span class="small mute">${meta(x)}</span><button class="sm ghost" data-del="${key}:${x.id}">✕</button></li>`).join('') + '</ul>';
+}
+function vRegistry() {
+  const years = ['2025-2026', '2026-2027', '2027-2028', '2028-2029'], y = S.settings.year;
+  const order = ['6e', '5e', '4e', '3e', '2de', '1re', 'Tle', 'TMELEC', 'BTS1', 'BTS2'];
+  const pill = (r, l, v) => { const s = refStatus(r, l, v), old = s === 'actif' && (r.until || r.untilByLevel); return `<span class="chip ${s === 'actif' ? (old ? 'o' : 'g') : ''}" style="${v === y ? 'outline:2px solid var(--blue)' : ''}${s !== 'actif' ? ';opacity:.45' : ''}">${v.slice(2, 4)}-${v.slice(7)} ${s === 'actif' ? '●' : '○'}</span>`; };
+  return `${regAlert()}<div class="card"><h2>Calendrier d'application<span class="r"><select data-a="year">${years.map(v => `<option ${v === y ? 'selected' : ''}>${v}</option>`).join('')}</select></span></h2>
+  <p class="small mute"><span class="chip g">● vert</span> s'applique · <span class="chip o">● orange</span> ancien programme encore en vigueur · ○ pas en vigueur. Encadré = année choisie. Vérifié le ${REG.VERIFIED}, mise à jour manuelle.</p></div>
+  ${order.map(l => { const refs = REG.REFS.filter(r => r.levels.includes(l)); if (!refs.length) return '';
+    return `<div class="card"><h2>${l}</h2><ul class="list">${refs.map(r => `<li style="display:block"><b>${esc(r.label)}</b> <span class="chip ${r.certainty >= 90 ? 'g' : r.certainty >= 80 ? 'b' : 'o'}" title="fiabilité du calendrier">${r.certainty} %</span>
+      <div class="small mute">${esc(r.text)}${r.note ? ' — ' + esc(r.note) : ''}</div><div>${years.map(v => pill(r, l, v)).join('')}</div>
+      <a class="small" href="${r.url}" target="_blank" rel="noopener">texte / page officielle ↗</a>${r.url2 ? ` · <a class="small" href="${r.url2}" target="_blank" rel="noopener">Éduscol ↗</a>` : ''}</li>`).join('')}</ul></div>`; }).join('')}
+  <div class="card"><h2>Règles d'association</h2><ul class="small"><li>Première générale : maths de l'enseignement scientifique toujours associées ; spécialité maths si « spé maths ».</li><li>Spécialités SVT / physique-chimie : proposées « à confirmer », jamais supposées.</li><li>Domaines « indicatifs » : repères de travail à aligner sur le texte officiel ; « banque » : thèmes de la banque MELEC du dépôt.</li><li>Sources : <a href="${REG.SOURCES.calendrier}" target="_blank" rel="noopener">calendrier Éduscol</a> · <a href="${REG.SOURCES.mathsGT}" target="_blank" rel="noopener">maths voie GT</a>.</li></ul></div>`;
+}
+function vSections() {
+  const P = planning(), U = units(), last = P.imports[0];
+  const unmatched = {}; P.events.filter(e => e.status !== 'annule').forEach(e => { const c = classify(e); if (!c.section || !c.subject) { const k = e.summary || '(sans titre)'; unmatched[k] = (unmatched[k] || 0) + 1; } });
+  const changes = P.events.filter(e => ['nouveau', 'deplace', 'annule'].includes(e.status) && e.start >= TODAY()).slice(0, 12);
+  const lv = ['TMELEC', '1MELEC', 'BTS1', 'BTS2', '2de', '1re', 'Tle'];
+  return `<div class="card"><h2>📥 Importer mon planning <span class="chip g">lecture seule · local</span></h2>
+  <p class="small">Dans NetYpareo, exporte ton planning (format <b>iCal / .ics</b> si le portail le propose, sinon un tableau <b>CSV</b>), puis choisis le fichier ici. L'application ne se connecte à aucun serveur et ne conserve aucun identifiant : le fichier est lu dans ce navigateur, rien n'est envoyé.</p>
+  <div class="row"><button class="pri" data-a="icsimp">Choisir un fichier .ics ou .csv…</button><input type="file" id="icsFile" accept=".ics,.ical,.csv,.txt,text/calendar,text/csv" class="hidden">
+  ${P.events.length ? `<button class="ghost sm" data-a="icsclear" style="color:var(--red)">Effacer le planning</button>` : ''}</div>
+  ${last ? `<p class="small mute" style="margin-top:8px">Dernier import : ${fmtD(last.date)} · ${esc(last.source)} · ${last.count} créneaux du ${fmtD(last.range[0])} au ${fmtD(last.range[1])}${P.imports.length > 1 ? ` · ${last.added} nouveau(x), ${last.moved} déplacé(s), ${last.removed} disparu(s)` : ''}.</p>` : ''}
+  ${changes.length ? `<p style="margin:8px 0 4px"><b>Changements à venir détectés</b></p><ul class="list">${changes.map(e => `<li><span class="chip ${e.status === 'annule' ? 'r' : e.status === 'deplace' ? 'o' : 'b'}">${{ annule: 'disparu', deplace: 'déplacé', nouveau: 'nouveau' }[e.status]}</span><span class="grow small">${esc(e.summary)}</span><span class="small">${fmtD(e.start.slice(0, 10))} ${e.start.slice(11)}${e.prev ? ' (avant : ' + fmtD(e.prev.slice(0, 10)) + ' ' + e.prev.slice(11) + ')' : ''}</span></li>`).join('')}</ul>` : ''}</div>
+  ${P.events.length ? `<div class="card"><h2>🔤 Reconnaissance des sections</h2><p class="small mute">Un créneau est rattaché à la première règle dont un mot-clé apparaît dans son intitulé (mots-clés séparés par |). La matière est reconnue par « maths » / « physique, chimie, sciences ».</p>
+  <ul class="list">${P.rules.map(r => `<li><code class="grow">${esc(r.match)}</code><span class="chip b">${esc(r.section)}</span><span class="small mute">${esc(r.level)}</span><button class="sm ghost" data-delrule="${r.id}">✕</button></li>`).join('')}</ul>
+  <div class="row" style="margin-top:8px"><input id="rMatch" placeholder="mots-clés (ex. TMELEC2|T MELEC 2)" style="flex:2;min-width:160px"><input id="rSection" placeholder="section (ex. TMELEC2)" style="flex:1;min-width:110px"><select id="rLevel">${lv.map(l => `<option>${l}</option>`).join('')}</select><button class="sm pri" data-a="addrule">Ajouter</button></div>
+  ${Object.keys(unmatched).length ? `<p style="margin:10px 0 4px"><b>Créneaux non reconnus</b> <span class="small mute">(clic = copier l'intitulé dans les mots-clés)</span></p><ul class="list">${Object.entries(unmatched).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([k, n]) => `<li><span class="grow small">${esc(k)}</span><span class="chip">${n}×</span><button class="sm" data-usesum="${esc(k)}">Utiliser</button></li>`).join('')}</ul>` : '<p class="small mute" style="margin-top:8px">Tous les créneaux sont reconnus.</p>'}
+  <div class="row small" style="margin-top:8px">Réserve (révisions, remédiation, rattrapage) : <input type="number" min="0" max="50" data-a="reserve" value="${P.reserve}" style="width:64px"> % des heures</div></div>` : ''}
+  ${U.map(u => { const pg = progression(u), tp = pg.total ? pg.pastH / pg.total : 0, dp = pg.budget ? pg.doneH / pg.budget : 0, gap = dp - tp;
+    return `<div class="card"><h2>${esc(u.section)} · ${SUBJ_L[u.subject]}<span class="r noprint"><button class="sm" data-pcsv="${esc(u.key)}">CSV</button><button class="sm" data-pmd="${esc(u.key)}">→ Obsidian</button></span></h2>
+    <p class="small mute">${pg.ref ? esc(pg.ref.label) + ' — domaines ' + pg.ref.domainsStatus : 'Aucun référentiel du registre pour ce niveau : suivi des heures uniquement.'}</p>
+    <div class="grid"><div class="stat"><b>${fh(pg.total)}</b>planifiées (${u.events.length} créneaux)</div><div class="stat"><b>${Math.round(tp * 100)} %</b>du temps écoulé</div><div class="stat"><b>${Math.round(dp * 100)} %</b>du programme traité</div><div class="stat"><b style="color:${pg.lateH > 0 ? 'var(--red)' : 'var(--green)'}">${fh(pg.lateH)}</b>de retard</div></div>
+    ${pg.ref ? `<div class="bar" title="temps écoulé"><i style="width:${tp * 100}%;background:var(--blue)"></i></div><div class="bar" title="programme traité"><i style="width:${dp * 100}%;background:var(--green)"></i></div>
+    <p class="small">${gap >= -0.05 ? '✅ Rythme tenu' : '⚠ Retard : ' + Math.round(-gap * 100) + ' points entre temps écoulé et programme traité'}. Coche les domaines traités ; le plan se recalcule avec les poids.</p>
+    <div class="scroll"><table><tr><th>✓ Domaine</th><th>Période prévue</th><th>H</th><th>Poids</th><th>Statut</th></tr>
+    ${pg.rows.map(r => `<tr><td>${r.extra ? '' : `<input type="checkbox" data-pdone="${esc(u.key)}::${esc(r.d)}" ${r.done ? 'checked' : ''} aria-label="traité"> `}${esc(r.d)}</td><td class="small">${r.from ? fmtD(r.from.slice(0, 10)) + ' → ' + fmtD(r.to.slice(0, 10)) : '—'}</td><td>${r.h.toFixed(1).replace('.', ',')}</td>
+      <td>${r.extra ? '' : `<select class="sm" data-w="${esc(u.key)}::${esc(r.d)}">${[0.5, 1, 1.5, 2, 3].map(v => `<option value="${v}" ${(pg.cfg.weights[r.d] ?? 1) === v ? 'selected' : ''}>×${String(v).replace('.', ',')}</option>`).join('')}</select>`}</td>
+      <td><span class="chip ${PST[r.status][0]}">${PST[r.status][1]}</span></td></tr>`).join('')}</table></div>` : ''}
+    ${pg.evals.length ? `<p class="small" style="margin-top:8px"><b>🎓 Évaluations / CCF repérées :</b> ${pg.evals.map(e => esc(fmtD(e.start.slice(0, 10)) + ' ' + e.summary)).join(' · ')}</p>` : ''}</div>`; }).join('')}
+  ${P.events.length && !U.length ? '<div class="card"><p>Aucune section reconnue : ajoute une règle avec les mots-clés qui apparaissent dans les intitulés de tes cours.</p></div>' : ''}`;
+}
+function vData() {
+  const bytes = new Blob([JSON.stringify(S)]).size;
+  return `<div class="card"><h2>Sauvegarde</h2><p class="small mute">Données dans ce navigateur uniquement (${(bytes / 1024).toFixed(1)} Ko). Exporte régulièrement : un nettoyage du navigateur efface tout. Dernier export : <b>${S.settings.lastExport ? fmtD(S.settings.lastExport) : 'jamais'}</b>.</p>
+  <div class="row"><button class="pri" data-a="export">Exporter JSON complet</button><button data-a="safe">Exporter SAFE (pseudonymes)</button><button data-a="mdall">Exporter tout pour Obsidian (.md)</button><button data-a="csv">Séances du mois (CSV)</button>
+  <label class="row"><button data-a="imp">Importer JSON…</button><input type="file" id="impFile" accept=".json,application/json" class="hidden"></label></div></div>
+  <div class="card"><h2>Réglages</h2><div class="row"><label>Tarif horaire par défaut <input type="number" min="0" data-a="rate" value="${S.settings.rate}" style="width:80px"> €</label>
+  <label><input type="checkbox" data-a="pseudo" ${S.settings.pseudo ? 'checked' : ''}> Afficher les pseudonymes (vidéoprojection, captures)</label>
+  <label>Thème <select data-a="theme"><option value="">auto</option><option value="light">clair</option><option value="dark">sombre</option></select></label></div></div>
+  <div class="card"><h2>Saisie rapide — aide-mémoire</h2><table><tr><th>Tu tapes</th><th>Effet</th></tr>
+  ${[['Lucas, première, spé maths', 'crée / met à jour le profil et associe les référentiels'], ['Lucas, blocage : signe de la dérivée', 'blocage + domaine reconnu + prérequis à tester'], ['Lucas, devoir : ex 12 p 54 pour vendredi', 'devoir daté'], ['Lucas, DS suites le 12/12', 'échéance (booste les domaines liés à J-21)'], ['Lucas, 2/3 suites', 'mini-test → état du domaine'], ['Lucas, ok dérivation', 'domaine maîtrisé (rappel espacé)'], ['Lucas, confiance 4 suites', 'confiance élève → détecte la surconfiance'], ['Lucas, séance 1h30 payée', 'séance + règlement'], ['Lucas, chapitre : produit scalaire', 'chapitre vu en classe'], ['Lucas, prochaine mardi 17h30', 'prochaine séance (agenda + plan calé sur l\'heure)'], ['(élève ouvert) blocage : fractions', 'sans nom = élève affiché']].map(r => `<tr><td><code>${esc(r[0])}</code></td><td>${esc(r[1])}</td></tr>`).join('')}</table></div>
+  <div class="card"><h2>Zone sensible</h2><button class="ghost" data-a="wipe" style="color:var(--red)">Tout effacer…</button></div>`;
+}
+
+// ---------------- Événements ----------------
+function bind(m) {
+  const st = getSt(cur);
+  m.onclick = e => {
+    const t = e.target.closest('button,[data-done]'); if (!t) return; const d = t.dataset;
+    if (d.open) { cur = d.open; view = 'student'; debrief = false; planDur = null; render(); window.scrollTo(0, 0); return; }
+    if (d.copy) return copy({ brief: briefText, parent: parentText, plan: planText, recap: x => monthRecap(x) }[d.copy](st));
+    if (d.cy) { const s0 = snap(); const [rid, dn] = d.cy.split('::'); const es = effState(dom(st, rid, dn)); const nx = es === 'verifier' ? 'ok' : CYCLE[(CYCLE.indexOf(es) + 1) % 4]; setState(st, rid, dn, nx); return save(dn + ' → ' + STATES[nx], s0); }
+    if (d.conf) { const s0 = snap(); st.refs.confirmed.push(d.conf); st.refs.ignored = st.refs.ignored.filter(x => x !== d.conf); return save('Référentiel confirmé.', s0); }
+    if (d.ign) { const s0 = snap(); st.refs.ignored.push(d.ign); return save('Référentiel écarté.', s0); }
+    if (d.paid) { const s0 = snap(); const s = st.sessions.find(x => x.id === d.paid); s.paid = !s.paid; return save(s.paid ? 'Séance réglée.' : 'Séance à régler.', s0); }
+    if (d.del) { const s0 = snap(); const [k, id] = d.del.split(':'); st[k] = st[k].filter(x => x.id !== id); return save('Supprimé.', s0); }
+    if (d.done) { const s0 = snap(); const [k, id] = d.done.split(':'); const x = st[k].find(x => x.id === id); x.done = !x.done; return save(x.done ? 'Marqué comme traité.' : 'Rouvert.', s0); }
+    const a = d.a;
+    if (a === 'demo') { const s0 = snap(); ['Lucas, première, spé maths', 'Lucas, chapitre : dérivation', 'Lucas, blocage : signe de la dérivée', 'Lucas, 1/3 dérivation', 'Lucas, confiance 4 dérivation', 'Lucas, 3/3 second degré', 'Lucas, DS dérivation dans 10 jours', 'Lucas, devoir : ex 34 p 112 pour demain', 'Lucas, séance 1h30 dérivées'].forEach(c => { const p = parseCmd(c); const keep = undoStack.length; apply(p); undoStack.length = keep; }); undoStack.push(s0); return; }
+    if (a === 'print') return window.print();
+    if (a === 'printrx') { document.body.classList.add('pr'); window.print(); setTimeout(() => document.body.classList.remove('pr'), 500); return; }
+    if (a === 'debrief') { debrief = true; render(); document.getElementById('debrief')?.scrollIntoView({ block: 'start' }); return; }
+    if (a === 'undebrief') { debrief = false; return render(); }
+    if (a === 'close') {
+      const s0 = snap(), box = document.getElementById('debrief'), doms = [], before = masteredCount(st);
+      box.querySelectorAll('[data-cand]').forEach(row => {
+        const [rid, dn] = row.dataset.cand.split('::'), w = row.querySelector('input[type=checkbox]').checked, r = row.querySelector('input[type=radio]:checked');
+        if (r) addScore(st, rid, dn, +r.value, 3);
+        if (w || r) doms.push({ rid, d: dn, s: r ? +r.value : null });
+      });
+      let res = 0; box.querySelectorAll('[data-bres]:checked').forEach(c => { const b = st.blocages.find(x => x.id === c.dataset.bres); if (b) { b.done = true; b.solved = TODAY(); res++; } });
+      const v = n => box.querySelector(`[name=${n}]`), dur = +v('dur').value || 60;
+      const ses = { id: uid(), date: TODAY(), dur, rate: S.settings.rate, paid: v('paid').checked, note: v('note').value.trim(), domains: doms, before, mastered: masteredCount(st) };
+      const same = st.sessions.find(x => x.date === TODAY() && !(x.domains || []).length); // séance déjà saisie par la barre : on la complète
+      if (same) Object.assign(same, ses, { id: same.id, before: Math.min(same.before ?? before, before), paid: same.paid || ses.paid, note: [same.note, ses.note].filter(Boolean).join(' · ') }); else st.sessions.unshift(ses);
+      st.next = v('nd').value ? { date: v('nd').value, time: v('nt').value } : null;
+      debrief = false; planDur = null;
+      return save(`Séance enregistrée : ${doms.length} domaine(s), ${res} blocage(s) résolu(s).`, s0);
+    }
+    if (a === 'md') return download(`${st.alias}.md`, obsidianMd(st), 'text/markdown');
+    if (a === 'mdall') return download(`Brief_eleves_${TODAY()}.md`, S.students.map(obsidianMd).join('\n\n---\n\n'), 'text/markdown');
+    if (a === 'export') { download(`BriefEleve_COMPLET_${TODAY()}.json`, JSON.stringify(S, null, 1)); S.settings.lastExport = TODAY(); S.settings.dirtySince = null; return save('Sauvegarde téléchargée.'); }
+    if (a === 'csv') { const ym = TODAY().slice(0, 7), rows = [['date', 'eleve', 'duree_min', 'tarif_h', 'montant', 'reglee', 'domaines']]; S.students.forEach(x => x.sessions.filter(s => s.date.startsWith(ym)).forEach(s => rows.push([s.date, disp(x), s.dur, s.rate || 0, (s.dur / 60 * (s.rate || 0)).toFixed(2), s.paid ? 'oui' : 'non', (s.domains || []).map(d => d.d).join(' | ')]))); return download(`BriefEleve_seances_${ym}.csv`, '\ufeff' + rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(';')).join('\n'), 'text/csv'); }
+    if (a === 'safe') { const c = JSON.parse(snap()); c.students.forEach(s => { s.name = s.alias; s.parent = ''; s.notes = s.notes.map(n => ({ ...n, text: '[note masquée]' })); }); if (c.planning) c.planning.events.forEach(e => { e.desc = ''; e.location = ''; }); return download(`BriefEleve_SAFE_${TODAY()}.json`, JSON.stringify(c, null, 1)); }
+    if (a === 'imp') return document.getElementById('impFile').click();
+    if (a === 'icsimp') return document.getElementById('icsFile').click();
+    if (a === 'icsclear') { if (confirm('Effacer le planning importé, les règles et le suivi des sections ?')) { const s0 = snap(); delete S.planning; save('Planning effacé.', s0); } return; }
+    if (a === 'addrule') { const m = document.getElementById('rMatch').value.trim(), sec = document.getElementById('rSection').value.trim(); if (!m || !sec) return toast('Mots-clés et section obligatoires.'); const s0 = snap(); planning().rules.unshift({ id: uid(), match: m, section: sec, level: document.getElementById('rLevel').value }); return save('Règle ajoutée.', s0); }
+    if (d.delrule) { const s0 = snap(); const P = planning(); P.rules = P.rules.filter(r => r.id !== d.delrule); return save('Règle supprimée.', s0); }
+    if (d.usesum) { const i = document.getElementById('rMatch'); i.value = norm(d.usesum).replace(/\s+/g, ' ').trim(); i.focus(); return; }
+    if (d.pcsv) { const u = units().find(x => x.key === d.pcsv); return download(`Progression_${u.section}_${u.subject}_${TODAY()}.csv`, progCSV(u), 'text/csv'); }
+    if (d.pmd) { const u = units().find(x => x.key === d.pmd); return download(`Progression ${u.section} ${u.subject}.md`, progMd(u), 'text/markdown'); }
+    if (a === 'rename') { const n = prompt('Nouveau nom :', st.name); if (n) { const s0 = snap(); st.name = n.trim(); save('Renommé.', s0); } return; }
+    if (a === 'delst') { if (confirm(`Supprimer définitivement ${st.name} et tout son suivi ?`)) { const s0 = snap(); S.students = S.students.filter(x => x.id !== st.id); cur = null; view = 'today'; save('Élève supprimé.', s0); } return; }
+    if (a === 'wipe') { if (prompt('Tape EFFACER pour tout supprimer (pense à exporter avant) :') === 'EFFACER') { const s0 = snap(); S = blank(); save('Tout est effacé.', s0); } return; }
+  };
+  m.onchange = e => {
+    const t = e.target, a = t.dataset.a;
+    if (a === 'pick') { cur = t.value; debrief = false; planDur = null; return render(); }
+    if (a === 'dur') { planDur = +t.value; return render(); }
+    if (a === 'year') { S.settings.year = t.value; return save('Année ' + t.value); }
+    if (a === 'rate') { S.settings.rate = +t.value || 0; return save(); }
+    if (a === 'pseudo') { S.settings.pseudo = t.checked; return save(); }
+    if (a === 'theme') { try { localStorage.setItem('brief_theme', t.value); } catch (e) {} applyTheme(); return; }
+    if (t.id === 'impFile') return importFile(t.files[0]);
+    if (t.id === 'icsFile') { const f = t.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => { try { const txt = String(rd.result); const ics = /BEGIN:VCALENDAR/.test(txt); importEvents(ics ? parseICS(txt) : parseCSV(txt), f.name, ics ? 'ics' : 'csv'); } catch (er) { toast('Fichier non reconnu : ' + er.message); } }; rd.readAsText(f); return; }
+    if (a === 'reserve') { planning().reserve = Math.min(50, Math.max(0, +t.value || 0)); return save('Réserve : ' + planning().reserve + ' %'); }
+    if (t.dataset.w) { const s0 = snap(), [k, dn] = t.dataset.w.split('::'), c = planning().units[k] ||= { weights: {}, done: {} }; c.weights[dn] = +t.value; return save('Poids mis à jour, progression recalculée.', s0); }
+    if (t.dataset.pdone) { const s0 = snap(), [k, dn] = t.dataset.pdone.split('::'), c = planning().units[k] ||= { weights: {}, done: {} }; if (t.checked) c.done[dn] = TODAY(); else delete c.done[dn]; return save(t.checked ? dn + ' : traité.' : dn + ' : rouvert.', s0); }
+    const s0 = snap();
+    if (a === 'level') { st.level = t.value; return save('Niveau : ' + t.value, s0); }
+    if (a === 'voie') { st.voie = t.value; return save('Voie : ' + t.value, s0); }
+    if (a === 'chapter') { st.chapter = t.value; return save('Chapitre en classe mis à jour.', s0); }
+    if (a === 'nextd' || a === 'nextt') { const n = { ...(st.next || { date: '', time: '' }), [a === 'nextd' ? 'date' : 'time']: t.value }; st.next = n.date ? n : null; return save('Prochaine séance mise à jour.', s0); }
+    if (t.dataset.spec) { const k = t.dataset.spec; st.specs = t.checked ? [...st.specs, k] : st.specs.filter(x => x !== k); return save(null, s0); }
+    if (t.dataset.cf) { const [rid, dn] = t.dataset.cf.split('::'); const r = dom(st, rid, dn); r.conf = +t.value || undefined; st.domains[dk(rid, dn)] = r; return save('Confiance enregistrée.', s0); }
+  };
+}
+function importFile(f) {
+  if (!f) return; const rd = new FileReader();
+  rd.onload = () => { try {
+    const inc = migrate(JSON.parse(rd.result)); const s0 = snap();
+    const replace = S.students.length && confirm(`Fichier : ${inc.students.length} élève(s).\nOK = REMPLACER toutes les données actuelles\nAnnuler = FUSIONNER (les élèves de même nom sont mis à jour)`);
+    if (replace || !S.students.length) { S = inc; return save('Import terminé.', s0); }
+    let kept = 0, upd = 0, add = 0; // fusion : la version la plus récente de chaque élève gagne
+    inc.students.forEach(n => { const i = S.students.findIndex(o => o.id === n.id || norm(o.name) === norm(n.name)); if (i < 0) { S.students.push(n); add++; } else if ((n.updated || 0) >= (S.students[i].updated || 0)) { S.students[i] = n; upd++; } else kept++; });
+    save(`Fusion : ${add} ajouté(s), ${upd} mis à jour, ${kept} conservé(s) car plus récent(s) ici.`, s0);
+  } catch (e) { toast('Fichier illisible : ' + e.message); } };
+  rd.readAsText(f);
+}
+function applyTheme() { let t = ''; try { t = localStorage.getItem('brief_theme') || ''; } catch (e) {} if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme; }
+applyTheme(); render();
+</script>
+</body>
+</html>
