@@ -65,3 +65,33 @@ Points à confirmer en priorité : domaines des nouveaux programmes 2026 (actuel
 
 ## Hors périmètre (non activé)
 Capture SMS/WhatsApp, analyse de photos, transcription audio : nécessitent des services externes. Si on les ajoute un jour : capture → n8n → texte au format de la saisie rapide → import JSON.
+
+## Planning professionnel → progressions des sections (onglet « Sections »)
+**Principe : lecture seule, aucune connexion.** L'application ne se connecte pas à NetYpareo et ne stocke aucun identifiant. Tu exportes toi-même ton planning depuis le portail, avec ton compte, puis tu importes le fichier. Il est lu dans le navigateur et n'est envoyé nulle part.
+
+### 1. Exporter depuis NetYpareo
+1. Ouvrir son planning sur le portail, comme d'habitude.
+2. Chercher une icône ou un menu d'export : **iCal / iCalendar / .ics / « Synchroniser avec mon agenda »**. Le format .ics est le meilleur : chaque créneau a un identifiant stable, donc les déplacements sont détectés.
+3. À défaut : un export **CSV / Excel** avec au minimum les colonnes `Date` et `Heure début` (idéalement aussi `Heure fin`, `Matière`, `Groupe`, `Salle`). Excel : « Enregistrer sous… CSV (séparateur point-virgule) ».
+4. Si aucun export n'apparaît, demander au service planning ou informatique de l'établissement si l'export iCal est activé pour les formateurs.
+
+Prudence :
+- Un **lien d'abonnement iCal** donne accès au planning à quiconque le possède. Ne pas le partager, ne pas le committer (`*.ics` est dans `.gitignore`).
+- Exporter son propre planning pour son usage professionnel est un usage normal du portail. Avant de partager un fichier qui contient d'autres personnes (collègues, apprentis), vérifier les règles internes de l'établissement.
+
+### 2. Importer et rattacher
+- Onglet **Sections** → « Choisir un fichier ». Ré-importer chaque semaine ou chaque mois : les créneaux **nouveaux, déplacés et disparus** sont signalés. Seuls les créneaux de la même période, du même type d'export et des mêmes sections peuvent être marqués « disparus ».
+- Les créneaux sont rattachés à une section par des **règles de mots-clés** (TMELEC, BTS1… fournies par défaut, modifiables). La matière est reconnue par « maths » ou « physique / chimie / sciences ». Les intitulés non reconnus sont listés avec un bouton pour créer la règle.
+- Les créneaux « CCF, évaluation, examen, bac blanc, contrôle, DS » sont des **jalons** : ils ne consomment pas d'heures de progression.
+
+### 3. Progression et suivi
+- Les heures réelles du planning sont réparties sur les domaines du registre (même section et même matière), dans l'ordre, après une **réserve** (10 % par défaut) pour les révisions, la remédiation et le rattrapage. Un **poids** (×0,5 à ×3) donne plus ou moins d'heures à un domaine.
+- Pour chaque domaine : période prévue, heures, nombre de séances, statut (à venir, en cours, en retard, traité). Tu coches « traité » au fil de l'année.
+- Indicateurs : % du temps écoulé, % du programme traité, heures de retard.
+- Le tableau **Aujourd'hui** affiche tes cours du jour avec le domaine prévu par la progression.
+- Exports : CSV (Excel) et Markdown pour Obsidian (frontmatter compatible avec `second-brain/brain.py`).
+
+Limites :
+- Les heures sans indicateur UTC sont lues dans le fuseau de l'appareil (Europe/Paris en pratique).
+- L'ordre des domaines suit le registre : c'est un repère de travail, pas l'ordre imposé par le programme.
+- Le niveau 1MELEC n'a pas encore de domaines dans le registre : seules ses heures sont suivies.

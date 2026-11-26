@@ -20,7 +20,8 @@ header{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0 8px;b
 #cmd{width:100%;margin-top:8px;padding:12px 14px;border:2px solid var(--blue);border-radius:12px;font-size:16px;background:var(--card);color:var(--ink)}
 #preview{margin-top:6px;font-size:13px}
 nav{display:flex;gap:6px;margin-top:8px;overflow-x:auto}
-nav button{flex:1;white-space:nowrap}
+nav button{flex:1 1 auto;white-space:nowrap;padding:7px 8px;font-size:14px}
+code{word-break:break-all}
 button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:9px;padding:7px 11px}
 button.on,button.pri{background:var(--blue);color:#fff;border-color:var(--blue)}
 button.ok{background:var(--green);color:#fff;border-color:var(--green)}
@@ -70,7 +71,7 @@ body.pr .card:not(.reflex),body.pr .alert,body.pr .grid{display:none!important}
   <input id="cmd" autocomplete="off" placeholder="« Lucas, première, spé maths » · « Lucas, blocage : dérivation » · « Lucas, 2/3 suites » · « Lucas, DS le 12/12 »   ( / pour revenir ici )" aria-label="Saisie rapide">
   <div id="preview" class="mute"></div>
   <nav id="tabs">
-    <button data-v="today" class="on">Aujourd'hui</button><button data-v="student">Élève</button><button data-v="registry">Registre</button><button data-v="data">Données</button>
+    <button data-v="today" class="on">Aujourd'hui</button><button data-v="student">Élève</button><button data-v="sections">Sections</button><button data-v="registry">Registre</button><button data-v="data">Données</button>
   </nav>
 </div></header>
 <main class="wrap" id="main"></main>
@@ -408,12 +409,123 @@ function obsidianMd(st) {
 function download(name, text, type = 'application/json') { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
 async function copy(t) { try { await navigator.clipboard.writeText(t); toast('Copié.'); } catch (e) { prompt('Copie manuelle :', t); } }
 
+// ---------------- Planning professionnel : import ICS / CSV (fichier exporté par l'utilisateur), lecture seule, local ----------------
+const DEFAULT_RULES = [
+  { id: 'r1', match: 'tmelec|t melec|tle melec|term melec|terminale melec', section: 'TMELEC', level: 'TMELEC' },
+  { id: 'r2', match: '1melec|1 melec|1re melec|premiere melec', section: '1MELEC', level: '1MELEC' },
+  { id: 'r3', match: 'bts1|bts 1|elt1|elt 1|bts elt 1', section: 'BTS1', level: 'BTS1' },
+  { id: 'r4', match: 'bts2|bts 2|elt2|elt 2|bts elt 2', section: 'BTS2', level: 'BTS2' }
+];
+const SUBJ = { maths: /\b(maths?|mathematiques?)\b/, pc: /\b(physique|chimie|sciences|spc|pc)\b/ };
+const SUBJ_L = { maths: 'Mathématiques', pc: 'Physique-chimie' };
+const EVAL_RX = /\b(ccf|evaluation|examen|bac blanc|controle|ds)\b/;
+function planning() { return S.planning ||= { events: [], rules: DEFAULT_RULES.map(r => ({ ...r })), imports: [], reserve: 10, units: {} }; }
+const hash = s => { let h = 5381; for (const c of s) h = (h * 33 ^ c.charCodeAt(0)) >>> 0; return h.toString(36); };
+const two = n => String(n).padStart(2, '0');
+const nowLocal = () => { const d = new Date(); return TODAY() + 'T' + two(d.getHours()) + ':' + two(d.getMinutes()); };
+const hrs = e => Math.max(0, (new Date(e.end) - new Date(e.start)) / 36e5);
+const fh = h => (Math.round(h * 2) / 2).toString().replace('.', ',') + ' h';
+
+function icsDate(v) {
+  if (/^\d{8}$/.test(v)) return `${v.slice(0, 4)}-${v.slice(4, 6)}-${v.slice(6, 8)}T00:00`;
+  const m = v.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})?(Z?)$/); if (!m) return null;
+  if (m[7]) { const d = new Date(Date.UTC(+m[1], m[2] - 1, +m[3], +m[4], +m[5])); return iso(d) + 'T' + two(d.getHours()) + ':' + two(d.getMinutes()); }
+  return `${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}`; // heure locale (fuseau de l'appareil)
+}
+function parseICS(text) {
+  const lines = text.replace(/\r\n?/g, '\n').replace(/\n[ \t]/g, '').split('\n'), out = [];
+  const un = v => v.replace(/\\n/gi, '\n').replace(/\\([,;\\])/g, '$1');
+  let ev = null;
+  for (const l of lines) {
+    if (l === 'BEGIN:VEVENT') ev = {};
+    else if (l === 'END:VEVENT') { if (ev && ev.start) out.push(ev); ev = null; }
+    else if (ev) {
+      const i = l.indexOf(':'); if (i < 0) continue;
+      const k = l.slice(0, i).split(';')[0].toUpperCase(), v = l.slice(i + 1);
+      if (k === 'DTSTART') ev.start = icsDate(v); else if (k === 'DTEND') ev.end = icsDate(v);
+      else if (k === 'SUMMARY') ev.summary = un(v); else if (k === 'LOCATION') ev.location = un(v);
+      else if (k === 'DESCRIPTION') ev.desc = un(v); else if (k === 'UID') ev.uid = v; else if (k === 'STATUS') ev.cancelled = /CANCELLED/i.test(v);
+    }
+  }
+  return out;
+}
+function parseCSV(text) {
+  const sep = [';', '\t', ','].sort((a, b) => text.split(b).length - text.split(a).length)[0];
+  const rows = text.replace(/\r/g, '').split('\n').filter(x => x.trim()).map(line => { const r = []; let c = '', q = false; for (const ch of line) { if (ch === '"') q = !q; else if (ch === sep && !q) { r.push(c); c = ''; } else c += ch; } r.push(c); return r.map(x => x.trim()); });
+  const h = rows.shift().map(norm), col = rx => h.findIndex(x => rx.test(x));
+  const cD = col(/date|jour/), cS = col(/debut|heure/), cE = col(/fin/), cT = col(/matiere|intitule|cours|module|libelle|activite/), cG = col(/groupe|section|classe|formation/), cL = col(/salle|lieu/);
+  if (cD < 0 || cS < 0) throw new Error('colonnes « date » et « début » introuvables');
+  const dt = (d, t) => { let m = (d || '').match(/(\d{4})-(\d{2})-(\d{2})/); const ymd = m ? m.slice(1) : (m = (d || '').match(/(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})/)) ? [m[3].length === 2 ? '20' + m[3] : m[3], two(m[2]), two(m[1])] : null; const tm = (t || '').match(/(\d{1,2})\s*[h:]\s*(\d{2})?/); return ymd && tm ? `${ymd[0]}-${ymd[1]}-${ymd[2]}T${two(tm[1])}:${tm[2] || '00'}` : null; };
+  return rows.map(r => ({ start: dt(r[cD], r[cS]), end: cE >= 0 ? dt(r[cD], r[cE]) : null, summary: [r[cT], r[cG]].filter(Boolean).join(' - '), location: cL >= 0 ? r[cL] : '' })).filter(e => e.start);
+}
+function classify(e) {
+  const P = planning(), t = norm([e.summary, e.desc, e.location].join(' '));
+  const r = P.rules.find(r => r.match.split('|').map(k => norm(k).trim()).filter(Boolean).some(k => t.includes(k)));
+  return { section: r?.section || '', level: r?.level || '', subject: SUBJ.maths.test(t) ? 'maths' : SUBJ.pc.test(t) ? 'pc' : '', isEval: EVAL_RX.test(t) };
+}
+function importEvents(list, source, origin) {
+  const P = planning(), s0 = snap(), first = !P.events.length;
+  const evs = list.filter(e => e.start).map(e => ({ uid: e.uid || 'h' + hash(e.start + '|' + (e.summary || '')), start: e.start, end: e.end && e.end > e.start ? e.end : e.start,
+    summary: (e.summary || '').trim(), location: (e.location || '').trim(), desc: (e.desc || '').slice(0, 300), cancelled: !!e.cancelled, origin }));
+  if (!evs.length) return toast('Aucun créneau trouvé dans ce fichier.');
+  const min = evs.reduce((a, e) => e.start < a ? e.start : a, '9'), max = evs.reduce((a, e) => e.start > a ? e.start : a, '0');
+  const old = new Map(P.events.map(e => [e.uid, e])), seen = new Set(); let added = 0, moved = 0, removed = 0;
+  for (const e of evs) {
+    seen.add(e.uid); const o = old.get(e.uid), st = e.cancelled ? 'annule' : null;
+    if (!o) { if (!first) added++; P.events.push({ ...e, status: st || (first ? 'ok' : 'nouveau') }); }
+    else if (o.start !== e.start || o.end !== e.end) { moved++; Object.assign(o, e, { prev: o.start, status: st || 'deplace' }); }
+    else Object.assign(o, e, { status: st || 'ok' });
+  }
+  // « disparu » seulement si le créneau vient du même type d'export, couvre la même période ET une section présente dans ce fichier :
+  // un export partiel (une seule section, une seule semaine) n'annule jamais le reste du planning.
+  const secs = new Set(evs.map(e => classify(e).section || '?'));
+  for (const o of P.events) if (!seen.has(o.uid) && (o.origin || origin) === origin && o.start >= min && o.start <= max && secs.has(classify(o).section || '?') && o.status !== 'annule') { o.status = 'annule'; removed++; }
+  P.events.sort((a, b) => a.start > b.start ? 1 : -1);
+  P.imports.unshift({ date: TODAY(), source, count: evs.length, added, moved, removed, range: [min.slice(0, 10), max.slice(0, 10)] }); P.imports = P.imports.slice(0, 20);
+  view = 'sections'; save(`Planning importé : ${evs.length} créneaux` + (first ? '.' : ` — ${added} nouveau(x), ${moved} déplacé(s), ${removed} disparu(s).`), s0);
+}
+function units() {
+  const U = {};
+  for (const e of planning().events) {
+    if (e.status === 'annule') continue; const c = classify(e); if (!c.section || !c.subject) continue;
+    const k = c.section + '|' + c.subject; (U[k] ||= { key: k, section: c.section, level: c.level, subject: c.subject, events: [] }).events.push({ ...e, isEval: c.isEval });
+  }
+  return Object.values(U).sort((a, b) => a.key > b.key ? 1 : -1);
+}
+function unitRef(u) {
+  const voie = /MELEC/.test(u.level) ? 'pro' : /BTS/.test(u.level) ? 'bts' : '';
+  return REG.REFS.find(r => r.levels.includes(u.level) && voieOk(r, voie) && r.discipline === u.subject && refStatus(r, u.level, S.settings.year) === 'actif' && r.domains.length);
+}
+function progression(u) {
+  const P = planning(), cfg = P.units[u.key] ||= { weights: {}, done: {} }, ref = unitRef(u), doms = ref ? ref.domains : [];
+  const lessons = u.events.filter(e => !e.isEval), total = lessons.reduce((a, e) => a + hrs(e), 0);
+  const w = d => cfg.weights[d] ?? 1, W = doms.reduce((a, d) => a + w(d), 0) || 1, budget = doms.length ? total * (1 - P.reserve / 100) : 0;
+  const plan = doms.map(d => ({ d, h: budget * w(d) / W, sessions: [] })), extra = { d: 'Réserve : révisions, remédiation, rattrapage', h: total - budget, sessions: [], extra: true };
+  const bounds = []; let c = 0; plan.forEach(p => bounds.push(c += p.h));
+  let acc = 0, i = 0; for (const e of lessons) { const mid = acc + hrs(e) / 2; acc += hrs(e); while (i < plan.length && mid > bounds[i]) i++; (plan[i] || extra).sessions.push(e); }
+  const nowS = nowLocal(), rows = [...plan, extra].map(p => ({ ...p, from: p.sessions[0]?.start, to: p.sessions.at(-1)?.end, done: p.extra ? null : cfg.done[p.d] || null }));
+  rows.forEach(p => p.status = p.extra ? 'reserve' : p.done ? 'fait' : !p.sessions.length ? 'vide' : p.to <= nowS ? 'retard' : p.from <= nowS ? 'encours' : 'avenir');
+  const pastH = lessons.filter(e => e.end <= nowS).reduce((a, e) => a + hrs(e), 0);
+  const doneH = rows.filter(p => p.status === 'fait').reduce((a, p) => a + p.h, 0), lateH = rows.filter(p => p.status === 'retard').reduce((a, p) => a + p.h, 0);
+  return { ref, total, budget, pastH, doneH, lateH, rows, evals: u.events.filter(e => e.isEval), cfg };
+}
+function topicMap() { const m = {}; for (const u of units()) { const pg = progression(u); pg.rows.forEach(r => r.sessions.forEach(e => m[e.uid] = { u, d: r.d })); pg.evals.forEach(e => m[e.uid] = { u, d: '🎓 ' + e.summary }); } return m; }
+const PST = { fait: ['g', 'traité'], retard: ['r', 'en retard'], encours: ['b', 'en cours'], avenir: ['', 'à venir'], vide: ['o', 'sans créneau'], reserve: ['', 'réserve'] };
+function progCSV(u) { const pg = progression(u); return '﻿' + [['domaine', 'debut', 'fin', 'heures', 'seances', 'statut'], ...pg.rows.map(r => [r.d, (r.from || '').replace('T', ' '), (r.to || '').replace('T', ' '), r.h.toFixed(1), r.sessions.length, PST[r.status][1]])].map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(';')).join('\n'); }
+function progMd(u) {
+  const pg = progression(u), t = `Progression ${u.section} — ${SUBJ_L[u.subject]} ${S.settings.year}`;
+  return ['---', `title: ${t}`, `sources: planning NetYpareo (export du ${planning().imports[0]?.date || TODAY()}) + ${pg.ref ? pg.ref.id : 'sans référentiel'}`, `updated: ${TODAY()}`, `tags: [progression, ${u.section.toLowerCase()}, ${u.subject}]`, '---', '', `# ${t}`, '',
+    `- Heures planifiées : ${fh(pg.total)} (réserve ${planning().reserve} %) · écoulées : ${fh(pg.pastH)} · traité : ${fh(pg.doneH)} · retard : ${fh(pg.lateH)}`, '',
+    '| Domaine | Du | Au | Heures | Séances | Statut |', '|---|---|---|---|---|---|', ...pg.rows.map(r => `| ${r.d} | ${(r.from || '').slice(0, 10)} | ${(r.to || '').slice(0, 10)} | ${r.h.toFixed(1)} | ${r.sessions.length} | ${PST[r.status][1]} |`),
+    '', '## Évaluations', ...(pg.evals.length ? pg.evals.map(e => `- ${e.start.replace('T', ' ')} ${e.summary}`) : ['- aucune repérée'])].join('\n');
+}
+
 // ---------------- Vues ----------------
 function render() {
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === view));
   document.getElementById('yearLbl').textContent = 'année ' + S.settings.year + (S.settings.pseudo ? ' · pseudonymes' : '');
   const m = document.getElementById('main');
-  m.innerHTML = backupAlert() + ({ today: vToday, student: vStudent, registry: vRegistry, data: vData })[view]();
+  m.innerHTML = backupAlert() + ({ today: vToday, student: vStudent, sections: vSections, registry: vRegistry, data: vData })[view]();
   bind(m);
 }
 function regAlert() {
@@ -421,7 +533,9 @@ function regAlert() {
   return age > REG.REVIEW_AFTER_DAYS ? `<div class="alert">Registre vérifié le ${REG.VERIFIED} (il y a ${age} j) : revérifie les textes officiels (BO, Éduscol) puis mets à jour <code>brief-eleve-referentiels.js</code>.</div>` : '';
 }
 function vToday() {
-  if (!S.students.length) return `<div class="card"><h2>Démarrer en 10 secondes</h2><p>Tape dans la barre du haut : <b>Lucas, première, spé maths</b>, puis Entrée.</p>
+  const tday = planning().events.filter(e => e.start.slice(0, 10) === TODAY() && e.status !== 'annule'), tm = tday.length ? topicMap() : {};
+  const coursDuJour = tday.length ? `<div class="card"><h2>🏫 Mes cours aujourd'hui</h2><ul class="list">${tday.map(e => { const x = tm[e.uid]; return `<li><b class="h" style="min-width:96px">${e.start.slice(11)}–${e.end.slice(11)}</b><span class="grow">${x ? `<b>${esc(x.u.section)} · ${SUBJ_L[x.u.subject]}</b><br><span class="small">→ ${esc(x.d)}</span>` : esc(e.summary)}</span><span class="small mute">${esc(e.location)}</span></li>`; }).join('')}</ul></div>` : '';
+  if (!S.students.length) return coursDuJour + `<div class="card"><h2>Démarrer en 10 secondes</h2><p>Tape dans la barre du haut : <b>Lucas, première, spé maths</b>, puis Entrée.</p>
   <p class="small mute">Ensuite, sur la même ligne, ajoute ce que tu veux, séparé par des virgules : <code>blocage : dérivée</code> · <code>devoir : ex 12 p 54 pour vendredi</code> · <code>DS dérivation le 12/12</code> · <code>2/3 suites</code> · <code>séance 1h30 payée</code> · <code>chapitre : produit scalaire</code> · <code>confiance 4 suites</code></p>
   <button class="pri" data-a="demo">Charger un élève de démonstration</button></div>${regAlert()}`;
   const items = [];
@@ -439,7 +553,7 @@ function vToday() {
   const month = TODAY().slice(0, 7), ses = S.students.flatMap(st => st.sessions.map(s => ({ ...s, st })));
   const mh = ses.filter(s => s.date.startsWith(month)).reduce((a, s) => a + s.dur, 0), unpaid = ses.filter(s => !s.paid);
   const due = unpaid.reduce((a, s) => a + s.dur / 60 * (s.rate || 0), 0);
-  return `${regAlert()}
+  return `${regAlert()}${coursDuJour}
   ${agenda.length ? `<div class="card"><h2>📆 Séances des 7 prochains jours</h2><ul class="list">${agenda.map(st => `<li class="${days(st.next.date) === 0 ? '' : ''}"><span class="chip ${days(st.next.date) === 0 ? 'o' : 'b'}">${days(st.next.date) === 0 ? 'aujourd\'hui' : fmtD(st.next.date)}</span><b>${esc(st.next.time || '—')}</b><span class="grow">${esc(disp(st))} <span class="small mute">${esc(profil(st))}</span></span><button class="sm pri" data-open="${st.id}">Plan</button></li>`).join('')}</ul></div>` : ''}
   <div class="grid"><div class="stat"><b>${S.students.length}</b>élèves</div><div class="stat"><b>${(mh / 60).toFixed(1).replace('.', ',')} h</b>ce mois</div>
   <div class="stat"><b>${S.students.reduce((a, s) => a + s.blocages.filter(b => !b.done).length, 0)}</b>blocages ouverts</div><div class="stat"><b>${due.toFixed(0)} €</b>non réglé (${unpaid.length} séance${unpaid.length > 1 ? 's' : ''})</div></div>
@@ -541,6 +655,35 @@ function vRegistry() {
       <a class="small" href="${r.url}" target="_blank" rel="noopener">texte / page officielle ↗</a>${r.url2 ? ` · <a class="small" href="${r.url2}" target="_blank" rel="noopener">Éduscol ↗</a>` : ''}</li>`).join('')}</ul></div>`; }).join('')}
   <div class="card"><h2>Règles d'association</h2><ul class="small"><li>Première générale : maths de l'enseignement scientifique toujours associées ; spécialité maths si « spé maths ».</li><li>Spécialités SVT / physique-chimie : proposées « à confirmer », jamais supposées.</li><li>Domaines « indicatifs » : repères de travail à aligner sur le texte officiel ; « banque » : thèmes de la banque MELEC du dépôt.</li><li>Sources : <a href="${REG.SOURCES.calendrier}" target="_blank" rel="noopener">calendrier Éduscol</a> · <a href="${REG.SOURCES.mathsGT}" target="_blank" rel="noopener">maths voie GT</a>.</li></ul></div>`;
 }
+function vSections() {
+  const P = planning(), U = units(), last = P.imports[0];
+  const unmatched = {}; P.events.filter(e => e.status !== 'annule').forEach(e => { const c = classify(e); if (!c.section || !c.subject) { const k = e.summary || '(sans titre)'; unmatched[k] = (unmatched[k] || 0) + 1; } });
+  const changes = P.events.filter(e => ['nouveau', 'deplace', 'annule'].includes(e.status) && e.start >= TODAY()).slice(0, 12);
+  const lv = ['TMELEC', '1MELEC', 'BTS1', 'BTS2', '2de', '1re', 'Tle'];
+  return `<div class="card"><h2>📥 Importer mon planning <span class="chip g">lecture seule · local</span></h2>
+  <p class="small">Dans NetYpareo, exporte ton planning (format <b>iCal / .ics</b> si le portail le propose, sinon un tableau <b>CSV</b>), puis choisis le fichier ici. L'application ne se connecte à aucun serveur et ne conserve aucun identifiant : le fichier est lu dans ce navigateur, rien n'est envoyé.</p>
+  <div class="row"><button class="pri" data-a="icsimp">Choisir un fichier .ics ou .csv…</button><input type="file" id="icsFile" accept=".ics,.ical,.csv,.txt,text/calendar,text/csv" class="hidden">
+  ${P.events.length ? `<button class="ghost sm" data-a="icsclear" style="color:var(--red)">Effacer le planning</button>` : ''}</div>
+  ${last ? `<p class="small mute" style="margin-top:8px">Dernier import : ${fmtD(last.date)} · ${esc(last.source)} · ${last.count} créneaux du ${fmtD(last.range[0])} au ${fmtD(last.range[1])}${P.imports.length > 1 ? ` · ${last.added} nouveau(x), ${last.moved} déplacé(s), ${last.removed} disparu(s)` : ''}.</p>` : ''}
+  ${changes.length ? `<p style="margin:8px 0 4px"><b>Changements à venir détectés</b></p><ul class="list">${changes.map(e => `<li><span class="chip ${e.status === 'annule' ? 'r' : e.status === 'deplace' ? 'o' : 'b'}">${{ annule: 'disparu', deplace: 'déplacé', nouveau: 'nouveau' }[e.status]}</span><span class="grow small">${esc(e.summary)}</span><span class="small">${fmtD(e.start.slice(0, 10))} ${e.start.slice(11)}${e.prev ? ' (avant : ' + fmtD(e.prev.slice(0, 10)) + ' ' + e.prev.slice(11) + ')' : ''}</span></li>`).join('')}</ul>` : ''}</div>
+  ${P.events.length ? `<div class="card"><h2>🔤 Reconnaissance des sections</h2><p class="small mute">Un créneau est rattaché à la première règle dont un mot-clé apparaît dans son intitulé (mots-clés séparés par |). La matière est reconnue par « maths » / « physique, chimie, sciences ».</p>
+  <ul class="list">${P.rules.map(r => `<li><code class="grow">${esc(r.match)}</code><span class="chip b">${esc(r.section)}</span><span class="small mute">${esc(r.level)}</span><button class="sm ghost" data-delrule="${r.id}">✕</button></li>`).join('')}</ul>
+  <div class="row" style="margin-top:8px"><input id="rMatch" placeholder="mots-clés (ex. TMELEC2|T MELEC 2)" style="flex:2;min-width:160px"><input id="rSection" placeholder="section (ex. TMELEC2)" style="flex:1;min-width:110px"><select id="rLevel">${lv.map(l => `<option>${l}</option>`).join('')}</select><button class="sm pri" data-a="addrule">Ajouter</button></div>
+  ${Object.keys(unmatched).length ? `<p style="margin:10px 0 4px"><b>Créneaux non reconnus</b> <span class="small mute">(clic = copier l'intitulé dans les mots-clés)</span></p><ul class="list">${Object.entries(unmatched).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([k, n]) => `<li><span class="grow small">${esc(k)}</span><span class="chip">${n}×</span><button class="sm" data-usesum="${esc(k)}">Utiliser</button></li>`).join('')}</ul>` : '<p class="small mute" style="margin-top:8px">Tous les créneaux sont reconnus.</p>'}
+  <div class="row small" style="margin-top:8px">Réserve (révisions, remédiation, rattrapage) : <input type="number" min="0" max="50" data-a="reserve" value="${P.reserve}" style="width:64px"> % des heures</div></div>` : ''}
+  ${U.map(u => { const pg = progression(u), tp = pg.total ? pg.pastH / pg.total : 0, dp = pg.budget ? pg.doneH / pg.budget : 0, gap = dp - tp;
+    return `<div class="card"><h2>${esc(u.section)} · ${SUBJ_L[u.subject]}<span class="r noprint"><button class="sm" data-pcsv="${esc(u.key)}">CSV</button><button class="sm" data-pmd="${esc(u.key)}">→ Obsidian</button></span></h2>
+    <p class="small mute">${pg.ref ? esc(pg.ref.label) + ' — domaines ' + pg.ref.domainsStatus : 'Aucun référentiel du registre pour ce niveau : suivi des heures uniquement.'}</p>
+    <div class="grid"><div class="stat"><b>${fh(pg.total)}</b>planifiées (${u.events.length} créneaux)</div><div class="stat"><b>${Math.round(tp * 100)} %</b>du temps écoulé</div><div class="stat"><b>${Math.round(dp * 100)} %</b>du programme traité</div><div class="stat"><b style="color:${pg.lateH > 0 ? 'var(--red)' : 'var(--green)'}">${fh(pg.lateH)}</b>de retard</div></div>
+    ${pg.ref ? `<div class="bar" title="temps écoulé"><i style="width:${tp * 100}%;background:var(--blue)"></i></div><div class="bar" title="programme traité"><i style="width:${dp * 100}%;background:var(--green)"></i></div>
+    <p class="small">${gap >= -0.05 ? '✅ Rythme tenu' : '⚠ Retard : ' + Math.round(-gap * 100) + ' points entre temps écoulé et programme traité'}. Coche les domaines traités ; le plan se recalcule avec les poids.</p>
+    <div class="scroll"><table><tr><th>✓ Domaine</th><th>Période prévue</th><th>H</th><th>Poids</th><th>Statut</th></tr>
+    ${pg.rows.map(r => `<tr><td>${r.extra ? '' : `<input type="checkbox" data-pdone="${esc(u.key)}::${esc(r.d)}" ${r.done ? 'checked' : ''} aria-label="traité"> `}${esc(r.d)}</td><td class="small">${r.from ? fmtD(r.from.slice(0, 10)) + ' → ' + fmtD(r.to.slice(0, 10)) : '—'}</td><td>${r.h.toFixed(1).replace('.', ',')}</td>
+      <td>${r.extra ? '' : `<select class="sm" data-w="${esc(u.key)}::${esc(r.d)}">${[0.5, 1, 1.5, 2, 3].map(v => `<option value="${v}" ${(pg.cfg.weights[r.d] ?? 1) === v ? 'selected' : ''}>×${String(v).replace('.', ',')}</option>`).join('')}</select>`}</td>
+      <td><span class="chip ${PST[r.status][0]}">${PST[r.status][1]}</span></td></tr>`).join('')}</table></div>` : ''}
+    ${pg.evals.length ? `<p class="small" style="margin-top:8px"><b>🎓 Évaluations / CCF repérées :</b> ${pg.evals.map(e => esc(fmtD(e.start.slice(0, 10)) + ' ' + e.summary)).join(' · ')}</p>` : ''}</div>`; }).join('')}
+  ${P.events.length && !U.length ? '<div class="card"><p>Aucune section reconnue : ajoute une règle avec les mots-clés qui apparaissent dans les intitulés de tes cours.</p></div>' : ''}`;
+}
 function vData() {
   const bytes = new Blob([JSON.stringify(S)]).size;
   return `<div class="card"><h2>Sauvegarde</h2><p class="small mute">Données dans ce navigateur uniquement (${(bytes / 1024).toFixed(1)} Ko). Exporte régulièrement : un nettoyage du navigateur efface tout. Dernier export : <b>${S.settings.lastExport ? fmtD(S.settings.lastExport) : 'jamais'}</b>.</p>
@@ -593,8 +736,15 @@ function bind(m) {
     if (a === 'mdall') return download(`Brief_eleves_${TODAY()}.md`, S.students.map(obsidianMd).join('\n\n---\n\n'), 'text/markdown');
     if (a === 'export') { download(`BriefEleve_COMPLET_${TODAY()}.json`, JSON.stringify(S, null, 1)); S.settings.lastExport = TODAY(); S.settings.dirtySince = null; return save('Sauvegarde téléchargée.'); }
     if (a === 'csv') { const ym = TODAY().slice(0, 7), rows = [['date', 'eleve', 'duree_min', 'tarif_h', 'montant', 'reglee', 'domaines']]; S.students.forEach(x => x.sessions.filter(s => s.date.startsWith(ym)).forEach(s => rows.push([s.date, disp(x), s.dur, s.rate || 0, (s.dur / 60 * (s.rate || 0)).toFixed(2), s.paid ? 'oui' : 'non', (s.domains || []).map(d => d.d).join(' | ')]))); return download(`BriefEleve_seances_${ym}.csv`, '\ufeff' + rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(';')).join('\n'), 'text/csv'); }
-    if (a === 'safe') { const c = JSON.parse(snap()); c.students.forEach(s => { s.name = s.alias; s.parent = ''; s.notes = s.notes.map(n => ({ ...n, text: '[note masquée]' })); }); return download(`BriefEleve_SAFE_${TODAY()}.json`, JSON.stringify(c, null, 1)); }
+    if (a === 'safe') { const c = JSON.parse(snap()); c.students.forEach(s => { s.name = s.alias; s.parent = ''; s.notes = s.notes.map(n => ({ ...n, text: '[note masquée]' })); }); if (c.planning) c.planning.events.forEach(e => { e.desc = ''; e.location = ''; }); return download(`BriefEleve_SAFE_${TODAY()}.json`, JSON.stringify(c, null, 1)); }
     if (a === 'imp') return document.getElementById('impFile').click();
+    if (a === 'icsimp') return document.getElementById('icsFile').click();
+    if (a === 'icsclear') { if (confirm('Effacer le planning importé, les règles et le suivi des sections ?')) { const s0 = snap(); delete S.planning; save('Planning effacé.', s0); } return; }
+    if (a === 'addrule') { const m = document.getElementById('rMatch').value.trim(), sec = document.getElementById('rSection').value.trim(); if (!m || !sec) return toast('Mots-clés et section obligatoires.'); const s0 = snap(); planning().rules.unshift({ id: uid(), match: m, section: sec, level: document.getElementById('rLevel').value }); return save('Règle ajoutée.', s0); }
+    if (d.delrule) { const s0 = snap(); const P = planning(); P.rules = P.rules.filter(r => r.id !== d.delrule); return save('Règle supprimée.', s0); }
+    if (d.usesum) { const i = document.getElementById('rMatch'); i.value = norm(d.usesum).replace(/\s+/g, ' ').trim(); i.focus(); return; }
+    if (d.pcsv) { const u = units().find(x => x.key === d.pcsv); return download(`Progression_${u.section}_${u.subject}_${TODAY()}.csv`, progCSV(u), 'text/csv'); }
+    if (d.pmd) { const u = units().find(x => x.key === d.pmd); return download(`Progression ${u.section} ${u.subject}.md`, progMd(u), 'text/markdown'); }
     if (a === 'rename') { const n = prompt('Nouveau nom :', st.name); if (n) { const s0 = snap(); st.name = n.trim(); save('Renommé.', s0); } return; }
     if (a === 'delst') { if (confirm(`Supprimer définitivement ${st.name} et tout son suivi ?`)) { const s0 = snap(); S.students = S.students.filter(x => x.id !== st.id); cur = null; view = 'today'; save('Élève supprimé.', s0); } return; }
     if (a === 'wipe') { if (prompt('Tape EFFACER pour tout supprimer (pense à exporter avant) :') === 'EFFACER') { const s0 = snap(); S = blank(); save('Tout est effacé.', s0); } return; }
@@ -608,6 +758,10 @@ function bind(m) {
     if (a === 'pseudo') { S.settings.pseudo = t.checked; return save(); }
     if (a === 'theme') { try { localStorage.setItem('brief_theme', t.value); } catch (e) {} applyTheme(); return; }
     if (t.id === 'impFile') return importFile(t.files[0]);
+    if (t.id === 'icsFile') { const f = t.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => { try { const txt = String(rd.result); const ics = /BEGIN:VCALENDAR/.test(txt); importEvents(ics ? parseICS(txt) : parseCSV(txt), f.name, ics ? 'ics' : 'csv'); } catch (er) { toast('Fichier non reconnu : ' + er.message); } }; rd.readAsText(f); return; }
+    if (a === 'reserve') { planning().reserve = Math.min(50, Math.max(0, +t.value || 0)); return save('Réserve : ' + planning().reserve + ' %'); }
+    if (t.dataset.w) { const s0 = snap(), [k, dn] = t.dataset.w.split('::'), c = planning().units[k] ||= { weights: {}, done: {} }; c.weights[dn] = +t.value; return save('Poids mis à jour, progression recalculée.', s0); }
+    if (t.dataset.pdone) { const s0 = snap(), [k, dn] = t.dataset.pdone.split('::'), c = planning().units[k] ||= { weights: {}, done: {} }; if (t.checked) c.done[dn] = TODAY(); else delete c.done[dn]; return save(t.checked ? dn + ' : traité.' : dn + ' : rouvert.', s0); }
     const s0 = snap();
     if (a === 'level') { st.level = t.value; return save('Niveau : ' + t.value, s0); }
     if (a === 'voie') { st.voie = t.value; return save('Voie : ' + t.value, s0); }
