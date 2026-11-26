@@ -1,0 +1,570 @@
+<title>Atelier Vitrine</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout : établi à deux plans. À gauche le carnet de prospects, à droite le poste de travail (fiche / site / message). */
+:root{
+  --bg:#eef1ee; --panel:#ffffff; --ink:#18221f; --muted:#5b6964; --line:#d5ddd8;
+  --accent:#e2570b; --accent-ink:#ffffff; --teal:#0f5c58; --soft:#f6f8f6;
+  --good:#1d7a46; --warn:#b26a00; --bad:#b4232c;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111816; --panel:#18211e; --ink:#e7eeea; --muted:#9aaba4; --line:#2b3934;
+  --accent:#ff7a33; --accent-ink:#1a0d04; --teal:#5fc3bb; --soft:#1d2824;
+  --good:#5ccf8c; --warn:#f0b54a; --bad:#ff7b82; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111816; --panel:#18211e; --ink:#e7eeea; --muted:#9aaba4; --line:#2b3934;
+  --accent:#ff7a33; --accent-ink:#1a0d04; --teal:#5fc3bb; --soft:#1d2824;
+  --good:#5ccf8c; --warn:#f0b54a; --bad:#ff7b82; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+.brand{font:800 22px/1 var(--f-display);letter-spacing:-.01em}
+.brand span{color:var(--accent)}
+.meta{color:var(--muted);font-size:13px;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.kpis{display:flex;gap:8px;flex-wrap:wrap}
+.kpi{font:600 12px var(--f-mono);padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+.kpi b{color:var(--accent)}
+.grid{display:grid;grid-template-columns:minmax(280px,360px) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px}
+.list{display:flex;flex-direction:column;max-height:calc(100vh - 110px);min-height:300px}
+@media (max-width:860px){.list{max-height:420px}}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px;border-bottom:1px solid var(--line)}
+.filters input{grid-column:1/-1}
+.filters input,.filters select{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--soft)}
+.rows{overflow:auto;flex:1}
+.row{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 10px;border-bottom:1px solid var(--line);cursor:pointer;background:none;border-left:3px solid transparent;width:100%;text-align:left;border-top:0;border-right:0}
+.row:hover{background:var(--soft)}
+.row[aria-current="true"]{background:var(--soft);border-left-color:var(--accent)}
+.prio{font:700 13px var(--f-mono);width:30px;height:30px;border-radius:6px;display:grid;place-items:center}
+.pA{background:var(--accent);color:var(--accent-ink)}
+.pB{background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--ink)}
+.pC{background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+.rname{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rsub{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.score{font:600 12px var(--f-mono);color:var(--muted);text-align:right}
+.chip{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:99px;border:1px solid currentColor;line-height:1.6}
+.s-none{color:var(--bad)} .s-old{color:var(--warn)} .s-mid{color:var(--teal)} .s-ok{color:var(--good)}
+.st{font-size:11px;color:var(--muted)}
+.work{min-width:0}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 10px;overflow-x:auto}
+.tab{padding:11px 14px;border:0;background:none;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.pane{padding:16px}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}
+h2{font:800 24px/1.15 var(--f-display);margin:0;text-wrap:balance}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600}
+.facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px 18px;margin:14px 0}
+.facts div{min-width:0}
+.facts .v{font-weight:500;overflow-wrap:anywhere}
+.mono{font-family:var(--f-mono);font-size:12.5px}
+.box{border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:var(--soft);margin:12px 0}
+.box ul{margin:6px 0 0;padding-left:18px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{padding:9px 14px;border-radius:7px;border:1px solid var(--line);background:var(--panel);cursor:pointer;font-weight:600;text-decoration:none;display:inline-flex;gap:6px;align-items:center}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn:disabled{opacity:.5;cursor:progress}
+.pipe{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pipe button{padding:5px 10px;border-radius:99px;border:1px solid var(--line);background:var(--panel);cursor:pointer;font-size:12.5px}
+.pipe button[aria-pressed="true"]{background:var(--teal);color:var(--panel);border-color:var(--teal)}
+textarea,.inp{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--panel)}
+textarea{min-height:70px;resize:vertical}
+.opts{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-bottom:12px}
+.opts label{display:flex;gap:6px;align-items:center;font-size:13px}
+.frame-wrap{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--soft);display:flex;justify-content:center}
+iframe{border:0;width:100%;height:72vh;min-height:480px;background:#fff;transition:width .25s}
+.frame-wrap.mobile iframe{width:390px;max-width:100%}
+.status{font-size:13px;color:var(--muted);min-height:20px}
+.msg{white-space:pre-wrap;font-size:13.5px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;max-height:340px;overflow:auto}
+.msg-h{display:flex;justify-content:space-between;align-items:center;margin:14px 0 6px}
+.empty{padding:40px 20px;text-align:center;color:var(--muted)}
+.legal{font-size:12px;color:var(--muted);margin-top:16px;border-top:1px dashed var(--line);padding-top:10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="top">
+  <div class="brand">Atelier <span>Vitrine</span></div>
+  <div class="meta">
+    <span id="zone">Chargement des prospects…</span>
+    <div class="kpis" id="kpis"></div>
+    <label class="btn" for="imp" title="Charger un prospects.json produit par prospecteur.py">Importer une prospection<input id="imp" type="file" accept=".json,application/json" hidden></label>
+  </div>
+</div>
+
+<div class="grid">
+  <aside class="panel list" aria-label="Prospects">
+    <div class="filters">
+      <input id="q" placeholder="Rechercher un nom, une commune…" aria-label="Rechercher">
+      <select id="fMetier" aria-label="Métier"><option value="">Tous métiers</option></select>
+      <select id="fStatut" aria-label="État du site">
+        <option value="">Tous états</option>
+        <option value="aucun site détecté">Sans site</option>
+        <option value="site obsolète">Site obsolète</option>
+        <option value="site perfectible">Site perfectible</option>
+        <option value="site correct">Site correct</option>
+      </select>
+      <select id="fPrio" aria-label="Priorité"><option value="">Priorités A+B+C</option><option>A</option><option>B</option><option>C</option></select>
+      <select id="fPipe" aria-label="Suivi"><option value="">Tout le suivi</option></select>
+    </div>
+    <div class="rows" id="rows" role="list"></div>
+  </aside>
+
+  <main class="panel work">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="t-fiche" aria-selected="true" data-pane="fiche">Fiche prospect</button>
+      <button class="tab" role="tab" id="t-site" aria-selected="false" data-pane="site">Site généré</button>
+      <button class="tab" role="tab" id="t-msg" aria-selected="false" data-pane="msg">Message de prospection</button>
+    </div>
+    <section class="pane" id="p-fiche"></section>
+    <section class="pane" id="p-site" hidden>
+      <div class="opts">
+        <button class="btn primary" id="gen">Générer le site</button>
+        <label><input type="checkbox" id="demo" checked> Mode maquette (bandeau + noindex)</label>
+        <label>Rendu <select id="dev" class="inp" style="width:auto;padding:4px 8px"><option value="desk">Ordinateur</option><option value="mobile">Mobile</option></select></label>
+        <button class="btn" id="dl" disabled>Télécharger le .html</button>
+        <button class="btn" id="cp" disabled>Copier le code</button>
+      </div>
+      <div class="status" id="gstat">Un clic : textes rédigés par Claude à partir des données officielles, mise en page adaptée au métier.</div>
+      <div class="frame-wrap" id="fw"><iframe id="frame" title="Aperçu du site" sandbox="allow-scripts"></iframe></div>
+    </section>
+    <section class="pane" id="p-msg" hidden>
+      <div class="actions"><button class="btn primary" id="genmsg">Rédiger les messages</button><span class="status" id="mstat"></span></div>
+      <div id="msgs"></div>
+      <p class="legal">Cadre légal B2B (CNIL) : prospection par e-mail autorisée vers l'adresse professionnelle d'un artisan si le message concerne son activité, avec identification de l'expéditeur et lien de désinscription. Les entreprises opposées à la prospection dans SIRENE sont déjà exclues par le prospecteur.</p>
+    </section>
+  </main>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = s => document.querySelector(s);
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const PIPE = [["", "À contacter"], ["contacte", "Contacté"], ["rdv", "RDV"], ["maquette", "Maquette envoyée"], ["signe", "Signé"], ["perdu", "Perdu"]];
+const STATUT_CLS = {"aucun site détecté":"s-none","site obsolète":"s-old","site perfectible":"s-mid","site correct":"s-ok"};
+
+let DATA = {meta:{}, prospects:[]}, CUR = null, PIPEDB = {}, db = null, sample = null, downloads = null;
+const SITES = {}, COPIES = {};
+
+/* ------------------------------------------------------------ chargement */
+async function load(){
+  try{ const r = await fetch("prospects.json"); if(!r.ok) throw 0; setData(await r.json()); }
+  catch{ $("#zone").textContent = "Aucune prospection chargée : importez un prospects.json."; render(); }
+}
+$("#imp").addEventListener("change", e => {
+  const f = e.target.files[0]; if(!f) return;
+  const fr = new FileReader();
+  fr.onload = () => { try{ setData(JSON.parse(fr.result)); }catch{ $("#zone").textContent = "Fichier illisible : ce n'est pas un prospects.json."; } };
+  fr.readAsText(f);
+});
+function setData(d){
+  DATA = d; CUR = null;
+  const m = d.meta || {};
+  $("#zone").textContent = `${m.ville || "?"} · rayon ${m.rayon_km ?? "?"} km · données du ${m.date || "?"}${m.google ? " · Google activé" : ""}`;
+  const fm = $("#fMetier"); fm.length = 1;
+  Object.entries(m.metiers || {}).forEach(([k,v]) => fm.add(new Option(v,k)));
+  const fp = $("#fPipe"); fp.length = 1; PIPE.forEach(([k,v]) => fp.add(new Option(v, k || "_")));
+  render();
+  const first = filtered()[0]; if(first) select(first.id);
+}
+
+/* ------------------------------------------------------------ liste */
+function filtered(){
+  const q = $("#q").value.toLowerCase().trim(), m = $("#fMetier").value, s = $("#fStatut").value, p = $("#fPrio").value, pp = $("#fPipe").value;
+  return DATA.prospects.filter(x =>
+    (!q || (x.nom+" "+x.commune+" "+(x.dirigeant||"")).toLowerCase().includes(q)) &&
+    (!m || x.metier === m) && (!s || x.statut_site === s) && (!p || x.priorite === p) &&
+    (!pp || (PIPEDB[x.id]?.statut || "_") === pp || (pp === "_" && !PIPEDB[x.id]?.statut)));
+}
+function render(){
+  const L = filtered(), rows = $("#rows");
+  rows.textContent = "";
+  if(!L.length){ rows.innerHTML = '<div class="empty">Aucun prospect pour ces filtres.</div>'; }
+  L.slice(0, 400).forEach(x => {
+    const b = document.createElement("button");
+    b.className = "row"; b.setAttribute("role","listitem"); b.dataset.id = x.id;
+    if(CUR && CUR.id === x.id) b.setAttribute("aria-current","true");
+    const pipe = PIPE.find(p => p[0] === (PIPEDB[x.id]?.statut || ""))[1];
+    b.innerHTML = `<span class="prio p${esc(x.priorite)}">${esc(x.priorite)}</span>
+      <span style="min-width:0"><div class="rname">${esc(x.nom)}</div>
+      <div class="rsub">${esc(x.metier_label)} · ${esc(x.commune)}</div>
+      <div class="rsub"><span class="chip ${STATUT_CLS[x.statut_site]||""}">${esc(x.statut_site)}</span> <span class="st">${esc(pipe)}</span></div></span>
+      <span class="score">${esc(x.score)}</span>`;
+    b.onclick = () => select(x.id);
+    rows.appendChild(b);
+  });
+  const P = DATA.prospects, n = s => P.filter(x => x.statut_site === s).length;
+  const signes = Object.values(PIPEDB).filter(v => v.statut === "signe").length;
+  $("#kpis").innerHTML = `<span class="kpi"><b>${P.length}</b> prospects</span><span class="kpi"><b>${P.filter(x=>x.priorite==="A").length}</b> priorité A</span><span class="kpi"><b>${n("aucun site détecté")}</b> sans site</span><span class="kpi"><b>${n("site obsolète")+n("site perfectible")}</b> à refaire</span><span class="kpi"><b>${signes}</b> signés</span>`;
+}
+["#q","#fMetier","#fStatut","#fPrio","#fPipe"].forEach(s => $(s).addEventListener("input", render));
+
+/* ------------------------------------------------------------ onglets */
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => showTab(t.dataset.pane));
+function showTab(n){
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.pane === n));
+  ["fiche","site","msg"].forEach(k => $("#p-"+k).hidden = k !== n);
+}
+
+/* ------------------------------------------------------------ fiche */
+function select(id){
+  CUR = DATA.prospects.find(x => x.id === id); render(); fiche();
+  const s = SITES[id];
+  $("#frame").srcdoc = s || placeholderPreview();
+  $("#dl").disabled = $("#cp").disabled = !s;
+  $("#gstat").textContent = s ? "Site déjà généré pour ce prospect. Régénérer pour une autre version." : "Un clic : textes rédigés par Claude à partir des données officielles, mise en page adaptée au métier.";
+  $("#msgs").innerHTML = COPIES["m"+id] || ""; $("#mstat").textContent = "";
+}
+function fiche(){
+  const x = CUR, P = $("#p-fiche"); if(!x){ P.innerHTML = '<div class="empty">Choisissez un prospect.</div>'; return; }
+  const pd = PIPEDB[x.id] || {}, site = pd.site || x.site;
+  const g = "https://www.google.com/search?q=" + encodeURIComponent(`${x.nom} ${x.metier_label} ${x.commune}`);
+  const pj = "https://www.pagesjaunes.fr/annuaire/chercherlespros?quoiqui=" + encodeURIComponent(x.nom) + "&ou=" + encodeURIComponent(x.commune);
+  const an = "https://annuaire-entreprises.data.gouv.fr/entreprise/" + encodeURIComponent(x.siren);
+  P.innerHTML = `
+    <div class="head"><div><div class="lbl">${esc(x.metier_label)} · ${esc(x.commune)}</div><h2>${esc(x.nom)}</h2>
+      <div style="margin-top:6px"><span class="chip ${STATUT_CLS[x.statut_site]||""}">${esc(x.statut_site)}</span>
+      <span class="mono" style="margin-left:8px">score ${esc(x.score)}/100 · priorité ${esc(x.priorite)}</span></div></div>
+      <div class="actions"><button class="btn primary" id="go1">Générer son site</button></div></div>
+    <div class="facts">
+      <div><div class="lbl">Dirigeant</div><div class="v">${esc(x.dirigeant || "non publié")}</div></div>
+      <div><div class="lbl">Créée le</div><div class="v">${esc(x.creation)} <span class="st">(${esc(x.anciennete)} ans)</span></div></div>
+      <div><div class="lbl">Effectif</div><div class="v">${x.salaries ? "Employeur" : "Sans salarié"}</div></div>
+      <div><div class="lbl">Forme</div><div class="v">${esc(x.forme)}${x.rge ? " · <b>RGE</b>" : ""}</div></div>
+      <div><div class="lbl">Adresse</div><div class="v">${esc(x.adresse)}</div></div>
+      <div><div class="lbl">SIRET</div><div class="v mono">${esc(x.siret)}</div></div>
+      <div><div class="lbl">Téléphone</div><div class="v">${esc(pd.tel || x.tel || "à trouver")}</div></div>
+      <div><div class="lbl">Site actuel</div><div class="v">${site && /^https?:\/\//.test(site) ? `<a href="${esc(site)}" target="_blank" rel="noopener">${esc(site.replace(/^https?:\/\//,""))}</a>` : "aucun détecté"}</div></div>
+      ${x.note ? `<div><div class="lbl">Google</div><div class="v">${esc(x.note)}/5 · ${esc(x.avis)} avis</div></div>` : ""}
+    </div>
+    ${x.raisons?.length ? `<div class="box"><div class="lbl">Ce que l'audit a trouvé (vos arguments)</div><ul>${x.raisons.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>` : ""}
+    ${!site ? `<div class="box"><div class="lbl">À vérifier en 20 secondes avant d'appeler</div>Le prospecteur n'a trouvé aucun site. Vérifiez qu'il n'en a pas un caché :
+      <div class="actions" style="margin-top:8px"><a class="btn" href="${g}" target="_blank" rel="noopener">Google</a><a class="btn" href="${pj}" target="_blank" rel="noopener">PagesJaunes</a><a class="btn" href="${an}" target="_blank" rel="noopener">Annuaire officiel</a></div></div>` : ""}
+    <div class="box"><div class="lbl">Suivi commercial</div>
+      <div class="pipe" id="pipe">${PIPE.map(([k,v]) => `<button data-k="${k}" aria-pressed="${(pd.statut||"")===k}">${v}</button>`).join("")}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+        <input class="inp" id="pTel" placeholder="Téléphone trouvé" value="${esc(pd.tel||"")}">
+        <input class="inp" id="pSite" placeholder="Site trouvé (https://…)" value="${esc(pd.site||"")}">
+      </div>
+      <textarea id="pNote" style="margin-top:8px" placeholder="Notes d'appel, objections, prix proposé…">${esc(pd.note||"")}</textarea>
+      <div class="status" id="pstat">${db ? "Enregistré automatiquement." : "Suivi indisponible ici : il s'enregistre quand vous êtes connecté à claude.ai."}</div>
+    </div>`;
+  $("#go1").onclick = () => { showTab("site"); generate(); };
+  $("#pipe").onclick = e => { const k = e.target.dataset?.k; if(k === undefined) return; savePipe({statut:k}); };
+  let t; ["#pTel","#pSite","#pNote"].forEach(s => $(s).addEventListener("input", () => { clearTimeout(t); t = setTimeout(() => savePipe({tel:$("#pTel").value.trim(), site:$("#pSite").value.trim(), note:$("#pNote").value}), 700); }));
+}
+
+/* ------------------------------------------------------------ suivi (db) */
+async function savePipe(patch){
+  if(!CUR) return; const id = CUR.id;
+  PIPEDB[id] = {...(PIPEDB[id]||{}), ...patch, nom: CUR.nom, maj: new Date().toISOString()};
+  if("statut" in patch){ document.querySelectorAll("#pipe button").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === patch.statut)); render(); }
+  if(!db) return;
+  try{ await db.doc("pipeline/" + id).set(PIPEDB[id]); $("#pstat").textContent = "Enregistré."; }
+  catch(e){ $("#pstat").textContent = "Non enregistré (" + (e.code || "erreur") + ") : vos droits ne permettent pas d'écrire ici."; }
+}
+
+/* ------------------------------------------------------------ contenu par métier (repli sans IA) */
+const SERV = {
+  plombier:[["Dépannage plomberie","Fuite, WC bouché, chasse d'eau, robinetterie : diagnostic et réparation."],["Chauffe-eau & ballon","Remplacement et entretien de chauffe-eau électriques et thermodynamiques."],["Chaudière & chauffage","Installation, entretien annuel et remplacement de chaudières et radiateurs."],["Salle de bains","Création et rénovation complète, douche à l'italienne, accessibilité."]],
+  electricien:[["Mise aux normes","Tableau électrique, différentiels, terre : conformité NF C 15-100."],["Rénovation électrique","Reprise complète de l'installation d'une maison ou d'un appartement."],["Dépannage","Panne, disjoncteur qui saute, prises et éclairage défectueux."],["Borne de recharge","Installation de bornes pour véhicule électrique, à domicile ou en entreprise."]],
+  menuisier:[["Fenêtres & portes","Pose de menuiseries bois, PVC et aluminium, sur mesure."],["Agencement intérieur","Placards, dressings, bibliothèques et escaliers sur mesure."],["Volets & portails","Fabrication et pose de volets, portails et clôtures."],["Parquet & terrasse","Pose de parquets et de terrasses en bois."]],
+  serrurier:[["Ouverture de porte","Intervention sur porte claquée ou serrure bloquée."],["Serrures & blindage","Changement de cylindre, serrure multipoints, blindage de porte."],["Métallerie","Garde-corps, grilles, portails et escaliers métalliques sur mesure."],["Après effraction","Sécurisation et remise en état après cambriolage."]],
+  carreleur:[["Carrelage intérieur","Pose de sols et murs, grands formats, toutes surfaces."],["Salle de bains","Faïence, douche à l'italienne, étanchéité sous carrelage."],["Terrasses","Carrelage extérieur et dalles sur plots."],["Rénovation","Dépose de l'ancien revêtement, ragréage, pose."]],
+  peintre:[["Peinture intérieure","Murs, plafonds, boiseries : préparation soignée et finitions."],["Ravalement de façade","Nettoyage, traitement et mise en peinture des façades."],["Revêtements muraux","Papier peint, toile de verre, enduits décoratifs."],["Petits travaux","Rebouchage, reprise de fissures, remise en état avant location."]],
+  couvreur:[["Réparation de toiture","Recherche de fuite, tuiles cassées, faîtage."],["Rénovation de toiture","Réfection complète, isolation sous toiture."],["Zinguerie","Gouttières, chéneaux, descentes d'eau pluviale."],["Charpente","Traitement, renforcement et création de charpentes."]],
+  macon:[["Maçonnerie générale","Murs, ouvertures, dalles et fondations."],["Extension","Agrandissement de maison et surélévation."],["Rénovation","Reprise de murs, enduits, démolition."],["Aménagements extérieurs","Murets, terrasses, allées et clôtures maçonnées."]],
+  platrier:[["Plâtrerie & cloisons","Cloisons, doublages et faux plafonds."],["Isolation intérieure","Isolation thermique et phonique des murs et combles."],["Enduits","Enduits traditionnels et finitions prêtes à peindre."],["Rénovation","Reprise de plafonds et de murs abîmés."]],
+  paysagiste:[["Création de jardins","Conception et aménagement d'espaces verts."],["Entretien","Tonte, taille de haies, désherbage, contrats à l'année."],["Élagage","Taille et abattage d'arbres en sécurité."],["Aménagements","Terrasses, allées, clôtures et arrosage automatique."]],
+  coiffeur:[["Coupe femme","Coupe, brushing et coiffage adaptés à votre style."],["Coupe homme & barbe","Coupe, dégradé et taille de barbe."],["Couleur","Coloration, balayage, mèches et soins de la fibre."],["Soins & coiffage","Soins profonds, chignons et coiffures d'événement."]],
+  esthetique:[["Soins du visage","Nettoyage, hydratation et soins anti-âge."],["Épilation","Épilation à la cire, visage et corps."],["Beauté des mains et des pieds","Manucure, pose de vernis semi-permanent, beauté des pieds."],["Modelages","Modelages relaxants du corps."]],
+  boulanger:[["Pains","Baguettes de tradition et pains spéciaux cuits sur place."],["Viennoiseries","Croissants, pains au chocolat et brioches pur beurre."],["Pâtisseries","Entremets, tartes et gâteaux de fête sur commande."],["Snacking","Sandwichs, quiches et formules du midi."]],
+  boucher:[["Boucherie","Viandes sélectionnées, découpe à la demande."],["Charcuterie maison","Saucisses, pâtés et terrines préparés sur place."],["Traiteur","Plats cuisinés et plateaux pour vos réceptions."],["Barbecue","Préparations et marinades pour la saison."]],
+  garagiste:[["Entretien","Vidange, filtres, révision constructeur."],["Freinage","Plaquettes, disques et liquide de frein."],["Diagnostic","Diagnostic électronique et recherche de panne."],["Pneumatiques","Montage, équilibrage et géométrie."]],
+};
+const SCHEMA = {plombier:"Plumber",electricien:"Electrician",menuisier:"HomeAndConstructionBusiness",serrurier:"Locksmith",carreleur:"HomeAndConstructionBusiness",peintre:"HousePainter",couvreur:"RoofingContractor",macon:"GeneralContractor",platrier:"HomeAndConstructionBusiness",paysagiste:"HomeAndConstructionBusiness",coiffeur:"HairSalon",esthetique:"BeautySalon",boulanger:"Bakery",boucher:"FoodEstablishment",garagiste:"AutoRepair"};
+
+/* Identité visuelle par famille de métier : palette, typographies, motif */
+const THEMES = {
+  eau:     {bg:"#f4f8fb",ink:"#0b2236",acc:"#0a77c2",acc2:"#3cc6d8",dark:"#0b2236",fd:"Outfit",fb:"Inter",motif:"waves"},
+  energie: {bg:"#f7f7f4",ink:"#17181c",acc:"#f2b705",acc2:"#2c2f38",dark:"#17181c",fd:"Sora",fb:"Inter",motif:"circuit",accInk:"#17181c"},
+  bois:    {bg:"#faf6f0",ink:"#2d2117",acc:"#9a5b2b",acc2:"#d9b382",dark:"#2d2117",fd:"Fraunces",fb:"Work Sans",motif:"grain"},
+  metal:   {bg:"#f3f4f6",ink:"#16191f",acc:"#3b6ea8",acc2:"#9aa4b2",dark:"#1b1f27",fd:"Barlow Condensed",fb:"Barlow",motif:"grid"},
+  pierre:  {bg:"#f8f4ee",ink:"#2a241f",acc:"#b8572f",acc2:"#d8c3a5",dark:"#2a241f",fd:"DM Serif Display",fb:"DM Sans",motif:"tiles"},
+  couleur: {bg:"#fbfbfd",ink:"#1d1b2c",acc:"#e2455d",acc2:"#f6b93b",dark:"#1d1b2c",fd:"Syne",fb:"Manrope",motif:"strokes"},
+  toit:    {bg:"#f5f5f3",ink:"#1f2428",acc:"#b83b26",acc2:"#5b6770",dark:"#1f2428",fd:"Oswald",fb:"Source Sans 3",motif:"roof"},
+  jardin:  {bg:"#f5f8f1",ink:"#1b2a1c",acc:"#2f7d32",acc2:"#a8cf5a",dark:"#1b2a1c",fd:"Bricolage Grotesque",fb:"Inter",motif:"leaves"},
+  beaute:  {bg:"#fbf6f5",ink:"#2e1f2a",acc:"#8d3b6b",acc2:"#e8c4c0",dark:"#2e1f2a",fd:"Playfair Display",fb:"Jost",motif:"arcs"},
+  bouche:  {bg:"#fbf7ef",ink:"#2b1d14",acc:"#8c2f2b",acc2:"#e0b867",dark:"#2b1d14",fd:"Cormorant Garamond",fb:"Karla",motif:"wheat"},
+};
+function motif(kind, c1, c2){
+  const s = {
+    waves:`<path d="M0 30 Q 25 10 50 30 T 100 30" stroke="${c1}" fill="none" stroke-width="3"/><path d="M0 60 Q 25 40 50 60 T 100 60" stroke="${c2}" fill="none" stroke-width="3"/>`,
+    circuit:`<path d="M10 10 H50 V50 H90 M50 50 V90" stroke="${c1}" fill="none" stroke-width="3"/><circle cx="90" cy="50" r="5" fill="${c1}"/><circle cx="10" cy="10" r="5" fill="${c2}"/>`,
+    grain:`<path d="M0 20 C30 10 70 30 100 20 M0 45 C30 35 70 55 100 45 M0 70 C30 60 70 80 100 70" stroke="${c1}" fill="none" stroke-width="2"/><ellipse cx="60" cy="45" rx="9" ry="4" stroke="${c2}" fill="none" stroke-width="2"/>`,
+    grid:`<path d="M0 25 H100 M0 75 H100 M25 0 V100 M75 0 V100" stroke="${c2}" stroke-width="1.5"/><rect x="25" y="25" width="50" height="50" fill="none" stroke="${c1}" stroke-width="3"/>`,
+    tiles:`<rect x="5" y="5" width="42" height="42" fill="${c2}"/><rect x="53" y="53" width="42" height="42" fill="${c2}"/><rect x="53" y="5" width="42" height="42" fill="none" stroke="${c1}" stroke-width="2"/>`,
+    strokes:`<path d="M5 80 L40 20" stroke="${c1}" stroke-width="10" stroke-linecap="round"/><path d="M45 85 L80 25" stroke="${c2}" stroke-width="10" stroke-linecap="round"/>`,
+    roof:`<path d="M5 60 L50 20 L95 60" stroke="${c1}" fill="none" stroke-width="5"/><path d="M5 85 L50 45 L95 85" stroke="${c2}" fill="none" stroke-width="3"/>`,
+    leaves:`<path d="M50 90 C 10 60 20 20 50 10 C 80 20 90 60 50 90 Z" fill="${c2}"/><path d="M50 90 V15" stroke="${c1}" stroke-width="3"/>`,
+    arcs:`<circle cx="50" cy="100" r="40" stroke="${c1}" fill="none" stroke-width="3"/><circle cx="50" cy="100" r="60" stroke="${c2}" fill="none" stroke-width="3"/>`,
+    wheat:`<path d="M50 95 V20" stroke="${c1}" stroke-width="3"/>${[25,40,55,70].map(y=>`<ellipse cx="42" cy="${y}" rx="8" ry="4" transform="rotate(-35 42 ${y})" fill="${c2}"/><ellipse cx="58" cy="${y}" rx="8" ry="4" transform="rotate(35 58 ${y})" fill="${c2}"/>`).join("")}`,
+  }[kind];
+  return "data:image/svg+xml," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">${s}</svg>`);
+}
+
+function zoneCommunes(x){
+  if(!x.lat) return [x.commune];
+  const d = (a,b) => Math.hypot(a.lat-b.lat, (a.lon-b.lon)*Math.cos(a.lat*Math.PI/180));
+  const out = [x.commune];
+  [...DATA.prospects].filter(p => p.lat).sort((a,b) => d(a,x)-d(b,x)).forEach(p => { if(!out.includes(p.commune) && out.length < 9) out.push(p.commune); });
+  return out;
+}
+
+function defaultCopy(x){
+  const serv = (SERV[x.metier] || SERV.plombier).map(([t,d]) => ({titre:t, texte:d}));
+  const an = (x.creation||"").slice(0,4);
+  const metierLow = x.metier_label.toLowerCase();
+  const commerce = ["coiffeur","esthetique","boulanger","boucher"].includes(x.metier);
+  return {
+    accroche: `${x.metier_label} à ${x.commune}`,
+    sous_titre: commerce ? `Votre ${metierLow} de quartier à ${x.commune}. Passez nous voir ou appelez-nous.` : `Un artisan local, joignable directement, qui se déplace à ${x.commune} et dans les communes voisines.`,
+    services: serv,
+    engagements: commerce
+      ? [{titre:"Savoir-faire", texte:`Un métier exercé avec exigence${an ? " depuis " + an : ""}.`},{titre:"Accueil", texte:"Des conseils personnalisés à chaque visite."},{titre:"Proximité", texte:`Au cœur de ${x.commune}.`}]
+      : [{titre:"Devis clair", texte:"Un devis détaillé et gratuit avant toute intervention."},{titre:"Interlocuteur unique", texte:"Vous parlez directement à l'artisan qui réalise vos travaux."},{titre:"Travail soigné", texte:`Une entreprise installée${an ? " depuis " + an : ""}, qui tient à sa réputation locale.`}],
+    faq: commerce
+      ? [{q:"Faut-il réserver ?", r:"Appelez-nous pour connaître nos disponibilités."},{q:"Où vous trouver ?", r:`Au ${x.adresse}.`}]
+      : [{q:"Le devis est-il gratuit ?", r:"Oui, le devis est gratuit et sans engagement."},{q:`Intervenez-vous autour de ${x.commune} ?`, r:"Oui, dans les communes listées dans notre zone d'intervention."},{q:"Comment vous joindre ?", r:"Par téléphone ou avec le formulaire de contact : nous vous répondons rapidement."}],
+    seo_title: `${x.metier_label} à ${x.commune} | ${x.nom}`,
+    meta_desc: `${x.nom}, ${metierLow} à ${x.commune}. ${serv.slice(0,3).map(s=>s.titre).join(", ")}. Devis gratuit.`,
+    cta: commerce ? "Nous appeler" : "Demander un devis gratuit",
+  };
+}
+
+/* ------------------------------------------------------------ rédaction IA */
+async function aiCopy(x){
+  if(!sample) return null;
+  const prompt = `Tu es rédacteur web spécialisé dans les sites d'artisans français (SEO local, conversion).
+Rédige les textes du site vitrine de cette entreprise, en français, ton chaleureux et professionnel, phrases courtes.
+
+DONNÉES OFFICIELLES (SIRENE) — seules informations vérifiées :
+- Nom : ${x.nom} (raison sociale : ${x.raison_sociale})
+- Métier : ${x.metier_label} (code NAF ${x.naf})
+- Commune : ${x.commune} ; adresse : ${x.adresse}
+- Créée en ${(x.creation||"").slice(0,4)} (${x.anciennete} ans) ; ${x.salaries ? "entreprise employeuse" : "artisan sans salarié"} ; ${x.rge ? "labellisée RGE" : "pas de label RGE connu"}
+- Zone : ${zoneCommunes(x).join(", ")}
+${x.note ? `- Google : ${x.note}/5 sur ${x.avis} avis` : ""}
+
+RÈGLES STRICTES :
+- N'invente AUCUN fait : pas de chiffres, prix, années, certifications, garanties décennales, horaires, "24h/24", avis ou nombre de clients non fournis.
+- Prestations : celles qu'un ${x.metier_label} réalise couramment, formulées sans promesse invérifiable.
+- SEO : mot-clé principal "${x.metier_label.toLowerCase()} ${x.commune}" dans accroche, seo_title (≤ 60 caractères) et meta_desc (≤ 155 caractères).
+
+Réponds UNIQUEMENT avec ce JSON :
+{"accroche":"titre H1 ≤ 60 car.","sous_titre":"1 à 2 phrases","services":[{"titre":"","texte":"1 phrase"}] (5 éléments),"engagements":[{"titre":"","texte":""}] (3),"faq":[{"q":"","r":""}] (4),"seo_title":"","meta_desc":"","cta":"texte du bouton principal"}`;
+  return await sample.json(prompt, {modelTier:"default"});
+}
+
+/* ------------------------------------------------------------ rendu du site client */
+function frTel(t){
+  let d = String(t).replace(/[^\d+]/g, "");
+  if(d.startsWith("+33")) d = "0" + d.slice(3);
+  if(d.startsWith("0033")) d = "0" + d.slice(4);
+  return /^0\d{9}$/.test(d) ? d.replace(/(\d{2})(?=\d)/g, "$1 ") : String(t);
+}
+function buildSite(x, c, demo){
+  const T = THEMES[x.famille] || THEMES.eau, accInk = T.accInk || "#ffffff";
+  const pd = PIPEDB[x.id] || {}, tel = frTel(pd.tel || x.tel || "");
+  const telHref = tel.replace(/[^\d+]/g, "");
+  const zone = zoneCommunes(x), an = (x.creation||"").slice(0,4);
+  const initials = x.nom.split(/\s+/).filter(w => w.length > 1).slice(0,2).map(w => w[0]).join("").toUpperCase();
+  const fonts = [T.fd, T.fb].map(f => "family=" + f.replace(/ /g,"+") + ":wght@400;500;600;700").join("&");
+  const ld = {"@context":"https://schema.org","@type":SCHEMA[x.metier]||"LocalBusiness",name:x.nom,
+    address:{"@type":"PostalAddress",streetAddress:(x.adresse||"").replace(/\s\d{5}\s.*$/,""),postalCode:x.code_postal,addressLocality:x.commune,addressCountry:"FR"},
+    areaServed:zone, ...(tel?{telephone:tel}:{}), ...(x.lat?{geo:{"@type":"GeoCoordinates",latitude:x.lat,longitude:x.lon}}:{}),
+    ...(x.note?{aggregateRating:{"@type":"AggregateRating",ratingValue:x.note,reviewCount:x.avis}}:{})};
+  const badges = [an && `Depuis ${an}`, x.rge && "Artisan RGE", `Basé à ${x.commune}`, x.note && `${String(x.note).replace(".",",")}/5 sur Google`].filter(Boolean);
+  const callBtn = tel ? `<a class="b b1" href="tel:${esc(telHref)}">Appeler le ${esc(tel)}</a>` : `<a class="b b1" href="#contact">${esc(c.cta)}</a>`;
+  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(c.seo_title)}</title><meta name="description" content="${esc(c.meta_desc)}">
+${demo ? '<meta name="robots" content="noindex,nofollow">' : ""}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?${fonts}&display=swap">
+<script type="application/ld+json">${JSON.stringify(ld).replace(/</g,"\\u003c")}<\/script>
+<style>
+:root{--bg:${T.bg};--ink:${T.ink};--acc:${T.acc};--acc2:${T.acc2};--dark:${T.dark};--accInk:${accInk};--fd:"${T.fd}",Georgia,serif;--fb:"${T.fb}",system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 var(--fb)}
+img{max-width:100%}a{color:inherit}
+.w{max-width:1120px;margin:0 auto;padding:0 20px}
+.demo{background:#111;color:#fff;font:13px/1.4 system-ui;text-align:center;padding:8px 12px}
+header{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid color-mix(in srgb,var(--ink) 10%,transparent)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:68px}
+.logo{display:flex;align-items:center;gap:10px;font:700 19px/1.1 var(--fd);text-decoration:none}
+.mono{width:40px;height:40px;border-radius:10px;background:var(--acc);color:var(--accInk);display:grid;place-items:center;font:700 16px var(--fb);flex:none}
+.links{display:flex;gap:22px;font-size:15px}.links a{text-decoration:none;opacity:.8}.links a:hover{opacity:1}
+.b{display:inline-block;padding:13px 22px;border-radius:10px;font-weight:600;text-decoration:none;font-size:16px}
+.b1{background:var(--acc);color:var(--accInk)}.b2{border:2px solid currentColor}
+.hero{position:relative;overflow:hidden;padding:72px 0 64px}
+.hero:after{content:"";position:absolute;right:-60px;top:-40px;width:460px;height:460px;background:url("${motif(T.motif,T.acc,T.acc2)}") center/contain no-repeat;opacity:.22;pointer-events:none}
+.hero h1{font:700 clamp(36px,6vw,64px)/1.05 var(--fd);margin:0 0 18px;max-width:14ch;text-wrap:balance;letter-spacing:-.01em}
+.hero p{font-size:20px;max-width:46ch;margin:0 0 28px;opacity:.85}
+.ctas{display:flex;flex-wrap:wrap;gap:12px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:30px}
+.badges span{font-size:14px;font-weight:600;padding:6px 12px;border-radius:99px;background:color-mix(in srgb,var(--acc) 12%,transparent)}
+section{padding:72px 0}
+h2{font:700 clamp(28px,4vw,40px)/1.15 var(--fd);margin:0 0 32px;text-wrap:balance}
+.eyebrow{font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--acc);margin-bottom:8px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.card{background:#fff;border-radius:16px;padding:26px;border:1px solid color-mix(in srgb,var(--ink) 9%,transparent)}
+.card h3{font:600 20px/1.25 var(--fd);margin:0 0 8px}.card p{margin:0;font-size:16px;opacity:.8}
+.num{font:700 14px var(--fb);color:var(--acc);margin-bottom:14px}
+.darkband{background:var(--dark);color:#fff}.darkband .card{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}.darkband .eyebrow{color:var(--acc2)}
+.ph{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.ph div{aspect-ratio:4/3;border-radius:14px;border:2px dashed color-mix(in srgb,var(--ink) 25%,transparent);display:grid;place-items:center;text-align:center;padding:16px;font-size:14px;opacity:.7;max-width:100%}
+.zone{display:flex;flex-wrap:wrap;gap:10px}.zone span{padding:9px 16px;border-radius:10px;background:#fff;border:1px solid color-mix(in srgb,var(--ink) 10%,transparent);font-weight:500}
+details{background:#fff;border-radius:12px;padding:18px 22px;margin-bottom:10px;border:1px solid color-mix(in srgb,var(--ink) 9%,transparent)}
+summary{font-weight:600;cursor:pointer}details p{margin:10px 0 0;opacity:.85}
+.contact{display:grid;grid-template-columns:1fr 1.2fr;gap:40px}@media(max-width:760px){.contact{grid-template-columns:1fr}.links,.hb{display:none!important}}
+form{display:grid;gap:12px}input,textarea{font:inherit;padding:13px 14px;border-radius:10px;border:1px solid color-mix(in srgb,var(--ink) 18%,transparent);background:#fff;width:100%}
+textarea{min-height:120px}
+footer{background:var(--dark);color:#fff;padding:40px 0 90px;font-size:14px}footer a{opacity:.85}
+.legal{opacity:.75;margin-top:18px;line-height:1.7}
+.sticky{position:fixed;left:0;right:0;bottom:0;padding:10px 14px;background:var(--dark);display:none;z-index:9}
+.sticky a{display:block;text-align:center}@media(max-width:760px){.sticky{display:block}}
+</style></head><body>
+${demo ? `<div class="demo">Maquette réalisée pour ${esc(x.nom)}. Proposition non officielle, non référencée sur Google.</div>` : ""}
+<header><div class="w nav"><a class="logo" href="#"><span class="mono">${esc(initials||"•")}</span>${esc(x.nom)}</a>
+<nav class="links"><a href="#services">Prestations</a><a href="#zone">Zone</a><a href="#faq">Questions</a><a href="#contact">Contact</a></nav>
+${tel ? `<a class="b b1 hb" href="tel:${esc(telHref)}" style="padding:10px 16px;font-size:15px">${esc(tel)}</a>` : `<a class="b b1 hb" href="#contact" style="padding:10px 16px;font-size:15px">Devis</a>`}</div></header>
+<main>
+<div class="hero"><div class="w"><div class="eyebrow">${esc(x.metier_label)} · ${esc(x.commune)}</div>
+<h1>${esc(c.accroche)}</h1><p>${esc(c.sous_titre)}</p>
+<div class="ctas">${callBtn}<a class="b b2" href="#services">Nos prestations</a></div>
+<div class="badges">${badges.map(b=>`<span>${esc(b)}</span>`).join("")}</div></div></div>
+<section id="services"><div class="w"><div class="eyebrow">Prestations</div><h2>Ce que nous faisons pour vous</h2>
+<div class="cards">${(c.services||[]).map((s,i)=>`<div class="card"><div class="num">${String(i+1).padStart(2,"0")}</div><h3>${esc(s.titre)}</h3><p>${esc(s.texte)}</p></div>`).join("")}</div></div></section>
+<section class="darkband"><div class="w"><div class="eyebrow">Pourquoi nous choisir</div><h2>Un artisan engagé, près de chez vous</h2>
+<div class="cards">${(c.engagements||[]).map(s=>`<div class="card"><h3>${esc(s.titre)}</h3><p>${esc(s.texte)}</p></div>`).join("")}</div></div></section>
+<section><div class="w"><div class="eyebrow">Réalisations</div><h2>Nos derniers travaux</h2>
+<div class="ph"><div>Photo de chantier ou de réalisation n°1</div><div>Photo n°2 (avant / après)</div><div>Photo n°3</div></div></div></section>
+${x.note ? `<section><div class="w"><div class="eyebrow">Avis clients</div><h2>${esc(String(x.note).replace(".",","))}/5 sur Google, ${esc(x.avis)} avis</h2>${x.maps ? `<a class="b b2" href="${esc(x.maps)}" target="_blank" rel="noopener">Lire les avis</a>` : ""}</div></section>` : ""}
+<section id="zone"><div class="w"><div class="eyebrow">Zone d'intervention</div><h2>${esc(x.metier_label)} à ${esc(x.commune)} et alentours</h2>
+<div class="zone">${zone.map(z=>`<span>${esc(z)}</span>`).join("")}</div></div></section>
+<section id="faq"><div class="w" style="max-width:820px"><div class="eyebrow">Questions fréquentes</div><h2>Vous vous demandez peut-être</h2>
+${(c.faq||[]).map(f=>`<details><summary>${esc(f.q)}</summary><p>${esc(f.r)}</p></details>`).join("")}</div></section>
+<section id="contact"><div class="w contact"><div><div class="eyebrow">Contact</div><h2>${esc(c.cta)}</h2>
+<p><strong>${esc(x.nom)}</strong><br>${esc(x.adresse)}</p>${tel ? `<p><a class="b b1" href="tel:${esc(telHref)}">${esc(tel)}</a></p>` : ""}</div>
+<form onsubmit="event.preventDefault();this.innerHTML='<p><strong>Merci, votre demande est bien partie.</strong> Nous vous rappelons rapidement.</p>'">
+<input required name="nom" placeholder="Votre nom" aria-label="Votre nom"><input required name="tel" type="tel" placeholder="Votre téléphone" aria-label="Votre téléphone">
+<input name="ville" placeholder="Votre commune" aria-label="Votre commune"><textarea name="msg" placeholder="Décrivez votre besoin" aria-label="Votre besoin"></textarea>
+<button class="b b1" style="border:0;cursor:pointer">Envoyer ma demande</button>
+<small style="opacity:.7">Vos données servent uniquement à répondre à votre demande.</small></form></div></section>
+</main>
+<footer><div class="w"><strong>${esc(x.nom)}</strong> · ${esc(x.metier_label)} à ${esc(x.commune)}
+<div class="legal" id="mentions"><strong>Mentions légales.</strong> Éditeur : ${esc(x.raison_sociale || x.nom)}, ${esc(x.forme.toLowerCase())}, SIRET ${esc(x.siret)}, ${esc(x.adresse)}.${x.dirigeant ? ` Directeur de la publication : ${esc(x.dirigeant)}.` : ""} Hébergeur : [nom, adresse et téléphone de l'hébergeur à compléter]. Données personnelles : les informations du formulaire servent uniquement à traiter votre demande ; vous pouvez demander leur suppression à tout moment.</div></div></footer>
+<div class="sticky">${callBtn}</div>
+</body></html>`;
+}
+function placeholderPreview(){
+  return `<!doctype html><html><body style="margin:0;display:grid;place-items:center;height:100vh;font:16px system-ui;color:#5b6964;background:#f6f8f6;text-align:center;padding:20px"><div><div style="font-size:40px">⌂</div>Le site apparaîtra ici.<br>Cliquez sur « Générer le site ».</div></body></html>`;
+}
+
+/* ------------------------------------------------------------ génération */
+async function generate(){
+  if(!CUR) return; const x = CUR, b = $("#gen"); b.disabled = true;
+  let c = defaultCopy(x), src = "modèle métier";
+  if(sample){
+    $("#gstat").textContent = "Claude rédige les textes à partir des données SIRENE…";
+    try{ const ai = await aiCopy(x); if(ai && ai.accroche && Array.isArray(ai.services)){ c = {...c, ...ai}; src = "rédigé par Claude"; } }
+    catch(e){ src = e.code === "not_granted" ? "modèle métier (IA refusée dans les permissions)" : e.code === "rate_limited" ? "modèle métier (IA momentanément saturée)" : "modèle métier (IA indisponible)"; if(e.code === "not_granted") sample = null; }
+  }
+  if(CUR !== x){ b.disabled = false; return; }
+  const html = buildSite(x, c, $("#demo").checked);
+  SITES[x.id] = html; $("#frame").srcdoc = html;
+  $("#dl").disabled = $("#cp").disabled = false; b.disabled = false;
+  $("#gstat").textContent = `Site prêt · textes : ${src} · ${Math.round(html.length/1024)} Ko, un seul fichier, hébergeable partout.`;
+}
+$("#gen").onclick = generate;
+$("#dev").onchange = e => $("#fw").classList.toggle("mobile", e.target.value === "mobile");
+$("#demo").onchange = () => { if(CUR && SITES[CUR.id]) generate(); };
+const slug = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+$("#dl").onclick = async () => {
+  const html = SITES[CUR?.id]; if(!html) return;
+  if(!downloads){ $("#gstat").textContent = "Téléchargement indisponible ici : utilisez « Copier le code » puis collez dans un fichier index.html."; return; }
+  try{ await downloads.save({filename: slug(CUR.nom) + "-site.html", data: html}); $("#gstat").textContent = "Fichier enregistré."; }
+  catch(e){ $("#gstat").textContent = e.code === "declined" ? "Téléchargement annulé." : "Téléchargement impossible : utilisez « Copier le code »."; }
+};
+$("#cp").onclick = async () => {
+  const html = SITES[CUR?.id]; if(!html) return;
+  try{ await navigator.clipboard.writeText(html); $("#gstat").textContent = "Code copié : collez-le dans un fichier index.html."; }
+  catch{ $("#gstat").textContent = "Copie refusée par le navigateur : utilisez « Télécharger »."; }
+};
+
+/* ------------------------------------------------------------ messages */
+function defaultMsgs(x){
+  const sans = !x.site, pb = (x.raisons||[]).slice(0,2).map(r => r.split(" : ")[0].toLowerCase()).join(" et ");
+  const constat = sans ? `je n'ai pas trouvé de site internet pour ${x.nom}, alors que vos clients cherchent « ${x.metier_label.toLowerCase()} ${x.commune} » sur Google` : `votre site actuel présente quelques points faibles (${pb || "affichage mobile, sécurité"}) qui font fuir des clients`;
+  return {
+    objet: `${x.nom} : une maquette de site prête pour vous`,
+    email: `Bonjour${x.dirigeant ? " " + x.dirigeant.split(" ")[0] : ""},\n\nEn préparant une étude des artisans de ${x.commune}, ${constat}.\n\nJ'ai donc préparé une maquette de site pour ${x.nom} : vos prestations, votre zone d'intervention, un bouton pour vous appeler en un geste sur mobile. Elle est déjà prête, je peux vous la montrer en 5 minutes.\n\nCela vous intéresse que je vous l'envoie ?\n\n[Votre prénom et nom]\n[Votre téléphone]\n\nSi vous ne souhaitez plus recevoir de message de ma part, répondez simplement STOP.`,
+    sms: `Bonjour, ${x.dirigeant ? x.dirigeant.split(" ")[0] + ", " : ""}j'ai préparé une maquette de site internet pour ${x.nom} (${x.commune}). Je peux vous l'envoyer pour avis, sans engagement ? [Prénom]. STOP pour ne plus être contacté.`,
+    appel: `1. Accroche (10 s) : « Bonjour, ${x.dirigeant ? x.dirigeant : "je cherche le responsable"} ? [Prénom], je crée des sites pour les artisans autour de ${x.commune}. Je vous prends 1 minute ? »\n2. Constat : « ${sans ? "Quand on cherche " + x.metier_label.toLowerCase() + " " + x.commune + " sur Google, vous n'apparaissez pas avec un site." : "J'ai regardé votre site : " + (pb || "il n'est pas adapté au téléphone") + "."} »\n3. Preuve : « J'ai déjà préparé une maquette pour vous. Je vous l'envoie par SMS, vous jugez sur pièce ? »\n4. Objection « j'ai assez de travail » : « Justement, le site sert aussi à choisir vos chantiers et à éviter les appels inutiles. »\n5. Objection « c'est cher » : « Le prix est fixé avant, et un seul chantier gagné le rembourse. »\n6. Conclusion : obtenir le numéro de portable pour la maquette + un créneau de 15 min.`,
+  };
+}
+async function genMsgs(){
+  if(!CUR) return; const x = CUR, b = $("#genmsg"); b.disabled = true;
+  let m = defaultMsgs(x), src = "modèle";
+  if(sample){
+    $("#mstat").textContent = "Claude personnalise les messages…";
+    try{
+      const ai = await sample.json(`Tu es commercial B2B pour une micro-agence qui crée des sites internet pour artisans. Rédige 3 messages de prospection pour ce prospect, en français, ton direct et respectueux, sans flatterie ni jargon, sans promesse chiffrée.
+Prospect : ${x.nom}, ${x.metier_label} à ${x.commune}, dirigeant ${x.dirigeant || "inconnu"}, entreprise créée en ${(x.creation||"").slice(0,4)}.
+Situation web : ${x.site ? "site existant " + x.site + ". Problèmes constatés : " + (x.raisons||[]).join(" ; ") : "aucun site trouvé sur Google"}.
+Argument central : une maquette de son futur site est DÉJÀ prête, on propose de la lui montrer.
+Obligations : e-mail ≤ 120 mots avec signature [Prénom Nom] [Téléphone] et ligne de désinscription STOP ; SMS ≤ 300 caractères avec STOP ; script d'appel en 6 étapes numérotées incluant 2 objections fréquentes d'artisans et leur réponse.
+Réponds UNIQUEMENT en JSON : {"objet":"","email":"","sms":"","appel":""}`, {modelTier:"default"});
+      if(ai && ai.email){ m = ai; src = "rédigé par Claude"; }
+    }catch(e){ src = "modèle (IA indisponible)"; if(e.code === "not_granted") sample = null; }
+  }
+  if(CUR !== x){ b.disabled = false; return; }
+  const block = (t, k) => `<div class="msg-h"><div class="lbl">${t}</div><button class="btn" data-copy="${k}">Copier</button></div><div class="msg" id="m-${k}">${esc(m[k])}</div>`;
+  const html = block("Objet de l'e-mail","objet") + block("E-mail","email") + block("SMS","sms") + block("Script d'appel","appel");
+  COPIES["m"+x.id] = html; $("#msgs").innerHTML = html; $("#mstat").textContent = "Messages : " + src + "."; b.disabled = false;
+}
+$("#genmsg").onclick = genMsgs;
+$("#msgs").addEventListener("click", async e => {
+  const k = e.target.dataset?.copy; if(!k) return;
+  const t = $("#m-"+k).textContent;
+  try{ await navigator.clipboard.writeText(t); e.target.textContent = "Copié"; }
+  catch{ const r = document.createRange(); r.selectNodeContents($("#m-"+k)); const s = getSelection(); s.removeAllRanges(); s.addRange(r); e.target.textContent = "Sélectionné, faites Ctrl+C"; }
+  setTimeout(() => e.target.textContent = "Copier", 1800);
+});
+
+/* ------------------------------------------------------------ capacités */
+load();
+if(window.claude?.use){
+  claude.use("sample").then(s => sample = s);
+  claude.use("downloads").then(d => downloads = d);
+  claude.use("db").then(d => {
+    if(!d) return; db = d;
+    const timer = setTimeout(() => {}, 10000);
+    d.collection("pipeline").onSnapshot(snap => {
+      clearTimeout(timer); PIPEDB = {};
+      snap.docs.forEach(doc => PIPEDB[doc.id] = doc.data());
+      render(); if(CUR && document.activeElement?.closest?.("#p-fiche") == null) fiche();
+    }, () => { clearTimeout(timer); });
+  });
+}
+})();
+</script>
