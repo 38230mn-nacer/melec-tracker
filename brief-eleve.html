@@ -317,7 +317,7 @@ function parentText(st) {
   return t;
 }
 function obsidianMd(st) {
-  const r = refsFor(st), L = ['---', `type: eleve`, `alias: ${st.alias}`, `niveau: ${st.level}`, `voie: ${st.voie}`, `specialites: [${st.specs.join(', ')}]`, `annee: ${S.settings.year}`, `maj: ${TODAY()}`, `tags: [eleve, cours-particulier, maths-au-cube]`, '---', '', `# ${S.settings.pseudo ? st.alias : st.name}`, '', '## Brief', '```', briefText(st), '```', '', '## Référentiels'];
+  const r = refsFor(st), L = ['---', `title: ${S.settings.pseudo ? st.alias : st.name}`, `sources: brief-eleve (export du ${TODAY()})`, `updated: ${TODAY()}`, `type: eleve`, `alias: ${st.alias}`, `niveau: ${st.level}`, `voie: ${st.voie}`, `specialites: [${st.specs.join(', ')}]`, `annee: ${S.settings.year}`, `tags: [eleve, cours-particulier, maths-au-cube]`, '---', '', `# ${S.settings.pseudo ? st.alias : st.name}`, '', '## Brief', '```', briefText(st), '```', '', '## Référentiels'];
   r.confirmed.forEach(x => L.push(`- ${x.label} — ${x.text} — [texte](${x.url})`)); r.suggested.forEach(x => L.push(`- (à confirmer) ${x.label}`));
   L.push('', '## Progression');
   r.confirmed.forEach(ref => { L.push(`### ${ref.label}`); ref.domains.forEach(d => { const rec = dom(st, ref.id, d); L.push(`- [${effState(rec) === 'ok' ? 'x' : ' '}] ${d} — ${STATES[effState(rec)]}${rec.hist?.length ? ' — dernier test ' + rec.hist.at(-1).s + '/' + rec.hist.at(-1).m : ''}`); }); });

@@ -100,6 +100,7 @@
 
     { id: 'BTS-ELT-MATHS', label: 'Mathématiques BTS Électrotechnique', discipline: 'maths', levels: ['BTS1', 'BTS2'], voie: 'bts',
       from: null, until: null, text: 'Référentiel du BTS — modules à confirmer sur le texte', certainty: 70, url: BO,
+      note: 'Vérifier la liste des modules de mathématiques du BTS Électrotechnique dans le référentiel officiel.',
       domainsStatus: 'indicatif',
       domains: ['Nombres complexes', 'Fonctions d\'une variable réelle', 'Calcul intégral', 'Équations différentielles', 'Séries de Fourier', 'Transformation de Laplace', 'Statistiques et probabilités'] }
   ];

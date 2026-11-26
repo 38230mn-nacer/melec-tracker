@@ -34,3 +34,7 @@ La chaîne V4.7.8 validée est conservée pour le sujet/corrigé Word avec équa
 ## Brief élève
 - `brief-eleve.html` : profils, référentiels 2026-2027 par niveau/voie/année, progression par domaines, brief de séance, message parents, export Obsidian — voir `docs/BRIEF-ELEVE.md` ;
 - `brief-eleve-referentiels.js` : registre daté (source de vérité, mise à jour manuelle).
+
+## Second cerveau
+- `second-brain/` : kit de vérification déterministe du coffre Obsidian (lint, citations, hooks Claude Code) — voir `second-brain/README.md` ;
+- `scripts/check-registry.mjs` : tests du registre Brief élève, exécutés en CI.
